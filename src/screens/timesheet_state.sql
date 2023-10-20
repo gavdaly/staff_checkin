@@ -1,0 +1,2 @@
+-- select sessions where user_id = ?, start_time > ?, end_time < ?
+-- join corrections -- join adjustments

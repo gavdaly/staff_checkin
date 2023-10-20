@@ -1,0 +1,1 @@
+-- create correction where session_id = ?, original_start_time = ?, original_end_time = ?, start_time = ?, end_time = ?, reason = ?, state = "pending"
