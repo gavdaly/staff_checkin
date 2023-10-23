@@ -161,7 +161,22 @@ pub struct Status {
 
 #[server]
 async fn logout() -> Result<(), ServerFnError> {
-    // delete cookie
+    use http::{header::SET_COOKIE, HeaderMap, HeaderValue, StatusCode};
+    let mut res_headers = HeaderMap::new();
+    res_headers.insert(SET_COOKIE, HeaderValue::from_str("jwt=").unwrap());
+
+    let res_parts = leptos_axum::ResponseParts {
+        headers: res_headers,
+        status: Some(StatusCode::ACCEPTED),
+    };
+
+    let res_options_outer = use_context::<leptos_axum::ResponseOptions>();
+    if let Some(res_options) = res_options_outer {
+        res_options.overwrite(res_parts);
+    }
+
+    // redirect to the home page
+    leptos_axum::redirect("/sign_in");
     Ok(())
 }
 

@@ -1,9 +1,31 @@
+use crate::models::user::User;
 use leptos::*;
 use leptos_router::ActionForm;
+use uuid::{uuid, Uuid};
+
+#[server]
+async fn get_user(id: Uuid) -> Result<User, ServerFnError> {
+    Ok(User {
+        id: Uuid::new_v4(),
+        first_name: "Test".to_string(),
+        last_name: "User".to_string(),
+        provider: None,
+        phone_number: "2341234567".to_string(),
+        display_name: None,
+        api_id: None,
+        state: crate::models::user::State::Salary,
+        role: crate::models::user::Role::BusinessStaff,
+        settings: "".to_string(),
+    })
+}
 
 /// Renders the home page of your application.
 #[component]
 pub fn HomePage() -> impl IntoView {
+    let user = create_resource(
+        || {},
+        move |_| get_user(uuid! {"67e55044-10b1-426f-9247-bb680e5fe0c8"}),
+    );
     // get user
     // get settings
     // account state
@@ -13,7 +35,22 @@ pub fn HomePage() -> impl IntoView {
     // upcomming vacations
     view! {
         <section class="stack">
-            "checking"
+            <Suspense fallback=|| view! {"Loading..."}>
+                {move || view!{
+                    {match user.get() {
+                        Some(Ok(u)) => {
+                            view!{
+                                <div id={u.id.to_string()}>
+                                    <h1>{u.first_name}</h1>
+                                    <p>{u.phone_number}</p>
+                                </div>
+                            }
+
+                        },
+                        _ => view!{<div>"error"</div>}
+                    }}
+                }}
+            </Suspense>
         </section>
     }
 }

@@ -1,5 +1,25 @@
+use crate::models::adjustments::Adjustment;
+use crate::models::assignation::Assignation;
+use crate::models::corrections::Correction;
+use crate::models::user::{Role, State as UserState};
 use leptos::*;
 use leptos_router::*;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+#[derive(Clone, Deserialize, Serialize)]
+pub struct TimeSheet {
+    pub id: Uuid,
+    pub first_name: String,
+    pub last_name: String,
+    pub phone_number: String,
+    pub display_name: String,
+    pub state: UserState,
+    pub role: Role,
+    pub assignations: Vec<Assignation>,
+    pub corrections: Vec<Correction>,
+    pub adjustments: Vec<Adjustment>,
+}
 
 /// Renders the home page of your application.
 #[component]
@@ -16,10 +36,24 @@ pub fn TimeSheets() -> impl IntoView {
     }
 }
 
+#[server]
+async fn load_timesheets_data() -> Result<Vec<TimeSheet>, ServerFnError> {
+    use crate::utils::db;
+
+    let db = db().await?;
+
+    Ok(vec![])
+}
+
 #[component]
 pub fn TimeSheetsList() -> impl IntoView {
+    let timesheets = create_resource(move || {}, move |_| load_timesheets_data());
     view! {
-        <h1>"TimeSheets | To Do"</h1>
+        <Suspense  fallback=move || view! { <p>"Loading..."</p> }>
+            {move || timesheets.get().map(|ts| {
+
+            })}
+        </Suspense>
     }
 }
 

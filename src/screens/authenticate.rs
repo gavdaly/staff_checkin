@@ -39,6 +39,7 @@ pub fn PhoneNumber() -> impl IntoView {
 
 #[server]
 async fn authenticate(pin: String) -> Result<String, ServerFnError> {
+    use http::{header::SET_COOKIE, HeaderMap, HeaderValue, StatusCode};
     // use axum_session::{SessionConfig, SessionLayer, SessionStore};
     // use axum_session_auth::{AuthConfig, AuthSessionLayer, SessionSqlitePool};
     // let params = ParamsMap::get("");
@@ -46,24 +47,18 @@ async fn authenticate(pin: String) -> Result<String, ServerFnError> {
     //
     println!("{pin}");
 
-    // use actix_web::{cookie::Cookie, http::header, http::header::HeaderValue};
-    // use leptos_actix::ResponseOptions;
+    let mut res_headers = HeaderMap::new();
+    res_headers.insert(SET_COOKIE, HeaderValue::from_str("jwt=todo").unwrap());
 
-    // pull ResponseOptions from context
-    // let response = expect_context::<ResponseOptions>();
+    let res_parts = leptos_axum::ResponseParts {
+        headers: res_headers,
+        status: Some(StatusCode::CREATED),
+    };
 
-    // set the HTTP status code
-    // response.set_status(StatusCode::IM_A_TEAPOT);
-
-    // set a cookie in the HTTP response
-    // let mut cookie = Cookie::build("biscuits", "yes").finish();
-    // if let Ok(cookie) = HeaderValue::from_str(&cookie.to_string()) {
-    //     res.insert_header(header::SET_COOKIE, cookie);
-    // }
-
-    // let headers = Headers([(SET_COOKIE, "auth=Authorized")]);
-    // auth.login_user(user.id);
-    // auth.remember_user(remember.is_some());
+    let res_options_outer = use_context::<leptos_axum::ResponseOptions>();
+    if let Some(res_options) = res_options_outer {
+        res_options.overwrite(res_parts);
+    }
 
     // redirect to the home page
     leptos_axum::redirect("/");
