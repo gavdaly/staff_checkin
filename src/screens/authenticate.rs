@@ -68,10 +68,10 @@ async fn authenticate(pin: String) -> Result<String, ServerFnError> {
 
 #[component]
 pub fn PinNumber() -> impl IntoView {
-    let (pin_input, set_pin_input) = create_signal(String::with_capacity(6));
+    let (_pin_input, set_pin_input) = create_signal(String::with_capacity(6));
     let authenticate = create_server_action::<Authenticate>();
     let pattern = "[0-9]{6}";
-    let options = PinPadOptions {
+    let _options = PinPadOptions {
         ..Default::default()
     };
 

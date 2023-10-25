@@ -33,50 +33,37 @@ pub enum State {
     Hourly = 2,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct UserPublic {
+    pub id: Uuid,
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub phone_number: Option<String>,
+    pub state: Option<i32>,
+    pub role: Option<i32>,
+}
+
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    use chrono::{DateTime, Utc};
     use sqlx::*;
 
-    #[derive(Debug)]
-    pub struct SqlUser {
-        pub id: Uuid,
-        pub first_name: String,
-        pub last_name: String,
-        pub provider: Option<i32>,
-        pub phone_number: String,
-        pub display_name: Option<String>,
-        pub api_id: Option<i32>,
-        pub state: State,
-        pub role: Role,
-        pub settings: String,
-        pub created_at: DateTime<Utc>,
-        pub updated_at: DateTime<Utc>,
-        /// @depricated
-        pub integer_id: u64,
-        /// @depricated
-        pub key: String,
-    }
-    impl SqlUser {
-        async fn get_all_hourly() -> Vec<Self> {
-            use crate::utils::db;
-            let mut db = db();
-
-            // let users = sqlx::query_as::<_, Self>!(r#"
-            //     SELECT * From users
-            //     WHERE state = 2;
-            //     "#).fetch_all(&mut db);
-
-
-            vec![]
+    impl UserPublic {
+        pub async fn get_all_hourly() -> Result<Vec<Self>, sqlx::Error>  {
+            use crate::database;
+            let db = database::get_db();
+            query_as!(UserPublic, "SELECT id, last_name, first_name, phone_number, role, state From users
+                            WHERE state = 2
+                            ORDER BY last_name, first_name;").fetch_all(db).await
         }
 
 
-        async fn get(id: Uuid) -> Self {
-            todo!()
+        pub async fn get(id: Uuid) -> Result<Self, sqlx::Error> {
+            use crate::database;
+            let db = database::get_db();
+            query_as!(UserPublic, "SELECT id, last_name, first_name, phone_number, role, state From users
+                            WHERE id = $1
+                            ORDER BY last_name, first_name;", id).fetch_one(db).await
         }
-
-
     }
 }
 }

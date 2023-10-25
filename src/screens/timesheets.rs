@@ -1,7 +1,7 @@
 use crate::models::adjustments::Adjustment;
 use crate::models::assignation::Assignation;
 use crate::models::corrections::Correction;
-use crate::models::user::{Role, State as UserState};
+use crate::models::user::{Role, State as UserState, UserPublic};
 use leptos::*;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
@@ -38,21 +38,41 @@ pub fn TimeSheets() -> impl IntoView {
 
 #[server]
 async fn load_timesheets_data() -> Result<Vec<TimeSheet>, ServerFnError> {
-    use crate::utils::db;
-
-    let db = db().await?;
-
     Ok(vec![])
+}
+
+#[server]
+async fn load_hourly_users() -> Result<Vec<UserPublic>, ServerFnError> {
+    match UserPublic::get_all_hourly().await {
+        Ok(v) => Ok(v),
+        Err(e) => Err(ServerFnError::ServerError("Server Error".to_string())),
+    }
 }
 
 #[component]
 pub fn TimeSheetsList() -> impl IntoView {
-    let timesheets = create_resource(move || {}, move |_| load_timesheets_data());
+    let timesheets = create_resource(move || {}, move |_| load_hourly_users());
+    // let user_view = |user| {
+    //     view! {<div id={user.id.to_string()}>{user.last_name}, {user.first_name}</div>}
+    // };
+
     view! {
         <Suspense  fallback=move || view! { <p>"Loading..."</p> }>
-            {move || timesheets.get().map(|ts| {
-
-            })}
+            {move || match timesheets.get() {
+                Some(Ok(a)) => view!{
+                    <div>
+                    <label for="user_selected"></label>
+                    <select name="user_selected" id="user_selected">
+                        <option />
+                        {a.iter().map(|user| { view! {
+                        <option value={user.id.to_string()}>
+                            {user.last_name.clone()}", "{user.first_name.clone()}
+                        </option>} }).collect_view()
+                    }</select>
+                    <button type="submit">Switch User</button>
+                    </div>},
+                _ => view!{<div>"Server Error"</div>},
+            }}
         </Suspense>
     }
 }

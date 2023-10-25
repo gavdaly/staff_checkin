@@ -4,35 +4,31 @@ use uuid::Uuid;
 
 pub struct Pin {
     pub id: Uuid,
-    pub user_id: Uuid,
-    pub number: u32,
+    pub user_id: Option<Uuid>,
+    pub number: Option<String>,
 }
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    use chrono::NaiveDateTime;
+    use crate::database;
 
-    struct SqlPin {
-        number: u32,
-        created_at: NaiveDateTime,
-        updated_at: NaiveDateTime,
-        user_id: Uuid,
-        id: Uuid,
-    }
+    impl Pin {
+        async fn create_pin_for(user_id: Uuid) -> Result<Self, sqlx::Error> {
+            use rand::Rng;
+            use rand::thread_rng;
+            let mut rng = thread_rng();
+            let numb: usize = rng.gen_range(100000..999999);
 
-    impl SqlPin {
-        async fn create_pin(id: Uuid) -> Self {
-            // destroy old pin
-            // create new pin
-            // return self
-            //
-            Self {
-                number: 1111,
-                created_at: NaiveDateTime::default(),
-                updated_at: NaiveDateTime::default(),
-                user_id: Uuid::new_v4(),
-                id: Uuid::new_v4(),
-            }
+            let db = database::get_db();
+            let _ = sqlx::query!("DELETE FROM pins WHERE user_id = $1", user_id).execute(db).await;
+            sqlx::query_as!(Pin, "
+                INSERT
+                    INTO pins
+                        (user_id, number)
+                    VALUES
+                        ($1, $2)
+                    RETURNING id, user_id, number;
+                ", user_id, numb.to_string()).fetch_one(db).await
         }
     }
 }

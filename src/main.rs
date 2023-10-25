@@ -2,10 +2,16 @@
 #[tokio::main]
 async fn main() {
     use axum::{routing::post, Router};
+    use dotenv;
     use leptos::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
     use staff::app::*;
+    use staff::database;
     use staff::fileserv::file_and_error_handler;
+
+    dotenv::dotenv().ok();
+
+    let _ = database::init_db().await;
 
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
 

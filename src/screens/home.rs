@@ -1,21 +1,20 @@
-use crate::models::user::User;
+use crate::models::user::UserPublic;
 use leptos::*;
 use leptos_router::ActionForm;
 use uuid::{uuid, Uuid};
 
 #[server]
-async fn get_user(id: Uuid) -> Result<User, ServerFnError> {
-    Ok(User {
+async fn get_user(id: Uuid) -> Result<UserPublic, ServerFnError> {
+    use crate::models::user::UserPublic;
+
+    // let _ = UserPublic::get(id);
+    Ok(UserPublic {
         id: Uuid::new_v4(),
-        first_name: "Test".to_string(),
-        last_name: "User".to_string(),
-        provider: None,
-        phone_number: "2341234567".to_string(),
-        display_name: None,
-        api_id: None,
-        state: crate::models::user::State::Salary,
-        role: crate::models::user::Role::BusinessStaff,
-        settings: "".to_string(),
+        first_name: Some("Test".to_string()),
+        last_name: Some("User".to_string()),
+        phone_number: Some("2341234567".to_string()),
+        state: Some(2),
+        role: Some(3),
     })
 }
 

@@ -16,27 +16,26 @@ pub enum State {
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Assignation {
-    pub integer_id: u64,
-    pub key: String,
-    pub start_time: NaiveDateTime,
-    pub end_time: NaiveDateTime,
-    pub state: State,
+    pub start_time: Option<NaiveDateTime>,
+    pub end_time: Option<NaiveDateTime>,
+    pub state: Option<i32>,
     pub id: Uuid,
-    pub user_id: Uuid,
+    pub user_id: Option<Uuid>,
 }
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    struct SqlAssignation {
-        integer_id: u64,
-        key: String,
-        start_time: NaiveDateTime,
-        end_time: NaiveDateTime,
-        state: i32,
-        created_at: NaiveDateTime,
-        updated_at: NaiveDateTime,
-        id: Uuid,
-        user_id: Uuid,
+    use crate::database::get_db;
+    use std::ops::Range;
+
+
+    pub async fn get_assignation_for(user_id: &Uuid, start_date: NaiveDateTime, end_date: NaiveDateTime) -> Result<Vec<Assignation>, sqlx::Error> {
+        let db = get_db();
+
+        sqlx::query_as!(Assignation, "
+            SELECT start_time, end_time, state, id, user_id
+            FROM assignations
+            WHERE user_id = $1 AND start_time BETWEEN $2 AND $3", user_id, start_date, end_date).fetch_all(db).await
     }
 
 }

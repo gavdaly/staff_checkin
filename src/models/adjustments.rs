@@ -5,15 +5,15 @@ use uuid::Uuid;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Adjustment {
-    pub category: Category,
-    pub start_date: NaiveDate,
-    pub end_date: NaiveDate,
-    pub duration: u64,
-    pub reason: String,
-    pub response: String,
-    pub state: State,
+    pub category: Option<i32>,
+    pub start_date: Option<NaiveDate>,
+    pub end_date: Option<NaiveDate>,
+    pub duration: Option<i32>,
+    pub reason: Option<String>,
+    pub response: Option<String>,
+    pub state: Option<i32>,
     pub id: Uuid,
-    pub user_id: Uuid,
+    pub user_id: Option<Uuid>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -34,33 +34,18 @@ pub enum State {
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    use chrono::{  NaiveDateTime};
-    use sqlx::PgConnection;
-    use crate::utils::db;
+    use crate::database::get_db;
+    use chrono::{DateTime, Utc};
+    use std::ops::Range;
 
-    struct SqlAdjustment {
-        integer_id: u64,
-        category: usize,
-        start_date: NaiveDate,
-        end_date: NaiveDate,
-        duration: u32,
-        reason: String,
-        response: String,
-        state: usize,
-        user_integer_id: u64,
-        created_at: NaiveDateTime,
-        updated_at: NaiveDateTime,
-        id: Uuid,
-        user_id: Uuid,
+
+    pub async fn get_adjustments_for(user_id: &Uuid, start_date: NaiveDate, end_date: NaiveDate) -> Result<Vec<Adjustment>, sqlx::Error> {
+        let db = get_db();
+
+        sqlx::query_as!(Adjustment, "
+            SELECT category, start_date, end_date, duration, reason, response, state, id, user_id
+            FROM adjustments
+            WHERE user_id = $1 AND start_date BETWEEN $2 AND $3", user_id, start_date, end_date).fetch_all(db).await
     }
-
-    pub fn get_adjustments_for(user_id: &Uuid) -> Vec<SqlAdjustment> {
-        let db = db();
-
-
-        // connection.close();
-        vec![]
-    }
-
 }
 }

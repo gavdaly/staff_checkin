@@ -6,35 +6,34 @@ use uuid::Uuid;
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Correction {
     pub id: Uuid,
-    pub assignation_id: Uuid,
+    pub assignation_id: Option<Uuid>,
     pub reason: Option<String>,
     pub response: Option<String>,
-    pub start_time: NaiveDateTime,
-    pub end_time: NaiveDateTime,
-    pub duration: u64,
-    pub original_start_time: NaiveDateTime,
-    pub original_end_time: NaiveDateTime,
-    pub original_duration: u64,
-    pub assignation_integer_id: u64,
+    pub start_time: Option<NaiveDateTime>,
+    pub end_time: Option<NaiveDateTime>,
+    pub original_start_time: Option<NaiveDateTime>,
+    pub original_end_time: Option<NaiveDateTime>,
+    pub new_start_time: Option<NaiveDateTime>,
+    pub new_end_time: Option<NaiveDateTime>,
 }
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    // use sqlx;
+    use crate::database::get_db;
+    use std::ops::Range;
 
-    struct SqlCorrection {
-        integer_id: u64,
-        reason: Option<String>,
-        response: Option<String>,
-        start_time: NaiveDateTime,
-        end_time: NaiveDateTime,
-        original_start_time: NaiveDateTime,
-        original_end_time: NaiveDateTime,
-        assignation_integer_id: u64,
-        created_at: NaiveDateTime,
-        updated_at: NaiveDateTime,
-        id: Uuid,
-        assignation_id: Uuid,
+
+    pub async fn get_corrections_for(assignation_id: &Uuid) -> Result<Option<Correction>, sqlx::Error> {
+        let db = get_db();
+        sqlx::query_as!(Correction, "
+            SELECT id, assignation_id, reason, response, start_time, end_time, original_start_time, original_end_time, new_start_time, new_end_time
+                FROM corrections
+                WHERE assignation_id = $1
+            ", assignation_id).fetch_optional(db).await
+
     }
+
+
+
 }
 }
