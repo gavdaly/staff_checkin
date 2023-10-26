@@ -96,8 +96,8 @@ pub fn CheckIn() -> impl IntoView {
                 {move || {
                     if let Some(coords) = coords() {
                         view! {
-                            <div>
-                                <ActionForm action=check_in>
+                            <div class="center-center">
+                                <ActionForm  class="center-center" action=check_in>
                                     <input type="hidden" value=coords.latitude() name="latitude"/>
                                     <input type="hidden" value=coords.longitude() name="longitude"/>
                                     <input type="hidden" value=coords.accuracy() name="accuracy"/>
@@ -119,7 +119,7 @@ pub fn CheckIn() -> impl IntoView {
             </Show>
 
             <Show when=move || error().is_some()>
-                <div data-state="error">
+                <div data-state="error"  class="center-center">
                     {move || {
                         if let Some(error) = error() {
                             location_error(error.code())
@@ -132,7 +132,7 @@ pub fn CheckIn() -> impl IntoView {
             </Show>
 
             <Show when=move || value.with(Option::is_some)>
-                <div>{value}</div>
+                <div  class="center-center">{value}</div>
             </Show>
         </section>
     }
