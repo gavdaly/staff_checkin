@@ -20,8 +20,6 @@ pub struct Correction {
 cfg_if! {
 if #[cfg(feature = "ssr")] {
     use crate::database::get_db;
-    use std::ops::Range;
-
 
     pub async fn get_corrections_for(assignation_id: &Uuid) -> Result<Option<Correction>, sqlx::Error> {
         let db = get_db();

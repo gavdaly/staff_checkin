@@ -1,14 +1,26 @@
+use crate::models::pins::Pin;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 
 #[server]
-async fn get_pin(phone: String) -> Result<String, ServerFnError> {
+async fn get_pin(phone: String) -> Result<Pin, ServerFnError> {
+    use crate::models::user::UserPublic;
     let phone = crate::utils::filter_phone_number(&phone);
-    // find users phone number and make a pin
-    //
-    leptos_axum::redirect(&format!("/sign_in/{phone}"));
-    Ok(phone)
+
+    match UserPublic::get_phone(&phone).await {
+        Ok(u) => {
+            match Pin::create_pin_for(u.id).await {
+                Ok(p) => {
+                    leptos_axum::redirect(&format!("/sign_in/{phone}"));
+                    Ok(p)},
+                Err(_) => Err(ServerFnError::ServerError(
+                    "Error Creating Pin.".to_string(),
+                ))
+            }
+        },
+        Err(_) => Err(ServerFnError::Request("Invalid Phone Number.".to_string())) 
+    }
 }
 
 #[component]
@@ -16,12 +28,14 @@ pub fn PhoneNumber() -> impl IntoView {
     let (error_text, _set_error_text) = create_signal::<String>(String::new());
     let get_pin = create_server_action::<GetPin>();
     view! {
-        <Title text="Dental Care | Authentication" />
+        <Title text="Dental Care | Authentication"/>
 
         <ActionForm class="center-center" action=get_pin>
             <div data-state="error">{error_text}</div>
             <label>"Phone Number"</label>
-            <input id="phone" label="Phone Number"
+            <input
+                id="phone"
+                label="Phone Number"
                 type="tel"
                 name="phone"
                 autoComplete="tel"
@@ -29,7 +43,9 @@ pub fn PhoneNumber() -> impl IntoView {
                 inputMode="tel"
                 required
             />
-            <button type="submit" disabled=get_pin.pending()>"Get Pin"</button>
+            <button type="submit" disabled=get_pin.pending()>
+                "Get Pin"
+            </button>
             <Show when=get_pin.pending()>
                 <div>"Loading..."</div>
             </Show>
@@ -85,7 +101,7 @@ pub fn PinNumber() -> impl IntoView {
 
     //
     view! {
-        <Title text="Dental Care | Authenticating" />
+        <Title text="Dental Care | Authenticating"/>
         <section class="center-center">
             // <PinPad active={pin_input} options=&options />
             <ActionForm action=authenticate class="center-center">
@@ -97,7 +113,9 @@ pub fn PinNumber() -> impl IntoView {
                     inputMode="numeric"
                     on:input=move |v| set_pin_input(event_target_value(&v))
                 />
-                <button type="submit" disabled=authenticate.pending()>"Log In"</button>
+                <button type="submit" disabled=authenticate.pending()>
+                    "Log In"
+                </button>
                 <Show when=authenticate.pending()>
                     <div>"Loading..."</div>
                 </Show>

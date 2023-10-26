@@ -26,12 +26,18 @@ pub struct TimeSheet {
 pub fn TimeSheets() -> impl IntoView {
     view! {
         <nav class="subWrapper">
-            <A href="" exact=true>"Time Sheets"</A>
-            <A href="adjustment" exact=true>"Add Adjustment"</A>
-            <A href="pending" exact=true>"Pending Corrections"</A>
+            <A href="" exact=true>
+                "Time Sheets"
+            </A>
+            <A href="adjustment" exact=true>
+                "Add Adjustment"
+            </A>
+            <A href="pending" exact=true>
+                "Pending Corrections"
+            </A>
         </nav>
         <section class="stack">
-            <Outlet />
+            <Outlet/>
         </section>
     }
 }
@@ -45,48 +51,58 @@ async fn load_timesheets_data() -> Result<Vec<TimeSheet>, ServerFnError> {
 async fn load_hourly_users() -> Result<Vec<UserPublic>, ServerFnError> {
     match UserPublic::get_all_hourly().await {
         Ok(v) => Ok(v),
-        Err(e) => Err(ServerFnError::ServerError("Server Error".to_string())),
+        Err(_) => Err(ServerFnError::ServerError("Server Error".to_string())),
     }
 }
 
 #[component]
 pub fn TimeSheetsList() -> impl IntoView {
-    let timesheets = create_resource(move || {}, move |_| load_hourly_users());
+    let timesheets = create_resource(move || {}, move |()| load_hourly_users());
     // let user_view = |user| {
     //     view! {<div id={user.id.to_string()}>{user.last_name}, {user.first_name}</div>}
     // };
 
     view! {
-        <Suspense  fallback=move || view! { <p>"Loading..."</p> }>
+        <Suspense fallback=move || {
+            view! { <p>"Loading..."</p> }
+        }>
             {move || match timesheets.get() {
-                Some(Ok(a)) => view!{
-                    <div>
-                    <label for="user_selected"></label>
-                    <select name="user_selected" id="user_selected">
-                        <option />
-                        {a.iter().map(|user| { view! {
-                        <option value={user.id.to_string()}>
-                            {user.last_name.clone()}", "{user.first_name.clone()}
-                        </option>} }).collect_view()
-                    }</select>
-                    <button type="submit">Switch User</button>
-                    </div>},
-                _ => view!{<div>"Server Error"</div>},
+                Some(Ok(a)) => {
+                    view! {
+                        <div>
+                            <label for="user_selected"></label>
+                            <select name="user_selected" id="user_selected">
+                                <option></option>
+                                {a
+                                    .iter()
+                                    .map(|user| {
+                                        view! {
+                                            <option value=user
+                                                .id
+                                                .to_string()>
+                                                {user.last_name.clone()} ", " {user.first_name.clone()}
+                                            </option>
+                                        }
+                                    })
+                                    .collect_view()}
+                            </select>
+                            <button type="submit">Switch User</button>
+                        </div>
+                    }
+                }
+                _ => view! { <div>"Server Error"</div> },
             }}
+
         </Suspense>
     }
 }
 
 #[component]
 pub fn TimeSheetsAdjustment() -> impl IntoView {
-    view! {
-        <h1>"Adjustment | To Do"</h1>
-    }
+    view! { <h1>"Adjustment | To Do"</h1> }
 }
 
 #[component]
 pub fn TimeSheetsPending() -> impl IntoView {
-    view! {
-        <h1>"TimeSheets | To Do"</h1>
-    }
+    view! { <h1>"TimeSheets | To Do"</h1> }
 }

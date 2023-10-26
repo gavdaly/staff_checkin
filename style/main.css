@@ -1,0 +1,146 @@
+@import "https://unpkg.com/open-props";
+@import "https://unpkg.com/open-props/normalize.min.css";
+@import "https://unpkg.com/open-props/buttons.min.css";
+
+#layout {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        "header header"
+        "main main";
+}
+
+#main {
+    height: 100%;
+    grid-area: main;
+}
+
+#header {
+    grid-area: header;
+    display: flex;
+    justify-content: space-between;
+    background: var(--gradient-17);
+    padding: 0.6rem;
+    align-items: baseline;
+    box-shadow: var(--shadow-3);
+    & h1 {
+        text-shadow: var(--shadow-4);
+    }
+}
+
+#nav {
+    grid-area: nav;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 999;
+    background: var(--surface-2);
+    width: auto;
+}
+
+#nav:target,
+#nav[aria-expanded="true"] {
+    display: block;
+    left: 0;
+    outline: none;
+}
+
+@media (min-width: 1150px) {
+    #nav {
+        position: sticky;
+        transform: translate(0);
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        top: 0;
+        height: 100%;
+        & button.button {
+            display: none;
+        }
+    }
+
+    #layout {
+        grid-template-areas:
+            "header header header header"
+            "nav    main   main   main";
+        grid-template-columns: auto 1fr 1fr 1fr;
+        grid-template-rows: auto 1fr;
+    }
+}
+
+.center-center {
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.85rem;
+    height: 100%;
+}
+
+button[data-size="huge"] {
+    font-size: 3rem;
+}
+
+button[data-size="large"] {
+    font-size: 2rem;
+}
+
+button[data-size="small"] {
+    font-size: 0.75rem;
+}
+
+#nav > * {
+    margin: 0;
+    padding: var(--size-2);
+    transition: color 300ms;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: color 200ms ease-in-out;
+}
+
+#nav a:not([aria-current="page"]):hover {
+    background: var(--surface-2);
+}
+
+#nav a[aria-current="page"] {
+    color: var(--text-1);
+    background: var(--surface-1);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+nav.subWrapper {
+    background: var(--surface-2);
+    display: flex;
+    justify-content: space-between;
+}
+
+nav.subWrapper a {
+    padding: 0.65rem;
+    margin: 0;
+}
+
+nav.subWrapper [aria-current="page"] {
+    background: var(--surface-1);
+}

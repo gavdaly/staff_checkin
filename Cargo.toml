@@ -1,6 +1,6 @@
 [package]
 name = "staff"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2021"
 
 [lib]
@@ -25,20 +25,20 @@ thiserror = "1.0.38"
 tracing = { version = "0.1.37", optional = true }
 http = "0.2.8"
 serde = { version = "1.0.189", features = ["derive"] }
-axum_session_auth = { version = "0.2.1", features = ["postgres-rustls"], optional = true }
-axum_session = { version = "0.2.3", features = ["postgres-rustls"], optional = true }
+axum_session = { version = "0.8.0", features = ["postgres-rustls"], optional = true }
 sqlx = { version = "0.7.2", features = ["runtime-tokio-rustls", "sqlx-postgres", "uuid", "postgres", "json", "chrono", "bigdecimal"], optional = true }
 uuid = { version = "1.5.0", features = ["v4", "js", "serde"] }
 chrono = { version = "0.4.31", features = ["serde"] }
 rand = { version = "0.8.5", features = ["nightly"], optional = true }
 dotenv = {version = "0.15.0", optional = true }
+leptos-use = {version = "0.8.0" }
+web-sys = { version = "0.3.64", features = ["Geolocation"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
 ssr = [
     "dep:axum",
     "dep:axum_session",
-    "dep:axum_session_auth",
     "dep:dotenv",
     "dep:tokio",
     "dep:tower",
@@ -49,6 +49,7 @@ ssr = [
     "leptos/ssr",
     "leptos_meta/ssr",
     "leptos_router/ssr",
+    "leptos-use/ssr",
     "dep:tracing",
 ]
 
@@ -72,7 +73,7 @@ site-root = "target/site"
 site-pkg-dir = "pkg"
 
 # [Optional] The source CSS file. If it ends with .sass or .scss then it will be compiled by dart-sass into CSS. The CSS is optimized by Lightning CSS before being written to <site-root>/<site-pkg>/app.css
-style-file = "style/main.scss"
+style-file = "style/main.css"
 # Assets source dir. All files found here will be copied and synchronized to site-root.
 # The assets-dir cannot have a sub directory with the same name/path as site-pkg-dir.
 #

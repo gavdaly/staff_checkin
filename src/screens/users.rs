@@ -6,32 +6,30 @@ use leptos_router::*;
 pub fn Users() -> impl IntoView {
     view! {
         <nav class="subWrapper">
-            <A href="" exact=true>"Users List"</A>
-            <A href="create" exact=true>"Add New User"</A>
+            <A href="" exact=true>
+                "Users List"
+            </A>
+            <A href="create" exact=true>
+                "Add New User"
+            </A>
         </nav>
         <section class="stack">
-            <Outlet />
+            <Outlet/>
         </section>
     }
 }
 
 #[component]
 pub fn UsersList() -> impl IntoView {
-    view! {
-        <h1>"Users"</h1>
-    }
+    view! { <h1>"Users"</h1> }
 }
 
 #[component]
 pub fn UserCreate() -> impl IntoView {
-    view! {
-        <h1>"User Create"</h1>
-    }
+    view! { <h1>"User Create"</h1> }
 }
 
 #[component]
 pub fn UserUpdate() -> impl IntoView {
-    view! {
-        <h1>"User Update"</h1>
-    }
+    view! { <h1>"User Update"</h1> }
 }

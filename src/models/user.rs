@@ -64,6 +64,14 @@ if #[cfg(feature = "ssr")] {
                             WHERE id = $1
                             ORDER BY last_name, first_name;", id).fetch_one(db).await
         }
+
+        pub async fn get_phone(phone: &str) -> Result<Self, sqlx::Error> {
+          use crate::database;
+          let db = database::get_db();
+          query_as!(UserPublic, "SELECT id, last_name, first_name, phone_number, role, state From users
+                          WHERE phone_number = $1
+                          ORDER BY last_name, first_name;", phone).fetch_one(db).await
+      }
     }
 }
 }

@@ -2,13 +2,14 @@ use cfg_if::cfg_if;
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-    use sqlx::*;
+    use std::sync::OnceLock;
+    use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 
-    static DB: std::sync::OnceLock<sqlx::PgPool> = std::sync::OnceLock::new();
+    static DB: OnceLock<Pool<Postgres>> = OnceLock::new();
 
-    async fn create_pool() -> sqlx::PgPool {
+    async fn create_pool() -> Pool<Postgres> {
         let database_url = std::env::var("DATABASE_URL").expect("no database url specify");
-        let pool = sqlx::postgres::PgPoolOptions::new()
+        let pool = PgPoolOptions::new()
             .max_connections(4)
             .connect(database_url.as_str())
             .await
@@ -22,11 +23,11 @@ if #[cfg(feature = "ssr")] {
         pool
     }
 
-    pub async fn init_db() -> Result<(), sqlx::Pool<sqlx::Postgres>> {
+    pub async fn init_db() -> Result<(), Pool<Postgres>> {
         DB.set(create_pool().await)
     }
 
-    pub fn get_db<'a>() -> &'a sqlx::PgPool {
+    pub fn get_db<'a>() -> &'a Pool<Postgres> {
         DB.get().expect("database unitialized")
     }
 

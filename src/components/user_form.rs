@@ -6,8 +6,8 @@ pub struct UserF {}
 pub fn UserForm() -> impl IntoView {
     view! {
         <form>
-            <input />
-            <input />
+            <input/>
+            <input/>
         </form>
     }
 }

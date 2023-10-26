@@ -1,7 +1,9 @@
 use cfg_if::cfg_if;
 
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Pin {
     pub id: Uuid,
     pub user_id: Option<Uuid>,
@@ -13,7 +15,7 @@ if #[cfg(feature = "ssr")] {
     use crate::database;
 
     impl Pin {
-        async fn create_pin_for(user_id: Uuid) -> Result<Self, sqlx::Error> {
+        pub async fn create_pin_for(user_id: Uuid) -> Result<Self, sqlx::Error> {
             use rand::Rng;
             use rand::thread_rng;
             let mut rng = thread_rng();

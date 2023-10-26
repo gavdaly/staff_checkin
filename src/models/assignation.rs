@@ -26,8 +26,6 @@ pub struct Assignation {
 cfg_if! {
 if #[cfg(feature = "ssr")] {
     use crate::database::get_db;
-    use std::ops::Range;
-
 
     pub async fn get_assignation_for(user_id: &Uuid, start_date: NaiveDateTime, end_date: NaiveDateTime) -> Result<Vec<Assignation>, sqlx::Error> {
         let db = get_db();

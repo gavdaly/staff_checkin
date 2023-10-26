@@ -6,7 +6,7 @@ use leptos_router::*;
 pub fn TimeSheet() -> impl IntoView {
     view! {
         <section class="stack">
-            <Outlet />
+            <Outlet/>
         </section>
     }
 }
@@ -14,14 +14,10 @@ pub fn TimeSheet() -> impl IntoView {
 #[component]
 pub fn TimeSheetDisplay() -> impl IntoView {
     // Creates a reactive value to update the button
-    view! {
-        <h1>"TimeSheet | To Do"</h1>
-    }
+    view! { <h1>"TimeSheet | To Do"</h1> }
 }
 
 #[component]
 pub fn TimeSheetMissing() -> impl IntoView {
-    view! {
-        <h1>"Missing"</h1>
-    }
+    view! { <h1>"Missing"</h1> }
 }

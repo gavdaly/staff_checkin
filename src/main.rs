@@ -5,16 +5,23 @@ async fn main() {
     use dotenv;
     use leptos::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
+    use axum_session::*;
     use staff::app::*;
-    use staff::database;
     use staff::fileserv::file_and_error_handler;
-
-    dotenv::dotenv().ok();
-
-    let _ = database::init_db().await;
 
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
 
+    dotenv::dotenv().ok();
+
+    staff::database::init_db().await.expect("Should create database pool");
+
+    let pool = staff::database::get_db();
+
+
+    let session_config = SessionConfig::default().with_table_name("user_sessions");
+    let session_store: SessionStore<SessionPgPool> =
+        SessionStore::new(Some(pool.clone().into()), session_config).await.expect("session store could not be created");
+    
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
     // For deployment these variables are:
     // <https://github.com/leptos-rs/start-axum#executing-a-server-on-a-remote-machine-without-the-toolchain>
@@ -29,6 +36,7 @@ async fn main() {
     let app = Router::new()
         .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
         .leptos_routes(&leptos_options, routes, App)
+        .layer(SessionLayer::new(session_store))
         .fallback(file_and_error_handler)
         .with_state(leptos_options);
 
