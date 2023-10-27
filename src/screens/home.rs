@@ -10,21 +10,23 @@ async fn get_user() -> Result<UserPublic, ServerFnError> {
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
-    let id = session.get::<Uuid>("id").ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+    let id = session
+        .get::<Uuid>("id")
+        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
 
     let Ok(user) = UserPublic::get(id).await else {
-        return Err(ServerFnError::ServerError("Could Not Find User.".into()))
+        return Err(ServerFnError::ServerError("Could Not Find User.".into()));
     };
     Ok(user)
 }
 
+const LATITUDE: f64 = 4.;
+const LONGITUDE: f64 = 3.;
+
 /// Renders the home page of your application.
 #[component]
 pub fn HomePage() -> impl IntoView {
-    let user = create_resource(
-        || {},
-        move |_| get_user(),
-    );
+    let user = create_resource(|| {}, move |_| get_user());
 
     // get user
     // get settings
@@ -48,7 +50,8 @@ pub fn HomePage() -> impl IntoView {
                                         <p>{u.phone_number}</p>
                                     </div>
                                 }
-                            }
+                            },
+                            Some(Err(e)) => view! { <div>"some error e:" {e.to_string()}</div> },
                             _ => view! { <div>"error"</div> },
                         }}
                     }
@@ -61,24 +64,36 @@ pub fn HomePage() -> impl IntoView {
 
 #[server]
 async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
-    use uuid::Uuid;
     use crate::models::location_trackers::insert;
-    use crate::models::sessions::{get_open_session, close_session, new_session};
+    use crate::models::sessions::{close_session, get_open_session, new_session};
+    use crate::utils::caluclate_distance;
+    use uuid::Uuid;
     // Get User
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
-    let id = session.get::<Uuid>("id").ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+    let id = session
+        .get::<Uuid>("id")
+        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
 
     insert(latitude, longitude, accuracy).await;
     // check distance
+    //
+    if caluclate_distance(latitude, longitude, LATITUDE, LONGITUDE) > 100. {
+        return Err(ServerFnError::Request("You are too far away.".into()));
+    }
+    if accuracy > 100. {
+        return Err(ServerFnError::Request(
+            "The location is not accurate enough.".into(),
+        ));
+    }
 
     // check for existing session
     match get_open_session(&id).await {
         Ok(sess) => {
             // if no session create new session
             close_session(&sess.id).await;
-        },
+        }
         Err(_) => {
             // else close exsiting session
             new_session(&id).await;

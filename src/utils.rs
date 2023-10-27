@@ -22,6 +22,22 @@ pub fn format_phone_number(number: &str) -> String {
     format!("+1 ({area}) {middle}-{last}")
 }
 
+/// calculates the distance between to points in meters
+pub fn caluclate_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
+    let pi = std::f64::consts::PI;
+    let r = 6371000.; // metres
+    let φ1 = lat1 * pi / 180.; // φ, λ in radians
+    let φ2 = lat2 * pi / 180.;
+    let Δφ = (lat2 - lat1) * pi / 180.;
+    let Δλ = (lon2 - lon1) * pi / 180.;
+
+    let a =
+        (Δφ / 2.).sin() * (Δφ / 2.).sin() + φ1.cos() * φ2.cos() * (Δλ / 2.).sin() * (Δλ / 2.).sin();
+    let c = 2. * a.sqrt().atan2((1. - a).sqrt());
+
+    r * c
+}
+
 #[cfg(test)]
 mod utils_test {
     use crate::utils::format_phone_number;
