@@ -1,21 +1,21 @@
 use crate::models::user::UserPublic;
 use leptos::*;
 use leptos_router::ActionForm;
-use uuid::{uuid, Uuid};
 
 #[server]
-async fn get_user(id: Uuid) -> Result<UserPublic, ServerFnError> {
+async fn get_user() -> Result<UserPublic, ServerFnError> {
     use crate::models::user::UserPublic;
+    use uuid::Uuid;
 
-    let _ = UserPublic::get(id);
-    Ok(UserPublic {
-        id: Uuid::new_v4(),
-        first_name: Some("Test".to_string()),
-        last_name: Some("User".to_string()),
-        phone_number: Some("2341234567".to_string()),
-        state: Some(2),
-        role: Some(3),
-    })
+    use axum_session::SessionPgSession;
+    let session = use_context::<SessionPgSession>()
+        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+    let id = session.get::<Uuid>("id").ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+
+    let Ok(user) = UserPublic::get(id).await else {
+        return Err(ServerFnError::ServerError("Could Not Find User.".into()))
+    };
+    Ok(user)
 }
 
 /// Renders the home page of your application.
@@ -23,8 +23,9 @@ async fn get_user(id: Uuid) -> Result<UserPublic, ServerFnError> {
 pub fn HomePage() -> impl IntoView {
     let user = create_resource(
         || {},
-        move |_| get_user(uuid! {"67e55044-10b1-426f-9247-bb680e5fe0c8"}),
+        move |_| get_user(),
     );
+
     // get user
     // get settings
     // account state
@@ -97,7 +98,7 @@ pub fn CheckIn() -> impl IntoView {
                     if let Some(coords) = coords() {
                         view! {
                             <div class="center-center">
-                                <ActionForm  class="center-center" action=check_in>
+                                <ActionForm class="center-center" action=check_in>
                                     <input type="hidden" value=coords.latitude() name="latitude"/>
                                     <input type="hidden" value=coords.longitude() name="longitude"/>
                                     <input type="hidden" value=coords.accuracy() name="accuracy"/>
@@ -119,7 +120,7 @@ pub fn CheckIn() -> impl IntoView {
             </Show>
 
             <Show when=move || error().is_some()>
-                <div data-state="error"  class="center-center">
+                <div data-state="error" class="center-center">
                     {move || {
                         if let Some(error) = error() {
                             location_error(error.code())
@@ -132,7 +133,7 @@ pub fn CheckIn() -> impl IntoView {
             </Show>
 
             <Show when=move || value.with(Option::is_some)>
-                <div  class="center-center">{value}</div>
+                <div class="center-center">{value}</div>
             </Show>
         </section>
     }

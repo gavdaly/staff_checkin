@@ -1,4 +1,5 @@
 use crate::models::pins::Pin;
+
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -6,21 +7,21 @@ use leptos_router::*;
 #[server]
 async fn get_pin(phone: String) -> Result<Pin, ServerFnError> {
     use crate::models::user::UserPublic;
-    let phone = crate::utils::filter_phone_number(&phone);
 
-    match UserPublic::get_phone(&phone).await {
-        Ok(u) => {
-            match Pin::create_pin_for(u.id).await {
-                Ok(p) => {
-                    leptos_axum::redirect(&format!("/sign_in/{phone}"));
-                    Ok(p)},
-                Err(_) => Err(ServerFnError::ServerError(
-                    "Error Creating Pin.".to_string(),
-                ))
-            }
-        },
-        Err(_) => Err(ServerFnError::Request("Invalid Phone Number.".to_string())) 
-    }
+    let phone = crate::utils::filter_phone_number(&phone);
+    let Ok(user) = UserPublic::get_phone(&phone).await else {
+        leptos::tracing::warn!("Could not find: {phone}");
+        return Err(ServerFnError::Deserialization(
+            "Could not Find Phone Number!".into(),
+        ));
+    };
+    let Ok(pin) = Pin::create_pin_for(user.id).await else {
+        leptos::tracing::error!("Could not create pin: {}", user.id.to_string());
+        return Err(ServerFnError::ServerError("Error Creating Pin!".into()));
+    };
+
+    leptos_axum::redirect(&format!("/sign_in/{phone}"));
+    Ok(pin)
 }
 
 #[component]
@@ -31,7 +32,6 @@ pub fn PhoneNumber() -> impl IntoView {
         <Title text="Dental Care | Authentication"/>
 
         <ActionForm class="center-center" action=get_pin>
-            <div data-state="error">{error_text}</div>
             <label>"Phone Number"</label>
             <input
                 id="phone"
@@ -49,43 +49,52 @@ pub fn PhoneNumber() -> impl IntoView {
             <Show when=get_pin.pending()>
                 <div>"Loading..."</div>
             </Show>
+            <div data-state="error">{error_text}</div>
         </ActionForm>
     }
 }
 
 #[server]
-async fn authenticate(pin: String) -> Result<String, ServerFnError> {
-    use http::{header::SET_COOKIE, HeaderMap, HeaderValue, StatusCode};
-    // use axum_session::{SessionConfig, SessionLayer, SessionStore};
-    // use axum_session_auth::{AuthConfig, AuthSessionLayer, SessionSqlitePool};
-    // let params = ParamsMap::get("");
-    // match the phone number and pin
-    //
-    println!("{pin}");
+async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
+    use axum_session::SessionPgSession;
+    use crate::models::user::UserPublic;
 
-    let mut res_headers = HeaderMap::new();
-    res_headers.insert(SET_COOKIE, HeaderValue::from_str("jwt=todo").unwrap());
-
-    let res_parts = leptos_axum::ResponseParts {
-        headers: res_headers,
-        status: Some(StatusCode::CREATED),
+    let Ok(pin) = Pin::get_pin(pin).await else {
+        return Err(ServerFnError::ServerError("Internal Server Error".into()));
     };
 
-    let res_options_outer = use_context::<leptos_axum::ResponseOptions>();
-    if let Some(res_options) = res_options_outer {
-        res_options.overwrite(res_parts);
+    let Ok(user) = UserPublic::get_phone(&phone).await else {
+        return Err(ServerFnError::ServerError("Internal Server Error".into()));
+    };
+
+    let session = use_context::<SessionPgSession>()
+        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+
+    if pin.user_id != user.id {
+        return Err(ServerFnError::Request("Unauthorized Try Again!".into()));
     }
-
-    // redirect to the home page
+    
+    session.set("id", user.id);
     leptos_axum::redirect("/");
+    Ok(())
+}
 
-    Ok("Ok".to_string())
+#[derive(Clone, Params, PartialEq)]
+struct PhoneParams {
+    phone: String
 }
 
 #[component]
 pub fn PinNumber() -> impl IntoView {
     let (_pin_input, set_pin_input) = create_signal(String::with_capacity(6));
     let authenticate = create_server_action::<Authenticate>();
+    let phone = use_params::<PhoneParams>();
+    
+    let PhoneParams { phone } = phone().expect("There should be a parameter");
+    // let navigate = use_navigate();
+    // navigate("/sign_in", NavigateOptions::default());
+        
+
     let pattern = "[0-9]{6}";
     let _options = PinPadOptions {
         ..Default::default()
@@ -105,6 +114,7 @@ pub fn PinNumber() -> impl IntoView {
         <section class="center-center">
             // <PinPad active={pin_input} options=&options />
             <ActionForm action=authenticate class="center-center">
+                <input type="hidden" value=phone name="phone"/>
                 <label id="pin">"Enter Pin From SMS"</label>
                 <input
                     type="number"

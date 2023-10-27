@@ -1,11 +1,18 @@
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-    use axum::{routing::post, Router};
-    use dotenv;
-    use leptos::*;
-    use leptos_axum::{generate_route_list, LeptosRoutes};
+    use axum::{
+        body::Body as AxumBody,
+        extract::{Path, RawQuery},
+        response::IntoResponse,
+        routing::post,
+        Router,
+    };
     use axum_session::*;
+    use dotenv;
+    use http::{HeaderMap, Request};
+    use leptos::*;
+    use leptos_axum::{generate_route_list, handle_server_fns_with_context, LeptosRoutes};
     use staff::app::*;
     use staff::fileserv::file_and_error_handler;
 
@@ -13,15 +20,39 @@ async fn main() {
 
     dotenv::dotenv().ok();
 
-    staff::database::init_db().await.expect("Should create database pool");
+    staff::database::init_db()
+        .await
+        .expect("Should create database pool");
 
     let pool = staff::database::get_db();
 
-
     let session_config = SessionConfig::default().with_table_name("user_sessions");
     let session_store: SessionStore<SessionPgPool> =
-        SessionStore::new(Some(pool.clone().into()), session_config).await.expect("session store could not be created");
-    
+        SessionStore::new(Some(pool.clone().into()), session_config)
+            .await
+            .expect("session store could not be created");
+
+    async fn server_fn_handler(
+        session_store: SessionPgSession,
+        path: Path<String>,
+        headers: HeaderMap,
+        raw_query: RawQuery,
+        request: Request<AxumBody>,
+    ) -> impl IntoResponse {
+        log::info!("{:?}", path);
+
+        handle_server_fns_with_context(
+            path,
+            headers,
+            raw_query,
+            move || {
+                provide_context(session_store.clone());
+            },
+            request,
+        )
+        .await
+    }
+
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
     // For deployment these variables are:
     // <https://github.com/leptos-rs/start-axum#executing-a-server-on-a-remote-machine-without-the-toolchain>
@@ -34,7 +65,7 @@ async fn main() {
 
     // build our application with a route
     let app = Router::new()
-        .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
+        .route("/api/*fn_name", post(server_fn_handler))
         .leptos_routes(&leptos_options, routes, App)
         .layer(SessionLayer::new(session_store))
         .fallback(file_and_error_handler)

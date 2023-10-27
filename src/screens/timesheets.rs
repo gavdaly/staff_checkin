@@ -1,7 +1,7 @@
 use crate::models::adjustments::Adjustment;
-use crate::models::assignation::Assignation;
+use crate::models::sessions::Session;
 use crate::models::corrections::Correction;
-use crate::models::user::{Role, State as UserState, UserPublic};
+use crate::models::user::{State as UserState, UserPublic};
 use leptos::*;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
@@ -15,8 +15,7 @@ pub struct TimeSheet {
     pub phone_number: String,
     pub display_name: String,
     pub state: UserState,
-    pub role: Role,
-    pub assignations: Vec<Assignation>,
+    pub sessions: Vec<Session>,
     pub corrections: Vec<Correction>,
     pub adjustments: Vec<Adjustment>,
 }

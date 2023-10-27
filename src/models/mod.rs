@@ -1,5 +1,5 @@
 pub mod adjustments;
-pub mod assignation;
+pub mod sessions;
 pub mod corrections;
 pub mod location_trackers;
 pub mod pins;
