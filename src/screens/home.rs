@@ -60,12 +60,34 @@ pub fn HomePage() -> impl IntoView {
 }
 
 #[server]
-async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<String, ServerFnError> {
+async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
+    use uuid::Uuid;
+    use crate::models::location_trackers::insert;
+    use crate::models::sessions::{get_open_session, close_session, new_session};
     // Get User
+    use axum_session::SessionPgSession;
+    let session = use_context::<SessionPgSession>()
+        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+    let id = session.get::<Uuid>("id").ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
 
-    Ok(format!("{latitude} | {longitude} | {accuracy}"))
+    insert(latitude, longitude, accuracy).await;
+    // check distance
 
-    // leptos_axum::redirect("/");
+    // check for existing session
+    match get_open_session(&id).await {
+        Ok(sess) => {
+            // if no session create new session
+            close_session(&sess.id).await;
+        },
+        Err(_) => {
+            // else close exsiting session
+            new_session(&id).await;
+        }
+    };
+
+    leptos_axum::redirect("/");
+
+    Ok(())
 }
 
 // #[server]
