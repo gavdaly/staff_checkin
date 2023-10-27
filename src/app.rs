@@ -118,15 +118,15 @@ pub fn App() -> impl IntoView {
                         <A href="/timesheets" class="link">
                             "timesheets"
                         </A>
-                        <A href="/vacations" class="link">
-                            "vacations"
-                        </A>
-                        <A href="/users" class="link">
-                            "users"
-                        </A>
-                        <A href="/settings" class="link">
-                            "settings"
-                        </A>
+                        // <A href="/vacations" class="link">
+                        //     "vacations"
+                        // </A>
+                        // <A href="/users" class="link">
+                        //     "users"
+                        // </A>
+                        // <A href="/settings" class="link">
+                        //     "settings"
+                        // </A>
                         <span>{VERSION}</span>
                     </nav>
                 </Show>
