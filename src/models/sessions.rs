@@ -48,7 +48,7 @@ if #[cfg(feature = "ssr")] {
 
     pub async fn close_session(id: &Uuid) -> Result<(), sqlx::Error> {
         let db = get_db();
-        sqlx::query!("UPDATE sessions SET end_time = NOW() WHERE id = $1", id).execute(db).await?;
+        sqlx::query!("UPDATE sessions SET end_time = NOW(), state = 1 WHERE id = $1", id).execute(db).await?;
         Ok(())
     }
     pub async fn new_session(user_id: &Uuid) -> Result<Session, sqlx::Error> {
