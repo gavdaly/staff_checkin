@@ -5,15 +5,15 @@ use uuid::Uuid;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Adjustment {
-    pub category: Option<i32>,
-    pub start_date: Option<NaiveDate>,
-    pub end_date: Option<NaiveDate>,
-    pub duration: Option<i32>,
-    pub reason: Option<String>,
-    pub response: Option<String>,
-    pub state: Option<i32>,
     pub id: Uuid,
-    pub user_id: Option<Uuid>,
+    pub user_id: Uuid,
+    pub category: i32,
+    pub start_date: NaiveDate,
+    pub end_date: Option<NaiveDate>,
+    pub duration: i32,
+    pub reason: String,
+    pub response: String,
+    pub state: i32,
 }
 
 #[derive(Clone, Deserialize, Serialize)]

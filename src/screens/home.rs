@@ -1,6 +1,7 @@
 use crate::models::user::UserPublic;
 use leptos::*;
 use leptos_router::ActionForm;
+use cfg_if::cfg_if;
 
 #[server]
 async fn get_user() -> Result<UserPublic, ServerFnError> {
@@ -8,11 +9,14 @@ async fn get_user() -> Result<UserPublic, ServerFnError> {
     use uuid::Uuid;
 
     use axum_session::SessionPgSession;
-    let session = use_context::<SessionPgSession>()
-        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
-    let id = session
-        .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+    let Some(session) = use_context::<SessionPgSession>() else {
+        return Err(ServerFnError::ServerError("Session missing.".into()));
+    };
+
+    let Some(id) = session.get::<Uuid>("id") else {
+        leptos_axum::redirect("/sign_in");
+        return Err(ServerFnError::ServerError("Error getting Session!".into()));
+    };
 
     let Ok(user) = UserPublic::get(id).await else {
         return Err(ServerFnError::ServerError("Could Not Find User.".into()));
@@ -20,8 +24,32 @@ async fn get_user() -> Result<UserPublic, ServerFnError> {
     Ok(user)
 }
 
+cfg_if! {
+if #[cfg(feature = "ssr")] {
 const LATITUDE: f64 = 4.;
 const LONGITUDE: f64 = 3.;
+const ACCURACY: f64 = 101.;
+
+async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
+    use crate::models::location_trackers::insert;
+    use crate::utils::caluclate_distance;
+
+    let _ = insert(latitude, longitude, accuracy).await.map_err(|e|
+        leptos::tracing::error!("Insert Tracing Error: {:?}", e)
+    );
+ 
+    if caluclate_distance(latitude, longitude, LATITUDE, LONGITUDE) > ACCURACY {
+        return Err(ServerFnError::Request("You are too far away.".into()));
+    };
+    if accuracy > ACCURACY {
+        return Err(ServerFnError::Request(
+            "The location is not accurate enough.".into(),
+        ));
+    };
+    Ok(())
+}
+
+}}
 
 /// Renders the home page of your application.
 #[component]
@@ -50,7 +78,7 @@ pub fn HomePage() -> impl IntoView {
                                         <p>{u.phone_number}</p>
                                     </div>
                                 }
-                            },
+                            }
                             Some(Err(e)) => view! { <div>"some error e:" {e.to_string()}</div> },
                             _ => view! { <div>"error"</div> },
                         }}
@@ -64,9 +92,7 @@ pub fn HomePage() -> impl IntoView {
 
 #[server]
 async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
-    use crate::models::location_trackers::insert;
     use crate::models::sessions::{close_session, get_open_session, new_session};
-    use crate::utils::caluclate_distance;
     use uuid::Uuid;
     // Get User
     use axum_session::SessionPgSession;
@@ -76,27 +102,20 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
         .get::<Uuid>("id")
         .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
 
-    insert(latitude, longitude, accuracy).await;
-    // check distance
-    //
-    if caluclate_distance(latitude, longitude, LATITUDE, LONGITUDE) > 100. {
-        return Err(ServerFnError::Request("You are too far away.".into()));
-    }
-    if accuracy > 100. {
-        return Err(ServerFnError::Request(
-            "The location is not accurate enough.".into(),
-        ));
-    }
+    match is_close(latitude, longitude, accuracy).await {
+        Ok(_) => (),
+        Err(e) => return Err(e)
+    };
 
     // check for existing session
     match get_open_session(&id).await {
         Ok(sess) => {
             // if no session create new session
-            close_session(&sess.id).await;
+            let _ = close_session(&sess.id).await;
         }
         Err(_) => {
             // else close exsiting session
-            new_session(&id).await;
+            let _ = new_session(&id).await;
         }
     };
 

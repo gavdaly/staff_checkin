@@ -24,15 +24,15 @@ pub fn format_phone_number(number: &str) -> String {
 
 /// calculates the distance between to points in meters
 pub fn caluclate_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
-    let pi = std::f64::consts::PI;
+    use std::f64::consts::PI;
     let r = 6371000.; // metres
-    let φ1 = lat1 * pi / 180.; // φ, λ in radians
-    let φ2 = lat2 * pi / 180.;
-    let Δφ = (lat2 - lat1) * pi / 180.;
-    let Δλ = (lon2 - lon1) * pi / 180.;
+    let o1 = lat1 * PI / 180.; // φ, λ in radians
+    let o2 = lat2 * PI / 180.;
+    let d_o = (lat2 - lat1) * PI / 180.;
+    let dl = (lon2 - lon1) * PI / 180.;
 
     let a =
-        (Δφ / 2.).sin() * (Δφ / 2.).sin() + φ1.cos() * φ2.cos() * (Δλ / 2.).sin() * (Δλ / 2.).sin();
+        (d_o / 2.).sin() * (d_o / 2.).sin() + o1.cos() * o2.cos() * (dl / 2.).sin() * (dl / 2.).sin();
     let c = 2. * a.sqrt().atan2((1. - a).sqrt());
 
     r * c

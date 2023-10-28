@@ -56,8 +56,8 @@ pub fn PhoneNumber() -> impl IntoView {
 
 #[server]
 async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
-    use axum_session::SessionPgSession;
     use crate::models::user::UserPublic;
+    use axum_session::SessionPgSession;
 
     let Ok(pin) = Pin::get_pin(pin).await else {
         return Err(ServerFnError::ServerError("Internal Server Error".into()));
@@ -73,7 +73,7 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
     if pin.user_id != user.id {
         return Err(ServerFnError::Request("Unauthorized Try Again!".into()));
     }
-    
+    session.set_longterm(true);
     session.set("id", user.id);
     leptos_axum::redirect("/");
     Ok(())
@@ -81,7 +81,7 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
 
 #[derive(Clone, Params, PartialEq)]
 struct PhoneParams {
-    phone: String
+    phone: String,
 }
 
 #[component]
@@ -89,11 +89,10 @@ pub fn PinNumber() -> impl IntoView {
     let (_pin_input, set_pin_input) = create_signal(String::with_capacity(6));
     let authenticate = create_server_action::<Authenticate>();
     let phone = use_params::<PhoneParams>();
-    
+
     let PhoneParams { phone } = phone().expect("There should be a parameter");
     // let navigate = use_navigate();
     // navigate("/sign_in", NavigateOptions::default());
-        
 
     let pattern = "[0-9]{6}";
     let _options = PinPadOptions {

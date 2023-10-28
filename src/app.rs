@@ -1,7 +1,7 @@
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::screens::authenticate::{PhoneNumber, PinNumber};
 use crate::screens::home::{CheckIn, HomePage, Settings};
-use crate::screens::timesheet::{TimeSheet, TimeSheetDisplay, TimeSheetMissing};
+use crate::screens::timesheet::{DispalyTimeSheet, TimeSheetDisplay, TimeSheetMissing};
 use crate::screens::timesheets::{
     TimeSheets, TimeSheetsAdjustment, TimeSheetsList, TimeSheetsPending,
 };
@@ -119,13 +119,13 @@ pub fn App() -> impl IntoView {
                             "timesheets"
                         </A>
                         // <A href="/vacations" class="link">
-                        //     "vacations"
+                        // "vacations"
                         // </A>
                         // <A href="/users" class="link">
-                        //     "users"
+                        // "users"
                         // </A>
                         // <A href="/settings" class="link">
-                        //     "settings"
+                        // "settings"
                         // </A>
                         <span>{VERSION}</span>
                     </nav>
@@ -137,7 +137,7 @@ pub fn App() -> impl IntoView {
                             <Route path="/" view=PhoneNumber/>
                             <Route path="/:phone" view=PinNumber/>
                         </Route>
-                        <Route path="/timesheet" view=TimeSheet>
+                        <Route path="/timesheet" view=DispalyTimeSheet>
                             <Route path="" view=TimeSheetDisplay/>
                             <Route path="/missing" view=TimeSheetMissing/>
                         </Route>
