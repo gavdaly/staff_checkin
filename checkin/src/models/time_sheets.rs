@@ -53,7 +53,7 @@ cfg_if! {
             }
 
             fn from(vals: InputValues) -> Self {
-                let UserPublic { id, first_name, last_name, phone_number, state, check_in} = vals.user;
+                let UserPublic { id, first_name, last_name, phone_number, state, check_in: _, checked_in: _} = vals.user;
                 let entries = generate_entries(vals.adjustments, vals.sessions);
                 let summary = generate_summary(&entries);
                 Self {

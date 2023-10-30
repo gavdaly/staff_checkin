@@ -31,6 +31,7 @@ pub struct UserPublic {
     pub phone_number: String,
     pub state: i32,
     pub check_in: Option<DateTime<Utc>>,
+    pub checked_in: Option<bool>
 }
 
 cfg_if! {
@@ -43,7 +44,7 @@ if #[cfg(feature = "ssr")] {
             let db = database::get_db();
             query_as!(UserPublic, r#"
 SELECT
-	u.id, last_name, first_name, phone_number, u.state, start_time as check_in
+	u.id, last_name, first_name, phone_number, u.state, start_time as check_in, (end_time IS NULL) as checked_in
 FROM
 	users u
 LEFT JOIN sessions s
@@ -60,28 +61,32 @@ ORDER BY last_name, first_name;
             let db = database::get_db();
             query_as!(UserPublic, r#"
 SELECT
-	u.id, last_name, first_name, phone_number, u.state, start_time as check_in
+    u.id, last_name, first_name, phone_number, u.state, (end_time IS NULL) as checked_in, start_time as check_in
 FROM
-	users u
+    users u
 LEFT JOIN sessions s
 ON u.id = s.user_id
 WHERE
-	u.id = $1 AND s.end_time IS NULL
+    u.id = $1
+ORDER BY start_time DESC
+LIMIT 1
                 "#, id).fetch_one(db).await
         }
 
         pub async fn get_phone(phone: &str) -> Result<Self, sqlx::Error> {
           use crate::database;
+            leptos::tracing::info!("-- Getting Phone Numeber: {}", phone);
+
           let db = database::get_db();
           query_as!(UserPublic, r#"
 SELECT
-	u.id, last_name, first_name, phone_number, u.state, start_time as check_in
+	u.id, last_name, first_name, phone_number, u.state, start_time as check_in, (end_time IS NULL) as checked_in
 FROM
 	users u
 LEFT JOIN sessions s
 ON u.id = s.user_id
 WHERE
-	phone_number = $1 AND s.end_time IS NULL;
+	phone_number = $1;
 	       "#, phone).fetch_one(db).await
       }
     }

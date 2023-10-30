@@ -1,10 +1,26 @@
+use cfg_if::cfg_if;
+
+cfg_if!{
+if #[cfg(feature = "ssr")] {
+    use leptos::LeptosOptions;
+    use axum::extract::FromRef;
+
+    #[derive(FromRef, Debug, Clone)]
+    pub struct AppState {
+        leptos_options: LeptosOptions,
+    }
+}}
+
+struct UserSession();
+
+
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
     use axum::{
         body::Body as AxumBody,
-        extract::{Path, RawQuery},
-        response::IntoResponse,
+        extract::{Path, RawQuery, State},
+        response::{IntoResponse, Response},
         routing::post,
         Router,
     };
@@ -27,8 +43,8 @@ async fn main() {
     let pool = staff::database::get_db();
 
     let session_config = SessionConfig::default().with_table_name("user_sessions");
-    let session_store: SessionStore<SessionPgPool> =
-        SessionStore::new(Some(pool.clone().into()), session_config)
+    let session_store =
+        SessionStore::<SessionPgPool>::new(Some(pool.clone().into()), session_config)
             .await
             .expect("session store could not be created");
 
@@ -51,6 +67,21 @@ async fn main() {
             request,
         )
         .await
+    }
+
+    async fn leptos_routes_handler(
+        session_store: SessionPgSession,
+        State(app_state): State<AppState>,
+        req: Request<AxumBody>,
+    ) -> Response {
+        let handler = leptos_axum::render_app_to_stream_with_context(
+            app_state.leptos_options.clone(),
+            move || {
+                provide_context(session_store.clone());
+            },
+            App,
+        );
+        handler(req).await.into_response()
     }
 
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values

@@ -15,10 +15,9 @@ if #[cfg(feature = "ssr")] {
             .await
             .expect("could not connect to database_url");
 
-        // sqlx::migrate!()
-        //     .run(&pool)
-        //     .await
-        //     .expect("migrations failed");
+        let _ = sqlx::migrate!()
+            .run(&pool)
+            .await;
 
         pool
     }

@@ -1,21 +1,36 @@
+
+use std::sync::OnceLock;
+
 use crate::models::user::UserPublic;
 use cfg_if::cfg_if;
 use leptos::*;
 use leptos_router::ActionForm;
+use uuid::uuid;
 
 #[server]
 async fn get_user() -> Result<UserPublic, ServerFnError> {
     use crate::models::user::UserPublic;
     use uuid::Uuid;
-
     use axum_session::SessionPgSession;
+
+
+    match UserPublic::get(uuid!("d6fe6b08-23b4-4e14-b108-c2f020194f49")).await {
+        Ok(_) => (),
+        Err(_) => leptos::tracing::warn!("********** Error getting accessing DB!!!!!!!")
+
+    };
+
+
     let Some(session) = use_context::<SessionPgSession>() else {
         return Err(ServerFnError::ServerError("Session missing.".into()));
     };
 
+    leptos::tracing::error!("*||* SESSION: {:?}", session);
+
     let Some(id) = session.get::<Uuid>("id") else {
+        leptos::tracing::warn!("*| Error getting SESSION: {:?}", session);
         leptos_axum::redirect("/sign_in");
-        return Err(ServerFnError::ServerError("Error getting Session!".into()));
+        return Err(ServerFnError::ServerError("*Error getting SESSION!".into()));
     };
 
     let Ok(user) = UserPublic::get(id).await else {
@@ -24,8 +39,11 @@ async fn get_user() -> Result<UserPublic, ServerFnError> {
     Ok(user)
 }
 
+
+
 cfg_if! {
 if #[cfg(feature = "ssr")] {
+
 
 
 async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
