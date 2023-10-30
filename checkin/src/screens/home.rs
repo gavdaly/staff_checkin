@@ -1,7 +1,7 @@
 use crate::models::user::UserPublic;
+use cfg_if::cfg_if;
 use leptos::*;
 use leptos_router::ActionForm;
-use cfg_if::cfg_if;
 
 #[server]
 async fn get_user() -> Result<UserPublic, ServerFnError> {
@@ -26,18 +26,21 @@ async fn get_user() -> Result<UserPublic, ServerFnError> {
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-const LATITUDE: f64 = 4.;
-const LONGITUDE: f64 = 3.;
-const ACCURACY: f64 = 101.;
+
 
 async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
     use crate::models::location_trackers::insert;
     use crate::utils::caluclate_distance;
+    use std::env;
+
+    let LATITUDE: f64 = env::var("LATITUDE").expect("To have ENV VAR: LATITUDE".into()).parse::<f64>().expect("`LATITUDE` to be a floating point number".into());
+    let LONGITUDE: f64 = env::var("LONGITUDE").expect("To have ENV VAR: LONGITUDE".into()).parse::<f64>().expect("`LONGITUDE` to be a floating point number".into());
+    let ACCURACY: f64 = env::var("ACCURACY").expect("To have ENV VAR: ACCURACY".into()).parse::<f64>().expect("`ACCURACY` to be a floating point number".into());
 
     let _ = insert(latitude, longitude, accuracy).await.map_err(|e|
         leptos::tracing::error!("Insert Tracing Error: {:?}", e)
     );
- 
+
     if caluclate_distance(latitude, longitude, LATITUDE, LONGITUDE) > ACCURACY {
         return Err(ServerFnError::Request("You are too far away.".into()));
     };
@@ -73,9 +76,30 @@ pub fn HomePage() -> impl IntoView {
                         {match user.get() {
                             Some(Ok(u)) => {
                                 view! {
-                                    <div id=u.id.to_string()>
+                                    <div id=u
+                                        .id
+                                        .to_string()>
+                                        {move || match u.check_in {
+                                            Some(t) => {
+                                                view! {
+                                                    <div
+                                                        id="checked_in"
+                                                        data-time=t.to_string()
+                                                        data-state="success"
+                                                    >
+                                                        "You are Checked In"
+                                                    </div>
+                                                }
+                                            }
+                                            None => {
+                                                view! {
+                                                    <div id="checked_out" data-state="warning">
+                                                        "You are Checked Out"
+                                                    </div>
+                                                }
+                                            }
+                                        }}
                                         <h1>{u.first_name}</h1>
-                                        <p>{u.phone_number}</p>
                                     </div>
                                 }
                             }
@@ -104,7 +128,7 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
 
     match is_close(latitude, longitude, accuracy).await {
         Ok(_) => (),
-        Err(e) => return Err(e)
+        Err(e) => return Err(e),
     };
 
     // check for existing session
@@ -123,11 +147,6 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
 
     Ok(())
 }
-
-// #[server]
-// async fn get_status() -> Result<String, ServerFnError> {
-//     Ok("CheckedStatus::In".to_string())
-// }
 
 #[component]
 pub fn CheckIn() -> impl IntoView {

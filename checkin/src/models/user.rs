@@ -1,4 +1,5 @@
 use cfg_if::cfg_if;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -29,6 +30,7 @@ pub struct UserPublic {
     pub last_name: String,
     pub phone_number: String,
     pub state: i32,
+    pub check_in: Option<DateTime<Utc>>,
 }
 
 cfg_if! {
@@ -39,24 +41,48 @@ if #[cfg(feature = "ssr")] {
         pub async fn get_all_hourly() -> Result<Vec<Self>, sqlx::Error>  {
             use crate::database;
             let db = database::get_db();
-            query_as!(UserPublic, "SELECT id, last_name, first_name, phone_number, state From users
-                            WHERE state = 2
-                            ORDER BY last_name, first_name;").fetch_all(db).await
+            query_as!(UserPublic, r#"
+SELECT
+	u.id, last_name, first_name, phone_number, u.state, start_time as check_in
+FROM
+	users u
+LEFT JOIN sessions s
+ON u.id = s.user_id
+WHERE
+	u.state = 2 AND s.end_time IS NULL
+ORDER BY last_name, first_name;
+                            "#).fetch_all(db).await
         }
 
 
         pub async fn get(id: Uuid) -> Result<Self, sqlx::Error> {
             use crate::database;
             let db = database::get_db();
-            query_as!(UserPublic, "SELECT id, last_name, first_name, phone_number, state From users
-                            WHERE id = $1
-                            ORDER BY last_name, first_name;", id).fetch_one(db).await
+            query_as!(UserPublic, r#"
+SELECT
+	u.id, last_name, first_name, phone_number, u.state, start_time as check_in
+FROM
+	users u
+LEFT JOIN sessions s
+ON u.id = s.user_id
+WHERE
+	u.id = $1 AND s.end_time IS NULL
+                "#, id).fetch_one(db).await
         }
 
         pub async fn get_phone(phone: &str) -> Result<Self, sqlx::Error> {
           use crate::database;
           let db = database::get_db();
-          query_as!(UserPublic, "SELECT id, last_name, first_name, phone_number, state From users WHERE phone_number = $1;", phone).fetch_one(db).await
+          query_as!(UserPublic, r#"
+SELECT
+	u.id, last_name, first_name, phone_number, u.state, start_time as check_in
+FROM
+	users u
+LEFT JOIN sessions s
+ON u.id = s.user_id
+WHERE
+	phone_number = $1 AND s.end_time IS NULL;
+	       "#, phone).fetch_one(db).await
       }
     }
 }

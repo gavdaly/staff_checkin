@@ -7,10 +7,10 @@ use leptos_router::*;
 #[server]
 async fn get_pin(phone: String) -> Result<Pin, ServerFnError> {
     use crate::models::user::UserPublic;
+    use crate::service::sms::send_message;
 
     let phone = crate::utils::filter_phone_number(&phone);
     let Ok(user) = UserPublic::get_phone(&phone).await else {
-        leptos::tracing::warn!("Could not find: {phone}");
         return Err(ServerFnError::Deserialization(
             "Could not Find Phone Number!".into(),
         ));
@@ -19,6 +19,8 @@ async fn get_pin(phone: String) -> Result<Pin, ServerFnError> {
         leptos::tracing::error!("Could not create pin: {}", user.id.to_string());
         return Err(ServerFnError::ServerError("Error Creating Pin!".into()));
     };
+
+    send_message(pin.number.to_string(), format!("+1{phone}")).await;
 
     leptos_axum::redirect(&format!("/sign_in/{phone}"));
     Ok(pin)

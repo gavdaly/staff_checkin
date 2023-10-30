@@ -1,8 +1,9 @@
 use cfg_if::cfg_if;
 
 cfg_if! {
-    if #[cfg(feature = "ssr")] {
-        use std::env;
+if #[cfg(feature = "ssr")] {
+
+    use std::env;
 use twilio::models::ApiPeriodV2010PeriodAccountPeriodMessage;
 use twilio::apis::api20100401_message_api::*;
 use twilio::apis::configuration::*;
@@ -11,6 +12,7 @@ pub async fn send_message(
     message: String,
     to: String,
 ) -> Option<ApiPeriodV2010PeriodAccountPeriodMessage> {
+
     let account_sid =
         env::var("TWILIO_ACCOUNT_SID").expect("env variable `TWILIO_ACCOUNT_SID` should be set");
     let api_key = env::var("TWILIO_API_KEY").expect("env variable `TWILIO_API_KEY` should be set");
@@ -37,4 +39,4 @@ pub async fn send_message(
     // Asynchronously send the message from your Twilio phone number.
     create_message(&twilio_config, message_params).await.ok()
 }
-    }}
+}}

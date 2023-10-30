@@ -1,11 +1,9 @@
-
+use crate::models::{adjustments::Adjustment, sessions::Session};
+use cfg_if::cfg_if;
 use chrono::NaiveDate;
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use uuid::Uuid;
-use cfg_if::cfg_if;
-use serde::{Deserialize, Serialize};
-use crate::models::{
-    adjustments::Adjustment, sessions::Session};
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct TimeSheet {
@@ -15,18 +13,16 @@ pub struct TimeSheet {
     pub phone_number: String,
     pub state: i32,
     pub entries: BTreeMap<NaiveDate, Vec<Entry>>,
-    pub summary: BTreeMap<NaiveDate, (i64, i64, i64, i64)>
+    pub summary: BTreeMap<NaiveDate, (i64, i64, i64, i64)>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
-        pub enum Entry {
-            Session(Session),
-            Adjustment(Adjustment),
-        }
-
-impl TimeSheet {
-    
+pub enum Entry {
+    Session(Session),
+    Adjustment(Adjustment),
 }
+
+impl TimeSheet {}
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
@@ -42,8 +38,8 @@ cfg_if! {
             corrections: Vec<Correction>,
             adjustments: Vec<Adjustment>,
         }
-        
-        
+
+
         impl TimeSheet {
             pub async fn generate_for(user_id: Uuid, start_date: NaiveDate, end_date: NaiveDate) -> Result<Self, sqlx::Error> {
                 let midnitght = NaiveTime::default();
@@ -57,7 +53,7 @@ cfg_if! {
             }
 
             fn from(vals: InputValues) -> Self {
-                let UserPublic { id, first_name, last_name, phone_number, state} = vals.user;
+                let UserPublic { id, first_name, last_name, phone_number, state, check_in} = vals.user;
                 let entries = generate_entries(vals.adjustments, vals.sessions);
                 let summary = generate_summary(&entries);
                 Self {
@@ -90,11 +86,11 @@ cfg_if! {
             });
             Duration::milliseconds(total.num_milliseconds() / number_of_days)
         }
-        
+
         /// Generates a summary from entries summary is (Entries, Adjustment, Vacation, Statuatory)
         fn generate_summary(entries: &BTreeMap<NaiveDate, Vec<Entry>>) -> BTreeMap<NaiveDate, (i64, i64, i64, i64)> {
             let mut map: BTreeMap<NaiveDate, (i64, i64, i64, i64)> = BTreeMap::new();
-        
+
             entries.iter().for_each(|(date, entries)| {
                 let week = date.week(Weekday::Mon).first_day();
                 if !map.contains_key(&week) {
@@ -119,10 +115,10 @@ cfg_if! {
                     }
                 }
             });
-        
+
             map
         }
-        
+
         fn generate_entries(adjustments: Vec<Adjustment>, sessions: Vec<Session>) -> BTreeMap<NaiveDate, Vec<Entry>> {
             let mut map: BTreeMap<NaiveDate, Vec<Entry>> = BTreeMap::new();
             adjustments.into_iter().for_each(|adj| {
@@ -142,4 +138,3 @@ cfg_if! {
             map
         }
 }}
-

@@ -25,7 +25,7 @@
     padding: 0.6rem;
     align-items: baseline;
     box-shadow: var(--shadow-3);
-    & h1 {
+    h1 {
         text-shadow: var(--shadow-4);
     }
 }
@@ -33,12 +33,16 @@
 #nav {
     grid-area: nav;
     position: fixed;
+    transform: translate(-100vh);
     top: 0;
     left: 0;
     height: 100%;
     z-index: 999;
     background: var(--surface-2);
     width: auto;
+}
+#nav[data-show] {
+    transform: translate(0);
 }
 
 #nav:target,
@@ -58,7 +62,12 @@
         top: 0;
         height: 100%;
     }
-    #header button.button {
+
+    button.close {
+        display: none;
+    }
+
+    button.hamburger {
         display: none;
     }
 
