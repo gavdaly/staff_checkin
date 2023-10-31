@@ -1,8 +1,7 @@
 use crate::models::user::UserPublic;
 use cfg_if::cfg_if;
 use leptos::*;
-use leptos_router::ActionForm;
-use uuid::uuid;
+use leptos_router::{A, ActionForm};
 
 #[server]
 async fn get_user() -> Result<UserPublic, ServerFnError> {
@@ -11,14 +10,14 @@ async fn get_user() -> Result<UserPublic, ServerFnError> {
     use axum_session::SessionPgSession;
 
     let Some(session) = use_context::<SessionPgSession>() else {
-        leptos::tracing::error!("Error getting session context: {:?}", session);
-
+        leptos::tracing::error!("| * Error getting session context");
         return Err(ServerFnError::ServerError("Session missing.".into()));
     };
 
     let Some(id) = session.get::<Uuid>("id") else {
+        leptos::tracing::info!("| * User not signed in");
         leptos_axum::redirect("/sign_in");
-        return Err(ServerFnError::ServerError("*Error getting SESSION!".into()));
+        return Err(ServerFnError::ServerError("You are not signed in".into()));
     };
 
     let Ok(user) = UserPublic::get(id).await else {
@@ -31,9 +30,6 @@ async fn get_user() -> Result<UserPublic, ServerFnError> {
 
 cfg_if! {
 if #[cfg(feature = "ssr")] {
-
-
-
 async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
     use crate::models::location_trackers::insert;
     use crate::utils::caluclate_distance;
@@ -85,27 +81,30 @@ pub fn HomePage() -> impl IntoView {
                                     <div id=u
                                         .id
                                         .to_string()>
-                                        {move || match u.check_in {
+                                        {move || match u.checked_in {
                                             Some(t) => {
                                                 view! {
-                                                    <div
+                                                    <A href="/check_in">
+                                                    <aside
                                                         id="checked_in"
-                                                        data-time=t.to_string()
-                                                        data-state="success"
+                                                        data-checked-in={t.to_string()}
                                                     >
-                                                        "You are Checked In"
-                                                    </div>
+                                                        {if t {
+                                                            "In"
+                                                        } else {
+                                                            "Out"
+                                                        }}
+                                                        
+                                                    </aside>
+                                                    </A>
                                                 }
                                             }
                                             None => {
                                                 view! {
-                                                    <div id="checked_out" data-state="warning">
-                                                        "You are Checked Out"
-                                                    </div>
+                                                    <A href="/"><aside data-state="warning">"You are Checked Out"</aside></A>
                                                 }
                                             }
                                         }}
-                                        <h1>{u.first_name}</h1>
                                     </div>
                                 }
                             }
