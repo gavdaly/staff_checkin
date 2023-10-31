@@ -15,7 +15,7 @@ use leptos_meta::*;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
 
-const VERSION: Option<&str> = option_env!("CARGO_PKG_VERSION");
+static VERSION: Option<&str> = option_env!("CARGO_PKG_VERSION");
 
 #[component]
 pub fn App() -> impl IntoView {
