@@ -1,6 +1,3 @@
-
-use std::sync::OnceLock;
-
 use crate::models::user::UserPublic;
 use cfg_if::cfg_if;
 use leptos::*;
@@ -13,22 +10,13 @@ async fn get_user() -> Result<UserPublic, ServerFnError> {
     use uuid::Uuid;
     use axum_session::SessionPgSession;
 
-
-    match UserPublic::get(uuid!("d6fe6b08-23b4-4e14-b108-c2f020194f49")).await {
-        Ok(_) => (),
-        Err(_) => leptos::tracing::warn!("********** Error getting accessing DB!!!!!!!")
-
-    };
-
-
     let Some(session) = use_context::<SessionPgSession>() else {
+        leptos::tracing::error!("Error getting session context: {:?}", session);
+
         return Err(ServerFnError::ServerError("Session missing.".into()));
     };
 
-    leptos::tracing::error!("*||* SESSION: {:?}", session);
-
     let Some(id) = session.get::<Uuid>("id") else {
-        leptos::tracing::warn!("*| Error getting SESSION: {:?}", session);
         leptos_axum::redirect("/sign_in");
         return Err(ServerFnError::ServerError("*Error getting SESSION!".into()));
     };
