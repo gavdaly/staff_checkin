@@ -44,7 +44,6 @@ pub fn App() -> impl IntoView {
         // sets the document title
         <Title text="Dental Care"/>
 
-        <pre>{format!("{:?}", user())}</pre>
         <div id="layout">
             <Router fallback=|| {
                 let mut outside_errors = Errors::default();
