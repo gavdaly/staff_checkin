@@ -11,9 +11,6 @@ if #[cfg(feature = "ssr")] {
     }
 }}
 
-struct UserSession();
-
-
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
@@ -21,7 +18,7 @@ async fn main() {
         body::Body as AxumBody,
         extract::{Path, RawQuery, State},
         response::{IntoResponse, Response},
-        routing::post,
+        routing::{post, get},
         Router,
     };
     use axum_session::*;
@@ -69,6 +66,7 @@ async fn main() {
         .await
     }
 
+    
     async fn leptos_routes_handler(
         session_store: SessionPgSession,
         State(app_state): State<AppState>,
@@ -94,13 +92,17 @@ async fn main() {
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
 
+    let app_state = AppState{
+        leptos_options,
+    };
+
     // build our application with a route
     let app = Router::new()
         .route("/api/*fn_name", post(server_fn_handler))
-        .leptos_routes(&leptos_options, routes, App)
+        .leptos_routes_with_handler(routes, get(leptos_routes_handler))
         .layer(SessionLayer::new(session_store))
         .fallback(file_and_error_handler)
-        .with_state(leptos_options);
+        .with_state(app_state);
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
