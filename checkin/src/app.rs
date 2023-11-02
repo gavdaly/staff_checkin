@@ -323,21 +323,22 @@ pub fn CheckIn(check_in: Action<CheckIn, Result<(), ServerFnError>>) -> impl Int
                         view! {
                             <div class="center-center">
                                 <ActionForm class="center-center" action=check_in>
-                                <input type="hidden" value=coords.latitude() name="latitude"/>
-                                <input type="hidden" value=coords.longitude() name="longitude"/>
-                                <input type="hidden" value=coords.accuracy() name="accuracy"/>
-                                <button type="submit" data-size="huge" disable=check_in.pending()>
-                                    "Check In"
-                                </button>
-                            </ActionForm>
+                                    <input type="hidden" value=coords.latitude() name="latitude"/>
+                                    <input type="hidden" value=coords.longitude() name="longitude"/>
+                                    <input type="hidden" value=coords.accuracy() name="accuracy"/>
+                                    <button
+                                        type="submit"
+                                        data-size="huge"
+                                        disable=check_in.pending()
+                                    >
+                                        "Check In"
+                                    </button>
+                                </ActionForm>
                             </div>
                         }
                     }
                     None => {
-                        view! {
-
-                            <div>"?"</div>
-                        }
+                        view! { <div>"?"</div> }
                     }
                 }}
 
@@ -352,9 +353,9 @@ pub fn CheckIn(check_in: Action<CheckIn, Result<(), ServerFnError>>) -> impl Int
 
                 </div>
             </Show>
-        <Show when=move || value().with(Option::is_some)>
-        <div class="center-center">{value}</div>
-        </Show>
+            <Show when=move || value().with(Option::is_some)>
+                <div class="center-center">{value}</div>
+            </Show>
         </section>
     }
 }

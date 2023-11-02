@@ -1,6 +1,7 @@
 use leptos::*;
 use leptos_router::*;
 use crate::models::time_sheets::TimeSheet;
+use crate::components::timesheet::TimeSheetDisplay as TSD;
 
 /// Renders the home page of your application.
 #[component]
@@ -18,71 +19,20 @@ pub fn TimeSheetDisplay() -> impl IntoView {
     {view! {
         <section class="stack">
             {match timesheet() {
-                Some(Ok(ts)) => {
+                Some(Ok(timesheet)) => {
                     view! {
                         <div>
-
-                            <div>{ts.last_name} ", " {ts.first_name}</div>
-                            // <div>{ts.summary.iter().map(|(key, (a, b, c, d))|  view! {
-                            // <div>{key.to_string()}"| "{a}"|"{b}"|"{c}"|"{d}</div>
-                            // }).collect_view()}</div>
-                            // <For each=move || ts.entries
-                            <div>// children=move |entry| {
-                            // <div>"entry"</div>
-                            // } />
-
-                            </div>
-
+                            <TSD timesheet />
                         </div>
                     }
                 }
                 Some(Err(e)) => {
                     view! {
-                        // <div>{ts.summary.iter().map(|(key, (a, b, c, d))|  view! {
-                        // <div>{key.to_string()}"| "{a}"|"{b}"|"{c}"|"{d}</div>
-                        // }).collect_view()}</div>
-                        // <For each=move || ts.entries
-                        // children=move |entry| {
-                        // <div>"entry"</div>
-                        // } />
-
-                        // <div>{ts.summary.iter().map(|(key, (a, b, c, d))|  view! {
-                        // <div>{key.to_string()}"| "{a}"|"{b}"|"{c}"|"{d}</div>
-                        // }).collect_view()}</div>
-                        // <For each=move || ts.entries
-                        // children=move |entry| {
-                        // <div>"entry"</div>
-                        // } />
-
                         <div>{format!("Error Getting Resource: {}", e)} ,</div>
                     }
                 }
                 None => {
                     view! {
-                        // <div>{ts.summary.iter().map(|(key, (a, b, c, d))|  view! {
-                        // <div>{key.to_string()}"| "{a}"|"{b}"|"{c}"|"{d}</div>
-                        // }).collect_view()}</div>
-                        // <For each=move || ts.entries
-                        // children=move |entry| {
-                        // <div>"entry"</div>
-                        // } />
-
-                        // <div>{ts.summary.iter().map(|(key, (a, b, c, d))|  view! {
-                        // <div>{key.to_string()}"| "{a}"|"{b}"|"{c}"|"{d}</div>
-                        // }).collect_view()}</div>
-                        // <For each=move || ts.entries
-                        // children=move |entry| {
-                        // <div>"entry"</div>
-                        // } />
-
-                        // <div>{ts.summary.iter().map(|(key, (a, b, c, d))|  view! {
-                        // <div>{key.to_string()}"| "{a}"|"{b}"|"{c}"|"{d}</div>
-                        // }).collect_view()}</div>
-                        // <For each=move || ts.entries
-                        // children=move |entry| {
-                        // <div>"entry"</div>
-                        // } />
-
                         <div>"Error Getting Resource"</div>
                     }
                 }
