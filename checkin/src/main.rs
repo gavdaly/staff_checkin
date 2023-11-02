@@ -1,15 +1,11 @@
-use cfg_if::cfg_if;
+#[cfg(feature = "ssr")]
+use {axum::extract::FromRef, leptos::LeptosOptions};
 
-cfg_if!{
-if #[cfg(feature = "ssr")] {
-    use leptos::LeptosOptions;
-    use axum::extract::FromRef;
-
-    #[derive(FromRef, Debug, Clone)]
-    pub struct AppState {
-        leptos_options: LeptosOptions,
-    }
-}}
+#[cfg(feature = "ssr")]
+#[derive(FromRef, Debug, Clone)]
+pub struct AppState {
+    leptos_options: LeptosOptions,
+}
 
 #[cfg(feature = "ssr")]
 #[tokio::main]
@@ -18,7 +14,7 @@ async fn main() {
         body::Body as AxumBody,
         extract::{Path, RawQuery, State},
         response::{IntoResponse, Response},
-        routing::{post, get},
+        routing::{get, post},
         Router,
     };
     use axum_session::*;
@@ -66,7 +62,6 @@ async fn main() {
         .await
     }
 
-    
     async fn leptos_routes_handler(
         session_store: SessionPgSession,
         State(app_state): State<AppState>,
@@ -92,9 +87,7 @@ async fn main() {
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
 
-    let app_state = AppState{
-        leptos_options,
-    };
+    let app_state = AppState { leptos_options };
 
     // build our application with a route
     let app = Router::new()
