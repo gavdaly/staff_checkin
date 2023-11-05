@@ -2,7 +2,7 @@
 @import "https://unpkg.com/open-props/normalize.min.css";
 @import "https://unpkg.com/open-props/buttons.min.css";
 
-#layout {
+body {
     min-height: 100vh;
     display: grid;
     grid-template-columns: auto 1fr;
@@ -71,7 +71,7 @@
         display: none;
     }
 
-    #layout {
+    body {
         grid-template-areas:
             "header header header header"
             "nav    main   main   main";
