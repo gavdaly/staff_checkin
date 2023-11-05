@@ -40,12 +40,12 @@ pub fn caluclate_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
 }
 
 /// Convert miliseconds to decimal hours
-pub fn miliseconds_to_hour(duration: i32) -> f32 {
-    duration as f32 / 1000. / 60. / 60.
+pub fn miliseconds_to_hour(duration: &i64) -> f64 {
+    *duration as f64 / 1000. / 60. / 60.
 }
 
 /// Convert miliseconds to hours and minutes and seconds
-pub fn miliseconds_to_hour_minute(duration: i32) -> (i32, i32, i32) {
+pub fn miliseconds_to_hour_minute(duration: &i64) -> (i64, i64, i64) {
     let hours = duration / 1000 / 60 / 60;
     let minutes = duration / 1000 / 60 % 60;
     let seconds = duration / 1000 % 60;
@@ -56,7 +56,7 @@ pub fn miliseconds_to_hour_minute(duration: i32) -> (i32, i32, i32) {
 /// `#.##h (#h ##m)`
 /// and when there are no hours:
 /// `#.#### (#m #s)`
-pub fn miliseconds_to_string(duration: i32) -> String {
+pub fn miliseconds_to_string(duration: &i64) -> String {
     let hours_dec = miliseconds_to_hour(duration);
     let (hours, minutes, seconds) = miliseconds_to_hour_minute(duration);
     match hours {

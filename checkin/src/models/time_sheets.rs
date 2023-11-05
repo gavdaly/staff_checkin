@@ -55,12 +55,12 @@ impl TimeSheet {
             DateTime::from_naive_utc_and_offset(end_date.and_time(midnitght), Utc),
         )
         .await?;
-        let adjustments = get_adjustments_for(&user_id, start_date, end_date).await?;
+        // let adjustments = get_adjustments_for(&user_id, start_date, end_date).await?;
         let values = InputValues {
             user,
             sessions,
             corrections: vec![],
-            adjustments,
+            adjustments: vec![],
         };
         leptos::tracing::error!("###| {:?}", values);
         Ok(Self::from(values))
@@ -89,12 +89,12 @@ impl TimeSheet {
 }
 
 #[cfg(feature = "ssr")]
-fn calculate_statuatory_hours(
+fn _calculate_statuatory_hours(
     number_of_days: i64,
     entries: &BTreeMap<NaiveDate, Vec<Entry>>,
 ) -> Duration {
     let mut total = Duration::zero();
-    entries.iter().for_each(|(date, entries)| {
+    entries.iter().for_each(|(_date, entries)| {
         for entry in entries {
             match entry {
                 Entry::Session(s) => {

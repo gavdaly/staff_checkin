@@ -32,7 +32,6 @@ pub async fn get_sessions_for(
     end_date: DateTime<Utc>,
 ) -> Result<Vec<Session>, sqlx::Error> {
     let db = get_db();
-
     sqlx::query_as!(
         Session,
         "

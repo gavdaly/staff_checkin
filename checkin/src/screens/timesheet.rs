@@ -1,5 +1,5 @@
 use leptos::*;
-use leptos_router::Outlet;
+use leptos_router::*;
 use crate::models::time_sheets::TimeSheet;
 use crate::components::timesheet::TimeSheetDisplay as Tsd;
 
@@ -18,22 +18,26 @@ pub fn TimeSheetDisplay() -> impl IntoView {
     let timesheet = create_resource(|| {},  |_| {get_active_user_timesheet()});
     {view! {
         <section class="stack">
-            {match timesheet() {
-                Some(Ok(timesheet)) => {
-                    view! {
-                        <div>
-                            <Tsd timesheet/>
-                        </div>
+            <Suspense fallback=move || {
+                view! { <div>"Loading..."</div> }
+            }>
+                {match timesheet() {
+                    Some(Ok(timesheet)) => {
+                        view! {
+                            <div>
+                                <Tsd timesheet/>
+                            </div>
+                        }
                     }
-                }
-                Some(Err(e)) => {
-                    view! { <div>{format!("Error Getting Resource: {}", e)} ,</div> }
-                }
-                None => {
-                    view! { <div>"Error Getting Resource"</div> }
-                }
-            }}
+                    Some(Err(e)) => {
+                        view! { <div>{format!("Error Getting Resource: {}", e)} ,</div> }
+                    }
+                    None => {
+                        view! { <div>"Error Getting Resource"</div> }
+                    }
+                }}
 
+            </Suspense>
         </section>
     }}
 }
@@ -60,10 +64,11 @@ async fn get_active_user_timesheet() -> Result<TimeSheet, ServerFnError> {
         return Err(ServerFnError::ServerError("Error Converting Time".into()));
     };
     let three_weeks_before = now.clone().date().week(Weekday::Mon).first_day() - Duration::days(14);
+    let end_of_week = now.date().week(Weekday::Mon).last_day() + Duration::days(7);
 
-    match TimeSheet::generate_for(id, three_weeks_before, now.date()).await {
+    match TimeSheet::generate_for(id, three_weeks_before, end_of_week).await {
         Ok(ts) => {
-            leptos::tracing::error!("######| {}", id);
+            leptos::tracing::info!("######| {:?}", ts);
             Ok(ts)},
         Err(_) => Err(ServerFnError::ServerError("Error Generating Time Sheet".into())),
     }
