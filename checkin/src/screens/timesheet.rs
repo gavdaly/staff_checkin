@@ -1,7 +1,7 @@
 use leptos::*;
-use leptos_router::*;
+use leptos_router::Outlet;
 use crate::models::time_sheets::TimeSheet;
-use crate::components::timesheet::TimeSheetDisplay as TSD;
+use crate::components::timesheet::TimeSheetDisplay as Tsd;
 
 /// Renders the home page of your application.
 #[component]
@@ -22,7 +22,7 @@ pub fn TimeSheetDisplay() -> impl IntoView {
                 Some(Ok(timesheet)) => {
                     view! {
                         <div>
-                            <TSD timesheet />
+                            <Tsd timesheet />
                         </div>
                     }
                 }
@@ -56,20 +56,18 @@ async fn get_active_user_timesheet() -> Result<TimeSheet, ServerFnError> {
     let Some(session) = use_context::<SessionPgSession>() else {
         return Err(ServerFnError::ServerError("Session missing.".into()));
     };
-
     let Some(id) = session.get::<Uuid>("id") else {
         leptos_axum::redirect("/sign_in");
         return Err(ServerFnError::ServerError("Error getting Session!".into()));
     };
-
-    let Some(now) = NaiveDateTime::from_timestamp_opt(  Local::now().timestamp(), 0) else {
+    let Some(now) = NaiveDateTime::from_timestamp_opt(Local::now().timestamp(), 0) else {
         return Err(ServerFnError::ServerError("Error Converting Time".into()));
     };
     let three_weeks_before = now.clone().date().week(Weekday::Mon).first_day() - Duration::days(14);
 
     match TimeSheet::generate_for(id, three_weeks_before, now.date()).await {
         Ok(ts) => {
-            leptos::tracing::error!("##| {}", id);
+            leptos::tracing::error!("######| {}", id);
             Ok(ts)},
         Err(_) => Err(ServerFnError::ServerError("Error Generating Time Sheet".into())),
     }

@@ -73,8 +73,6 @@ impl TimeSheet {
             last_name,
             phone_number,
             state,
-            check_in: _,
-            checked_in: _,
         } = vals.user;
         let entries = generate_entries(vals.adjustments, vals.sessions);
         let summary = generate_summary(&entries);

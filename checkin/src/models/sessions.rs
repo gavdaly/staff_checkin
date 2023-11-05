@@ -1,8 +1,6 @@
 use chrono::{DateTime, Utc};
-use leptos::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-
 
 #[derive(Clone, Deserialize, Serialize)]
 pub enum State {
@@ -44,6 +42,22 @@ pub async fn get_sessions_for(
         user_id,
         start_date,
         end_date
+    )
+    .fetch_all(db)
+    .await
+}
+
+#[cfg(feature = "ssr")]
+pub async fn get_open_sessions(user_id: &Uuid) -> Result<Vec<Session>, sqlx::Error> {
+    let db = get_db();
+
+    sqlx::query_as!(
+        Session,
+        "
+            SELECT start_time, end_time, state, id, user_id
+            FROM sessions
+            WHERE user_id = $1 AND end_time IS NULL",
+        user_id
     )
     .fetch_all(db)
     .await

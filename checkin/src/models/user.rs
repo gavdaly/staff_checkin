@@ -29,8 +29,8 @@ pub struct UserPublic {
     pub last_name: String,
     pub phone_number: String,
     pub state: i32,
-    pub check_in: Option<DateTime<Utc>>,
-    pub checked_in: Option<bool>,
+    // pub check_in: Option<DateTime<Utc>>,
+    // pub checked_in: Option<bool>,
 }
 
 #[cfg(feature = "ssr")]
@@ -43,13 +43,11 @@ impl UserPublic {
         let db = database::get_db();
         query_as!(UserPublic, r#"
 SELECT
-	u.id, last_name, first_name, phone_number, u.state, start_time as check_in, (end_time IS NULL) as checked_in
+	id, last_name, first_name, phone_number, state
 FROM
-	users u
-LEFT JOIN sessions s
-ON u.id = s.user_id
+	users
 WHERE
-	u.state = 2 AND s.end_time IS NULL
+	state = 2
 ORDER BY last_name, first_name;
                             "#).fetch_all(db).await
     }
@@ -59,32 +57,38 @@ ORDER BY last_name, first_name;
         let db = database::get_db();
         query_as!(UserPublic, r#"
 SELECT
-    u.id, last_name, first_name, phone_number, u.state, (end_time IS NULL) as checked_in, start_time as check_in
+    id, last_name, first_name, phone_number, state
 FROM
-    users u
-LEFT JOIN sessions s
-ON u.id = s.user_id
+    users
 WHERE
-    u.id = $1
-ORDER BY start_time DESC
-LIMIT 1
-                "#, id).fetch_one(db).await
+    id = $1
+        "#, id).fetch_one(db).await
     }
+}
 
-    pub async fn get_phone(phone: &str) -> Result<Self, sqlx::Error> {
-        use crate::database;
-        leptos::tracing::info!("-- Getting Phone Numeber: {}", phone);
+#[cfg(feature = "ssr")]
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct UserPhone {
+    pub id: Uuid,
+    pub phone_number: String,
+}
 
-        let db = database::get_db();
-        query_as!(UserPublic, r#"
+#[cfg(feature = "ssr")]
+pub async fn get_user_by_phone(phone: &str) -> Result<UserPhone, sqlx::Error> {
+    use sqlx::*;
+    use crate::database;
+    leptos::tracing::info!("-- Getting Phone Numeber: {}", phone);
+
+    let db = database::get_db();
+    let result = query_as!(UserPhone, r#"
 SELECT
-	u.id, last_name, first_name, phone_number, u.state, start_time as check_in, (end_time IS NULL) as checked_in
+    id, phone_number
 FROM
-	users u
-LEFT JOIN sessions s
-ON u.id = s.user_id
+    users
 WHERE
-	phone_number = $1;
-	       "#, phone).fetch_one(db).await
-    }
+    phone_number = $1;
+       "#, phone).fetch_one(db).await;
+
+    leptos::tracing::info!("-- Got User: {:?}", result);
+    result
 }

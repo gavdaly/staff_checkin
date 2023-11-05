@@ -24,7 +24,9 @@ pub fn App() -> impl IntoView {
     let log_out = create_server_action::<Logout>();
     let check_in = create_server_action::<CheckIn>();
     let authenticate = create_server_action::<Authenticate>();
-    let user_fetch = create_resource(move || (log_out.version().get(), check_in.version().get()), |_| get_curent_user());
+
+    let user_fetch = create_resource(move || (log_out.version().get(), authenticate.version().get()), |_| get_curent_user());
+    let session_status = create_resource(move || check_in.version().get(), |_| get_session_status());
 
     let _error = move || match user_fetch() {
         Some(Err(e)) => Some(e),
@@ -37,6 +39,17 @@ pub fn App() -> impl IntoView {
         _ => None
     };
 
+    create_effect(move |_| { 
+
+        // leptos::console_log!("user:  {:?}", user)
+    });
+
+    let status = move || match session_status() {
+        Some(Ok(status)) => status,
+        Some(Err(_)) => false,
+        None => false,
+    };
+
     let (show_menu, set_show_menu) = create_signal(false);
 
     view! {
@@ -44,18 +57,14 @@ pub fn App() -> impl IntoView {
 
         // sets the document title
         <Title text="Dental Care"/>
-
-        <div id="layout">
             <Router fallback=|| {
                 let mut outside_errors = Errors::default();
                 outside_errors.insert_with_default_key(AppError::NotFound);
                 view! { <ErrorTemplate outside_errors/> }.into_view()
             }>
-                <Suspense fallback=|| {
-                    view! { "Loading..." }
-                }>
+                <Suspense fallback=|| {view! { "Loading..." } }>
                     <header id="header">
-                        <input type="checkbox" class="sr-only" id="menu" name="menu"/>
+                        // <input type="checkbox" class="sr-only" id="menu" name="menu"/>
                         <Show when=move || user().is_some()>
                             <label for="menu" class="button" aria-hidden="true">
                                 <button class="hamburger" on:click=move |_| { set_show_menu(true) }>
@@ -94,13 +103,13 @@ pub fn App() -> impl IntoView {
                                     </svg>
                                 </button>
                             </label>
-                            <A href="" class="link" exact=true>
+                            <A href="" class="link" exact=true on:click=move |_| { set_show_menu(false) }>
                                 "dashboard"
                             </A>
-                            <A href="/check_in" class="link">
-                                "check in"
+                            <A href="/check_in" class="link" on:click=move |_| { set_show_menu(false) }>
+                                "check "{if status() { "out" } else { "in" }}
                             </A>
-                            <A href="/timesheet" class="link">
+                            <A href="/timesheet" class="link" on:click=move |_| { set_show_menu(false) }>
                                 "timesheet"
                             </A>
                             // <A href="/timesheets" class="link">
@@ -153,20 +162,8 @@ pub fn App() -> impl IntoView {
                     <main id="main">
                         // Add protected routes
                         <Routes>
-                            <Route path="/sign_in" view=|| view! { <Outlet/> }>
-                                <Route path="/" view=PhoneNumber/>
-                                <Route
-                                    path="/:phone"
-                                    view=move || view! { <PinNumber authenticate/> }
-                                />
-                            </Route>
-                            <ProtectedRoute
-                                path=""
-                                redirect_path="/sign_in"
-                                condition=move || user().is_some()
-                                view=|| view! { <Outlet/> }
-                            >
-                                <Route path="/" view=move || view! { <HomePage user/> }/>
+                        
+                                <Route path="/" view=move || view! { <HomePage status/> }/>
                                 <Route path="/timesheet" view=TimeSheetDisplay/>
                                 <Route path="/timesheet/missing" view=TimeSheetMissing/>
                                 <Route path="/timesheets" view=TimeSheets>
@@ -185,14 +182,19 @@ pub fn App() -> impl IntoView {
                                     <Route path="/create" view=UserCreate/>
                                     <Route path="/:id" view=UserUpdate/>
                                 </Route>
-                                <Route path="/check_in" view=move || view! { <CheckIn check_in/> }/>
+                                <Route path="/check_in" view=move || view! { <CheckIn check_in status/> }/>
                                 <Route path="/settings" view=Settings/>
-                            </ProtectedRoute>
+                                <Route path="/sign_in" view=|| view! { <Outlet/> }>
+                                    <Route path="/" view=PhoneNumber/>
+                                    <Route
+                                        path="/:phone"
+                                        view=move || view! { <PinNumber authenticate/> }
+                                    />
+                                </Route>
                         </Routes>
                     </main>
                 </Suspense>
             </Router>
-        </div>
     }
 }
 
@@ -219,7 +221,7 @@ pub async fn get_curent_user() -> Result<Option<UserPublic>, ServerFnError> {
     use axum_session::SessionPgSession;
 
     let Some(session) = use_context::<SessionPgSession>() else {
-        leptos::tracing::error!("Error getting settion");
+        leptos::tracing::error!("| * Error getting settion");
         return Err(ServerFnError::ServerError("Error Finding Session 30".into()));
     };
 
@@ -230,11 +232,28 @@ pub async fn get_curent_user() -> Result<Option<UserPublic>, ServerFnError> {
     };
 
     let Ok(user) = UserPublic::get(id).await else {
-        leptos::tracing::error!("Could not find User for session");
+        leptos::tracing::error!("| * Could not find User for session");
         return Err(ServerFnError::ServerError("Could Not Find User.".into()));
     };
 
     Ok(Some(user))
+}
+
+#[server]
+async fn get_session_status() -> Result<bool, ServerFnError> {
+    use uuid::Uuid;
+    use crate::models::sessions::{close_session, get_open_sessions};
+    use axum_session::SessionPgSession;
+
+    let session = use_context::<SessionPgSession>()
+        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+    let id = session
+        .get::<Uuid>("id")
+        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+    match get_open_sessions(&id).await {
+        Ok(a) => Ok(a.len() != 0),
+        Err(_) => Err(ServerFnError::ServerError("Error getting one".into()))
+    }
 }
 
 #[server]
@@ -273,7 +292,7 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
 
 #[server]
 async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
-    use crate::models::user::UserPublic;
+    use crate::models::user::get_user_by_phone;
     use axum_session::SessionPgSession;
     use crate::models::pins::Pin;
 
@@ -281,7 +300,7 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
         return Err(ServerFnError::ServerError("Internal Server Error".into()));
     };
 
-    let Ok(user) = UserPublic::get_phone(&phone).await else {
+    let Ok(user) = get_user_by_phone(&phone).await else {
         return Err(ServerFnError::ServerError("Internal Server Error".into()));
     };
 
@@ -298,7 +317,8 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
 }
 
 #[component]
-pub fn CheckIn(check_in: Action<CheckIn, Result<(), ServerFnError>>) -> impl IntoView {
+pub fn CheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F) -> impl IntoView 
+where F: Fn() -> bool + 'static {
     use leptos_use::{use_geolocation_with_options, UseGeolocationReturn};
     
     let value = move || check_in.value();
@@ -313,6 +333,7 @@ pub fn CheckIn(check_in: Action<CheckIn, Result<(), ServerFnError>>) -> impl Int
         pause: _,
     } = use_geolocation_with_options(options);
 
+    let stat = status();
     view! {
         <section class="center-center">
             <Show when=move || {
@@ -331,7 +352,7 @@ pub fn CheckIn(check_in: Action<CheckIn, Result<(), ServerFnError>>) -> impl Int
                                         data-size="huge"
                                         disable=check_in.pending()
                                     >
-                                        "Check In"
+                                        "Check "{if stat { "Out" } else { "In" }}
                                     </button>
                                 </ActionForm>
                             </div>
@@ -366,18 +387,17 @@ async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     use crate::utils::caluclate_distance;
     use std::env;
 
-    let LATITUDE: f64 = env::var("LATITUDE").expect("To have ENV VAR: LATITUDE".into()).parse::<f64>().expect("`LATITUDE` to be a floating point number".into());
-    let LONGITUDE: f64 = env::var("LONGITUDE").expect("To have ENV VAR: LONGITUDE".into()).parse::<f64>().expect("`LONGITUDE` to be a floating point number".into());
-    let ACCURACY: f64 = env::var("ACCURACY").expect("To have ENV VAR: ACCURACY".into()).parse::<f64>().expect("`ACCURACY` to be a floating point number".into());
+    let base_latitude: f64 = env::var("LATITUDE").expect("To have ENV VAR: LATITUDE".into()).parse::<f64>().expect("`LATITUDE` to be a floating point number".into());
+    let base_longitude: f64 = env::var("LONGITUDE").expect("To have ENV VAR: LONGITUDE".into()).parse::<f64>().expect("`LONGITUDE` to be a floating point number".into());
+    let base_accuracy: f64 = env::var("ACCURACY").expect("To have ENV VAR: ACCURACY".into()).parse::<f64>().expect("`ACCURACY` to be a floating point number".into());
 
     let _ = insert(latitude, longitude, accuracy).await.map_err(|e|
         leptos::tracing::error!("Insert Tracing Error: {:?}", e)
     );
-
-    if caluclate_distance(latitude, longitude, LATITUDE, LONGITUDE) > ACCURACY {
+    if caluclate_distance(latitude, longitude, base_latitude, base_longitude) > base_accuracy {
         return Err(ServerFnError::Request("You are too far away.".into()));
     };
-    if accuracy > ACCURACY {
+    if accuracy > base_accuracy {
         return Err(ServerFnError::Request(
             "The location is not accurate enough.".into(),
         ));
@@ -405,8 +425,6 @@ pub fn PinNumber(authenticate: Action<Authenticate, Result<(), ServerFnError>>) 
     let phone = use_params::<PhoneParams>();
 
     let PhoneParams { phone } = phone().expect("There should be a parameter");
-    // let navigate = use_navigate();
-    // navigate("/sign_in", NavigateOptions::default());
 
     let pattern = "[0-9]{6}";
     let _options = PinPadOptions {
