@@ -163,9 +163,11 @@ aside#checked_in {
     font-size: var(--font-size-7);
     text-align: center;
 }
-[data-checked-n="true"] {
+[data-checked-in="true"] {
+    color: var(--sand-11);
     background: var(--gradient-24);
 }
+
 [data-checked-in="false"] {
     color: var(--sand-11);
     background: var(--gradient-20);
