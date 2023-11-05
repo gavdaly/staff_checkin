@@ -5,12 +5,12 @@ pub fn UserForm() -> impl IntoView {
     view! {
         <form>
             <div>
-                <input type="text" placeholder="First Name" />
+                <input type="text" placeholder="First Name"/>
             </div>
-            <input type="text" placeholder="Last Name" />
-            <input type="prefered" placeholder="Prefered Name" />
+            <input type="text" placeholder="Last Name"/>
+            <input type="prefered" placeholder="Prefered Name"/>
 
-            <input type="phone" placeholder="Phone Number" />
+            <input type="phone" placeholder="Phone Number"/>
 
             <select>
                 <option>"Inactive"</option>

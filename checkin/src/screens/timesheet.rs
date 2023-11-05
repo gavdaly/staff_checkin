@@ -22,19 +22,15 @@ pub fn TimeSheetDisplay() -> impl IntoView {
                 Some(Ok(timesheet)) => {
                     view! {
                         <div>
-                            <Tsd timesheet />
+                            <Tsd timesheet/>
                         </div>
                     }
                 }
                 Some(Err(e)) => {
-                    view! {
-                        <div>{format!("Error Getting Resource: {}", e)} ,</div>
-                    }
+                    view! { <div>{format!("Error Getting Resource: {}", e)} ,</div> }
                 }
                 None => {
-                    view! {
-                        <div>"Error Getting Resource"</div>
-                    }
+                    view! { <div>"Error Getting Resource"</div> }
                 }
             }}
 
