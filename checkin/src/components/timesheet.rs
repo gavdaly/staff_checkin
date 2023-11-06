@@ -21,39 +21,43 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                     <th>"total"</th>
                 </tr>
             </thead>
-            {timesheet.summary.iter().map(|(day, (time,b,c,d))|{
-                view!{
-                    <tr>
-                        <td>{day.to_string()}</td>
-                        <td>{miliseconds_to_string(time)}</td>
-                        <td>{miliseconds_to_string(b)}</td>
-                        <td>{miliseconds_to_string(&(time + b))}</td>
-                        <td>{miliseconds_to_string(c)}</td>
-                        <td>{miliseconds_to_string(d)}</td>
-                        <td>{miliseconds_to_string(&(time + b + c + d))}</td>
-                    </tr>
-                }
-            }).collect_view()}
+            {timesheet
+                .summary
+                .iter()
+                .map(|(day, (time, b, c, d))| {
+                    view! {
+                        <tr>
+                            <td>{day.to_string()}</td>
+                            <td>{miliseconds_to_string(time)}</td>
+                            <td>{miliseconds_to_string(b)}</td>
+                            <td>{miliseconds_to_string(&(time + b))}</td>
+                            <td>{miliseconds_to_string(c)}</td>
+                            <td>{miliseconds_to_string(d)}</td>
+                            <td>{miliseconds_to_string(&(time + b + c + d))}</td>
+                        </tr>
+                    }
+                })
+                .collect_view()}
         </table>
         <table>
-        {timesheet
-            .entries
-            .iter()
-            .map(|(day, entries)| {
-                view! {
-                    <tr class="entry">
-                        <td>{day.to_string()}</td>
-                        <td>
-                        {entries
-                            .into_iter()
-                            .map(|entry| view! { <Entry entry=entry/> })
-                            .collect_view()}
-                        </td>
-                    </tr>
-                }
-            })
-            .collect_view()}
-            </table>
+            {timesheet
+                .entries
+                .iter()
+                .map(|(day, entries)| {
+                    view! {
+                        <tr class="entry">
+                            <td>{day.to_string()}</td>
+                            <td>
+                                {entries
+                                    .into_iter()
+                                    .map(|entry| view! { <Entry entry=entry/> })
+                                    .collect_view()}
+                            </td>
+                        </tr>
+                    }
+                })
+                .collect_view()}
+        </table>
     }
 }
 

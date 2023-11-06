@@ -171,11 +171,19 @@ pub fn App() -> impl IntoView {
                 <main id="main">
                     // Add protected routes
                     <Routes>
-                        <Route path="" view=move || view! {
-                            <Show when=move || user().is_some() fallback=move || view! {<Auth authenticate />}>
-                                <Outlet />
-                            </Show>
-                        }>
+                        <Route
+                            path=""
+                            view=move || {
+                                view! {
+                                    <Show
+                                        when=move || user().is_some()
+                                        fallback=move || view! { <Auth authenticate/> }
+                                    >
+                                        <Outlet/>
+                                    </Show>
+                                }
+                            }
+                        >
                             <Route path="/" view=move || view! { <HomePage status/> }/>
                             <Route path="/timesheet" view=TimeSheetDisplay/>
                             <Route path="/timesheet/missing" view=TimeSheetMissing/>
@@ -195,7 +203,10 @@ pub fn App() -> impl IntoView {
                                 <Route path="/create" view=UserCreate/>
                                 <Route path="/:id" view=UserUpdate/>
                             </Route>
-                            <Route path="/check_in" view=move || view! { <CheckIn check_in status/> }/>
+                            <Route
+                                path="/check_in"
+                                view=move || view! { <CheckIn check_in status/> }
+                            />
                             <Route path="/settings" view=Settings/>
                         </Route>
                     </Routes>
@@ -443,69 +454,72 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
         <Title text="Dental Care | Authenticating"/>
         <section class="center-center">
 
-
-        <Show when=move || phone_query().is_ok() fallback=move || view!{
-        <ActionForm class="center-center" action=get_pin>
-            <label>"Phone Number"</label>
-            <input
-                id="phone"
-                label="Phone Number"
-                type="tel"
-                name="phone"
-                autoComplete="tel"
-                placeholder="+1 (893) 234-2345"
-                inputMode="tel"
-                required
-            />
-                <button type="submit" disabled=get_pin.pending()>
-                    "Get Pin"
-                </button>
-                <Show when=get_pin.pending()>
-                    <div>"Loading..."</div>
-                </Show>
-                <div data-state="error">{error_text}</div>
-            </ActionForm>
-        }>
-        {match phone_query() {
-            Ok(query) => {
-                view! { 
-                    <ActionForm action=authenticate class="center-center">
-                    <input type="hidden" value=query.phone name="phone"/>
-                    <label id="pin">"Enter Pin From SMS"</label>
-                    <input
-                        type="number"
-                        name="pin"
-                        pattern=pattern
-                        inputMode="numeric"
-                        on:input=move |v| set_pin_input(event_target_value(&v))
-                    />
-                    <button type="submit" disabled=authenticate.pending()>
-                        "Log In"
-                    </button>
-                    <Show when=authenticate.pending()>
-                        <div>"Loading..."</div>
-                    </Show>
-                    <Show when=move || value.with(Option::is_some)>
-                        <div>{value}</div>
-                    </Show>
-                </ActionForm>
-
+            <Show
+                when=move || phone_query().is_ok()
+                fallback=move || {
+                    view! {
+                        <ActionForm class="center-center" action=get_pin>
+                            <label>"Phone Number"</label>
+                            <input
+                                id="phone"
+                                label="Phone Number"
+                                type="tel"
+                                name="phone"
+                                autoComplete="tel"
+                                placeholder="+1 (893) 234-2345"
+                                inputMode="tel"
+                                required
+                            />
+                            <button type="submit" disabled=get_pin.pending()>
+                                "Get Pin"
+                            </button>
+                            <Show when=get_pin.pending()>
+                                <div>"Loading..."</div>
+                            </Show>
+                            <div data-state="error">{error_text}</div>
+                        </ActionForm>
+                    }
                 }
-            },
-            Err(e) => view! { <ActionForm action=authenticate class="center-center">
-                <input type="hidden" value="" name="phone"/>
-                <input
-                    type="hidden"
-                    name="pin"
-                />
-            <Show when=move || value.with(Option::is_some)>
-                <div>{value}</div>
-            </Show>
-        </ActionForm>}
-        }}
+            >
+                {match phone_query() {
+                    Ok(query) => {
+                        view! {
+                            <ActionForm action=authenticate class="center-center">
+                                <input type="hidden" value=query.phone name="phone"/>
+                                <label id="pin">"Enter Pin From SMS"</label>
+                                <input
+                                    type="number"
+                                    name="pin"
+                                    pattern=pattern
+                                    inputMode="numeric"
+                                    on:input=move |v| set_pin_input(event_target_value(&v))
+                                />
+                                <button type="submit" disabled=authenticate.pending()>
+                                    "Log In"
+                                </button>
+                                <Show when=authenticate.pending()>
+                                    <div>"Loading..."</div>
+                                </Show>
+                                <Show when=move || value.with(Option::is_some)>
+                                    <div>{value}</div>
+                                </Show>
+                            </ActionForm>
+                        }
+                    }
+                    Err(e) => {
+                        view! {
+                            <ActionForm action=authenticate class="center-center">
+                                <input type="hidden" value="" name="phone"/>
+                                <input type="hidden" name="pin"/>
+                                <Show when=move || value.with(Option::is_some)>
+                                    <div>{value}</div>
+                                </Show>
+                            </ActionForm>
+                        }
+                    }
+                }}
 
-            
-        </Show>
+            </Show>
         </section>
     }
 }
