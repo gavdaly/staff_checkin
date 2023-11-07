@@ -185,6 +185,7 @@ pub fn App() -> impl IntoView {
                                 }
                             }
                         >
+
                             <Route path="/" view=move || view! { <HomePage status/> }/>
                             <Route path="/timesheet" view=TimeSheetDisplay/>
                             <Route path="/timesheet/missing" view=TimeSheetMissing/>
@@ -407,6 +408,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                     }
                 }
             >
+
                 {match phone_query() {
                     Ok(query) => {
                         view! {

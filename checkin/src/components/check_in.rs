@@ -15,7 +15,7 @@ where F: Fn() -> bool + 'static {
     match window.is_some() {
         true => view! {
             <section class="center-center">
-                <GeoCheckIn check_in status />
+                <GeoCheckIn check_in status/>
             </section>
         },
         false => view! {
@@ -55,11 +55,7 @@ fn GeoCheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F
                                 <input type="hidden" value=coords.latitude() name="latitude"/>
                                 <input type="hidden" value=coords.longitude() name="longitude"/>
                                 <input type="hidden" value=coords.accuracy() name="accuracy"/>
-                                <button
-                                    type="submit"
-                                    data-size="huge"
-                                    disable=check_in.pending()
-                                >
+                                <button type="submit" data-size="huge" disable=check_in.pending()>
                                     "Check "
                                     {if stat { "Out" } else { "In" }}
                                 </button>
