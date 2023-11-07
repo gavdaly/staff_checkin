@@ -434,7 +434,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                             </ActionForm>
                         }
                     }
-                    Err(e) => {
+                    Err(_e) => {
                         view! {
                             <ActionForm action=authenticate class="center-center">
                                 <input type="hidden" value="" name="phone"/>

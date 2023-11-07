@@ -1,10 +1,9 @@
 use leptos::*;
-use leptos_router::*;
+
 use crate::components::entry::Entry;
 use crate::models::sessions::Session;
 use crate::models::time_sheets::TimeSheet;
 use crate::utils::miliseconds_to_string;
-// summary: {2023-10-30: (1552232, 0, 0, 0)}
 
 #[component]
 pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
@@ -12,13 +11,13 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
         <table>
             <thead>
                 <tr>
-                    <th>"day"</th>
-                    <th>"checkins"</th>
-                    <th>"adjustments"</th>
-                    <th>"subtotal"</th>
-                    <th>"statutory"</th>
-                    <th>"vacation"</th>
-                    <th>"total"</th>
+                    <th data-title="day">"day"</th>
+                    <th data-title="checkins">"checkins"</th>
+                    <th data-title="adjustments">"adjustments"</th>
+                    <th data-title="subtotal">"subtotal"</th>
+                    <th data-title="statutory">"statutory"</th>
+                    <th data-title="vacation">"vacation"</th>
+                    <th data-title="total">"total"</th>
                 </tr>
             </thead>
             {timesheet
@@ -27,13 +26,13 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                 .map(|(day, (time, b, c, d))| {
                     view! {
                         <tr>
-                            <td>{day.to_string()}</td>
-                            <td>{miliseconds_to_string(time)}</td>
-                            <td>{miliseconds_to_string(b)}</td>
-                            <td>{miliseconds_to_string(&(time + b))}</td>
-                            <td>{miliseconds_to_string(c)}</td>
-                            <td>{miliseconds_to_string(d)}</td>
-                            <td>{miliseconds_to_string(&(time + b + c + d))}</td>
+                            <td data-title="day">{day.to_string()}</td>
+                            <td data-title="checkins">{miliseconds_to_string(time)}</td>
+                            <td data-title="adjustments">{miliseconds_to_string(b)}</td>
+                            <td data-title="subtotal">{miliseconds_to_string(&(time + b))}</td>
+                            <td data-title="statutory">{miliseconds_to_string(c)}</td>
+                            <td data-title="vacation">{miliseconds_to_string(d)}</td>
+                            <td data-title="total">{miliseconds_to_string(&(time + b + c + d))}</td>
                         </tr>
                     }
                 })
@@ -69,7 +68,7 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
 }
 
 #[component]
-fn EntryEdit(entry: Session) -> impl IntoView {
+fn EntryEdit(_entry: Session) -> impl IntoView {
     view! { <div></div> }
 }
 

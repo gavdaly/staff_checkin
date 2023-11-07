@@ -1,8 +1,4 @@
-use crate::models::pins::Pin;
-
 use leptos::*;
-use leptos_meta::*;
-use leptos_router::*;
 
 pub struct PinPadOptions {
     pub length: u8,

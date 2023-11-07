@@ -1,4 +1,3 @@
-use crate::models::user::UserPublic;
 use leptos::*;
 use leptos_router::A;
 
@@ -19,7 +18,6 @@ pub fn HomePage<F>(status: F) -> impl IntoView where F: Fn() -> bool + 'static {
         </section>
     }
 }
-
 
 #[component]
 pub fn Settings() -> impl IntoView {

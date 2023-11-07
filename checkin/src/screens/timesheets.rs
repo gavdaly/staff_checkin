@@ -1,13 +1,8 @@
-use crate::models::adjustments::Adjustment;
-use crate::models::sessions::Session;
-use crate::models::corrections::Correction;
-use crate::models::user::{State as UserState, UserPublic};
+use crate::models::user::{UserPublic};
 use leptos::*;
 use leptos_router::*;
-use serde::{Deserialize, Serialize};
 use crate::components::timesheet::TimeSheetDisplay;
 use crate::models::time_sheets::TimeSheet;
-use uuid::Uuid;
 
 /// Renders the home page of your application.
 #[component]
@@ -64,7 +59,6 @@ async fn load_hourly_users() -> Result<Vec<UserPublic>, ServerFnError> {
 
 #[component]
 pub fn TimeSheetsList() -> impl IntoView {
-    use leptos::ev::Event;
     let (current_user, set_current_user) = create_signal(String::new());
     let users = create_resource(move || {}, move |_| load_hourly_users());
     let timesheet = create_resource(move || current_user(), move |user_id| load_timesheet_for(user_id));
