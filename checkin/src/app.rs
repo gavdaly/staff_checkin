@@ -9,6 +9,7 @@ use crate::screens::users::{UserCreate, UserUpdate, Users, UsersList};
 use crate::screens::vacations::{
     VacationEdit, VacationRequest, Vacations, VacationsList, VacationsPending,
 };
+use crate::components::check_in::CheckInView;
 use crate::models::pins::Pin;
 use leptos::*;
 use leptos_meta::*;
@@ -83,7 +84,7 @@ pub fn App() -> impl IntoView {
                             </button>
                         </label>
                     </Show>
-                    <h1>"Dental Care"</h1>
+                    <h1>"Click"</h1>
                 </header>
 
                 <Show when=move || user().is_some()>
@@ -205,7 +206,7 @@ pub fn App() -> impl IntoView {
                             </Route>
                             <Route
                                 path="/check_in"
-                                view=move || view! { <CheckIn check_in status/> }
+                                view=move || view! { <CheckInView check_in status/> }
                             />
                             <Route path="/settings" view=Settings/>
                         </Route>
@@ -333,72 +334,6 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
     Ok(())
 }
 
-#[component]
-pub fn CheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F) -> impl IntoView 
-where F: Fn() -> bool + 'static {
-    use leptos_use::{use_geolocation_with_options, UseGeolocationReturn};
-    
-    let value = move || check_in.value();
-
-    let options = leptos_use::UseGeolocationOptions::default().enable_high_accuracy(true);
-
-    let UseGeolocationReturn {
-        coords,
-        located_at: _,
-        error,
-        resume: _,
-        pause: _,
-    } = use_geolocation_with_options(options);
-
-    let stat = status();
-    view! {
-        <section class="center-center">
-            <Show when=move || {
-                coords.with(Option::is_some)
-            }>
-                {match coords() {
-                    Some(coords) => {
-                        view! {
-                            <div class="center-center">
-                                <ActionForm class="center-center" action=check_in>
-                                    <input type="hidden" value=coords.latitude() name="latitude"/>
-                                    <input type="hidden" value=coords.longitude() name="longitude"/>
-                                    <input type="hidden" value=coords.accuracy() name="accuracy"/>
-                                    <button
-                                        type="submit"
-                                        data-size="huge"
-                                        disable=check_in.pending()
-                                    >
-                                        "Check "
-                                        {if stat { "Out" } else { "In" }}
-                                    </button>
-                                </ActionForm>
-                            </div>
-                        }
-                    }
-                    None => {
-                        view! { <div>"?"</div> }
-                    }
-                }}
-
-            </Show>
-
-            <Show when=move || error().is_some()>
-                <div data-state="error" class="center-center">
-                    {move || match error() {
-                        Some(error) => location_error(error.code()),
-                        None => "No Error code given".to_string(),
-                    }}
-
-                </div>
-            </Show>
-            <Show when=move || value().with(Option::is_some)>
-                <div class="center-center">{value}</div>
-            </Show>
-        </section>
-    }
-}
-
 #[cfg(feature = "ssr")] 
 async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
     use crate::models::location_trackers::insert;
@@ -421,15 +356,6 @@ async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
         ));
     };
     Ok(())
-}
-
-pub fn location_error(error_number: u16) -> String {
-    match error_number {
-        1 => "Location Services are disabled, please enable and try again.".to_string(),
-        2 => "Error getting a signal for your location.".to_string(),
-        3 => "Finding Location Took too long please try again.".to_string(),
-        _ => "Unknow Error".to_string(),
-    }
 }
 
 #[derive(Clone, Params, PartialEq)]
