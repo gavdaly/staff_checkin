@@ -101,7 +101,6 @@ pub fn TimeSheetsList() -> impl IntoView {
                                     })
                                     .collect_view()}
                             </select>
-                            <button type="submit">Switch User</button>
                         </div>
                     }
                 }

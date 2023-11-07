@@ -40,6 +40,13 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                 .collect_view()}
         </table>
         <table>
+            <thead>
+                <tr>
+                    <th>"day"</th>
+                    <th>"entries"</th>
+                </tr>
+            </thead>
+
             {timesheet
                 .entries
                 .iter()
