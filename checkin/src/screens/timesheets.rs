@@ -108,9 +108,15 @@ pub fn TimeSheetsList() -> impl IntoView {
                 _ => view! { <div>"Server Error"</div> },
             }}
             {move || match timesheet() {
-                Some(Ok(timesheet)) => view! { <div><TimeSheetDisplay timesheet /></div>},
-                Some(Err(e)) => view! {<div>"Error: "{e.to_string()}</div>},
-                None => view! { <div>"Error loading timesheet"</div>}
+                Some(Ok(timesheet)) => {
+                    view! {
+                        <div>
+                            <TimeSheetDisplay timesheet/>
+                        </div>
+                    }
+                }
+                Some(Err(e)) => view! { <div>"Error: " {e.to_string()}</div> },
+                None => view! { <div>"Error loading timesheet"</div> },
             }}
 
         </Suspense>
