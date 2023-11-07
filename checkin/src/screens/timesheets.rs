@@ -5,20 +5,9 @@ use crate::models::user::{State as UserState, UserPublic};
 use leptos::*;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
+use crate::components::timesheet::TimeSheetDisplay;
+use crate::models::time_sheets::TimeSheet;
 use uuid::Uuid;
-
-#[derive(Clone, Deserialize, Serialize)]
-pub struct TimeSheet {
-    pub id: Uuid,
-    pub first_name: String,
-    pub last_name: String,
-    pub phone_number: String,
-    pub display_name: String,
-    pub state: UserState,
-    pub sessions: Vec<Session>,
-    pub corrections: Vec<Correction>,
-    pub adjustments: Vec<Adjustment>,
-}
 
 /// Renders the home page of your application.
 #[component]
@@ -42,8 +31,27 @@ pub fn TimeSheets() -> impl IntoView {
 }
 
 #[server]
-async fn load_timesheets_data() -> Result<Vec<TimeSheet>, ServerFnError> {
-    Ok(vec![])
+async fn load_timesheet_for<'a>(user_id: String) -> Result<TimeSheet, ServerFnError> {
+    use axum_session::SessionPgSession;
+    use uuid::{uuid, Uuid};
+    use chrono::{NaiveDateTime, Local, Duration, Weekday};
+
+    let Ok(id) = Uuid::parse_str(&user_id) else {
+        return Err(ServerFnError::Deserialization("Error parsing ID".into()));
+    };
+    
+    let Some(now) = NaiveDateTime::from_timestamp_opt(Local::now().timestamp(), 0) else {
+        return Err(ServerFnError::ServerError("Error Converting Time".into()));
+    };
+    let three_weeks_before = now.clone().date().week(Weekday::Mon).first_day() - Duration::days(14);
+    let end_of_week = now.date().week(Weekday::Mon).last_day() + Duration::days(7);
+
+    match TimeSheet::generate_for(id, three_weeks_before, end_of_week).await {
+        Ok(ts) => {
+            leptos::tracing::info!("######| {:?}", ts);
+            Ok(ts)},
+        Err(_) => Err(ServerFnError::ServerError("Error Generating Time Sheet".into())),
+    }
 }
 
 #[server]
@@ -56,22 +64,30 @@ async fn load_hourly_users() -> Result<Vec<UserPublic>, ServerFnError> {
 
 #[component]
 pub fn TimeSheetsList() -> impl IntoView {
-    let timesheets = create_resource(move || {}, move |()| load_hourly_users());
-    // let user_view = |user| {
-    //     view! {<div id={user.id.to_string()}>{user.last_name}, {user.first_name}</div>}
-    // };
+    use leptos::ev::Event;
+    let (current_user, set_current_user) = create_signal(String::new());
+    let users = create_resource(move || {}, move |_| load_hourly_users());
+    let timesheet = create_resource(move || current_user(), move |user_id| load_timesheet_for(user_id));
+
+    create_effect( { move |_|
+        leptos::logging::log!("{:?}", current_user())
+    });
 
     view! {
         <Suspense fallback=move || {
             view! { <p>"Loading..."</p> }
         }>
-            {move || match timesheets.get() {
+            {move || match users.get() {
                 Some(Ok(a)) => {
                     view! {
                         <div>
                             <label for="user_selected"></label>
-                            <select name="user_selected" id="user_selected">
-                                <option></option>
+                            <select
+                                name="user_selected"
+                                id="user_selected"
+                                on:change=move |e| set_current_user(event_target_value(&e))
+                            >
+                                <option value="">"-- Select User --"</option>
                                 {a
                                     .iter()
                                     .map(|user| {
@@ -90,6 +106,11 @@ pub fn TimeSheetsList() -> impl IntoView {
                     }
                 }
                 _ => view! { <div>"Server Error"</div> },
+            }}
+            {move || match timesheet() {
+                Some(Ok(timesheet)) => view! { <div><TimeSheetDisplay timesheet /></div>},
+                Some(Err(e)) => view! {<div>"Error: "{e.to_string()}</div>},
+                None => view! { <div>"Error loading timesheet"</div>}
             }}
 
         </Suspense>
