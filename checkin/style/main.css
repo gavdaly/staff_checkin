@@ -3,7 +3,7 @@
 @import "https://unpkg.com/open-props/buttons.min.css";
 
 body {
-    min-height: 100vh;
+    min-height: 100svh;
     display: grid;
     grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr;
