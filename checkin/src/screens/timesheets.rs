@@ -27,8 +27,7 @@ pub fn TimeSheets() -> impl IntoView {
 
 #[server]
 async fn load_timesheet_for<'a>(user_id: String) -> Result<TimeSheet, ServerFnError> {
-    use axum_session::SessionPgSession;
-    use uuid::{uuid, Uuid};
+    use uuid::Uuid;
     use chrono::{NaiveDateTime, Local, Duration, Weekday};
 
     let Ok(id) = Uuid::parse_str(&user_id) else {

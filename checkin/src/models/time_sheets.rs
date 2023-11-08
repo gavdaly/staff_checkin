@@ -23,7 +23,6 @@ pub enum Entry {
 
 #[cfg(feature = "ssr")]
 use {
-    super::adjustments,
     crate::models::{
         adjustments::get_adjustments_for, corrections::Correction, sessions::get_sessions_for,
         user::UserPublic,
@@ -55,12 +54,13 @@ impl TimeSheet {
             DateTime::from_naive_utc_and_offset(end_date.and_time(midnitght), Utc),
         )
         .await?;
-        // let adjustments = get_adjustments_for(&user_id, start_date, end_date).await?;
+        let adjustments = get_adjustments_for(&user_id, start_date.and_time(midnitght).date(),
+        end_date.and_time(midnitght).date()).await?;
         let values = InputValues {
             user,
             sessions,
             corrections: vec![],
-            adjustments: vec![],
+            adjustments,
         };
         leptos::tracing::error!("###| {:?}", values);
         Ok(Self::from(values))

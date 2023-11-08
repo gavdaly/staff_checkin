@@ -261,7 +261,7 @@ pub async fn get_curent_user() -> Result<Option<UserPublic>, ServerFnError> {
 #[server]
 async fn get_session_status() -> Result<bool, ServerFnError> {
     use uuid::Uuid;
-    use crate::models::sessions::{close_session, get_open_sessions};
+    use crate::models::sessions::get_open_sessions;
     use axum_session::SessionPgSession;
 
     let session = use_context::<SessionPgSession>()
