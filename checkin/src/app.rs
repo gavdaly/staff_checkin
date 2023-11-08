@@ -111,7 +111,7 @@ pub fn App() -> impl IntoView {
                         </A>
                         <A href="/check_in" class="link" on:click=move |_| { set_show_menu(false) }>
                             "check "
-                            {if status() { "out" } else { "in" }}
+                            {move || if status() { "out" } else { "in" }}
                         </A>
                         <A
                             href="/timesheet"
@@ -409,7 +409,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                 }
             >
 
-                {match phone_query() {
+                {move || match phone_query() {
                     Ok(query) => {
                         view! {
                             <ActionForm action=authenticate class="center-center">
@@ -422,7 +422,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                                     inputMode="numeric"
                                     on:input=move |v| set_pin_input(event_target_value(&v))
                                 />
-                                <button type="submit" disabled=authenticate.pending()>
+                                <button type="submit" disabled=move || authenticate.pending()>
                                     "Log In"
                                 </button>
                                 <Show when=authenticate.pending()>
@@ -501,7 +501,7 @@ pub fn PhoneNumber() -> impl IntoView {
                 inputMode="tel"
                 required
             />
-            <button type="submit" disabled=get_pin.pending()>
+            <button type="submit" disabled=move || get_pin.pending()>
                 "Get Pin"
             </button>
             <Show when=get_pin.pending()>
