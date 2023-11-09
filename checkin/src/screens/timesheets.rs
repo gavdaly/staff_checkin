@@ -80,7 +80,9 @@ pub fn TimeSheetsList() -> impl IntoView {
                                 id="user_selected"
                                 on:change=move |e| set_current_user(event_target_value(&e))
                             >
-                                <option value="">"-- Select User --"</option>
+                                <Show when=move || current_user().len() == 0>
+                                    <option value="">"-- Select User --"</option>
+                                </Show>
                                 {a
                                     .iter()
                                     .map(|user| {
@@ -99,6 +101,7 @@ pub fn TimeSheetsList() -> impl IntoView {
                 }
                 _ => view! { <div>"Server Error"</div> },
             }}
+            <Show when=move || current_user().len() != 0>
             {move || match timesheet() {
                 Some(Ok(timesheet)) => {
                     view! {
@@ -110,6 +113,7 @@ pub fn TimeSheetsList() -> impl IntoView {
                 Some(Err(e)) => view! { <div>"Error: " {e.to_string()}</div> },
                 None => view! { <div>"Error loading timesheet"</div> },
             }}
+            </Show>
 
         </Suspense>
     }
