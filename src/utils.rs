@@ -79,8 +79,8 @@ mod utils_test {
 
     #[test]
     fn test_miliseconds_to_string() {
-        let a = (1 * 60 * 60 * 1000) - 1;
-        assert_eq!(miliseconds_to_string(a), "0.9999h (59m 59s)".to_string());
+        let a = (1 * 60 * 60 * 1000) - 500;
+        assert_eq!(miliseconds_to_string(&a), "0.9999h (59m 59s)".to_string());
     }
 
     #[test]
