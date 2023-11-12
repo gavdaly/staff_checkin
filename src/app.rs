@@ -62,7 +62,6 @@ pub fn App() -> impl IntoView {
                 view! { "Loading..." }
             }>
                 <header id="header">
-                    // <input type="checkbox" class="sr-only" id="menu" name="menu"/>
                     <Show when=move || user().is_some()>
                         <label for="menu" class="button" aria-hidden="true">
                             <button class="hamburger" on:click=move |_| { set_show_menu(true) }>
@@ -89,49 +88,53 @@ pub fn App() -> impl IntoView {
 
                 <Show when=move || user().is_some()>
                     <nav aria-label="Main menu" id="nav" data-show=show_menu>
-                        <label for="menu" aria-hidden="true">
-                            <button class="close" on:click=move |_| { set_show_menu(false) }>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 30 30"
-                                    width="30px"
-                                    height="30px"
-                                >
-                                    <path d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
-                                </svg>
-                            </button>
-                        </label>
+                        <button class="close" on:click=move |_| { set_show_menu(false) }>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 30 30"
+                                width="30px"
+                                height="30px"
+                            >
+                                <path d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
+                            </svg>
+                        </button>
+
                         <A
-                            href=""
+                            href="/app"
                             class="link"
                             exact=true
                             on:click=move |_| { set_show_menu(false) }
                         >
                             "dashboard"
                         </A>
-                        <A href="/check_in" class="link" on:click=move |_| { set_show_menu(false) }>
+                        <A
+                            href="/app/check_in"
+                            class="link"
+                            on:click=move |_| { set_show_menu(false) }
+                        >
                             "check "
                             {move || if status() { "out" } else { "in" }}
                         </A>
                         <A
-                            href="/timesheet"
+                            href="/app/timesheet"
                             class="link"
                             on:click=move |_| { set_show_menu(false) }
                         >
                             "timesheet"
                         </A>
 
-                        <A href="/timesheets" class="link">
-                            "timesheets"
-                        </A>
-                        <A href="/vacations" class="link">
+                        <A href="/app/vacations" class="link">
                             "vacations"
                         </A>
-                        <A href="/users" class="link">
+                        <A href="/admin/users" class="link">
                             "users"
                         </A>
                         <A href="/settings" class="link">
                             "settings"
+                        </A>
+
+                        <A href="/admin/timesheets" class="link">
+                            "timesheets"
                         </A>
 
                         <ActionForm action=log_out>
@@ -170,45 +173,53 @@ pub fn App() -> impl IntoView {
                     </nav>
                 </Show>
                 <main id="main">
-                    // Add protected routes
                     <Routes>
+                        <Route path="/p/:phone" view=move || view! { <Auth authenticate/> }/>
+                        <Route path="/l/:link" view=move || view! { <div>"TODO"</div> }/>
                         <Route
                             path=""
                             view=move || {
                                 view! {
-                                    <Show
-                                        when=move || user().is_some()
-                                        fallback=move || view! { <Auth authenticate/> }
-                                    >
+                                    <Show when=move || user().is_some() fallback=PhoneNumber>
                                         <Outlet/>
                                     </Show>
                                 }
                             }
                         >
-
-                            <Route path="/" view=move || view! { <HomePage status/> }/>
-                            <Route path="/timesheet" view=TimeSheetDisplay/>
-                            <Route path="/timesheet/missing" view=TimeSheetMissing/>
-                            <Route path="/timesheets" view=TimeSheets>
-                                <Route path="" view=TimeSheetsList/>
-                                <Route path="/adjustment" view=TimeSheetsAdjustment/>
-                                <Route path="/pending" view=TimeSheetsPending/>
+                            <Route path="" view=move || view! { <HomePage status/> }/>
+                            <Route path="/app" view=move || view! { <Outlet/> }>
+                                <Route path="" view=move || view! { <HomePage status/> }/>
+                                <Route path="/timesheet" view=TimeSheetDisplay/>
+                                <Route path="/timesheet/missing" view=TimeSheetMissing/>
+                                <Route path="/vacations" view=Vacations>
+                                    <Route path="" view=VacationsList/>
+                                    <Route path="/request" view=VacationRequest/>
+                                    <Route path="/:id" view=VacationEdit/>
+                                </Route>
+                                <Route path="/users" view=Users/>
+                                <Route
+                                    path="/check_in"
+                                    view=move || view! { <CheckInView check_in status/> }
+                                />
                             </Route>
-                            <Route path="/vacations" view=Vacations>
-                                <Route path="" view=VacationsList/>
-                                <Route path="/pending" view=VacationsPending/>
-                                <Route path="/request" view=VacationRequest/>
-                                <Route path="/:id" view=VacationEdit/>
+                            <Route path="/admin" view=move || view! { <Outlet/> }>
+                                <Route path="/vacations" view=Vacations>
+                                    <Route path="" view=VacationsList/>
+                                    <Route path="/pending" view=VacationsPending/>
+                                    <Route path="/request" view=VacationRequest/>
+                                    <Route path="/:id" view=VacationEdit/>
+                                </Route>
+                                <Route path="/timesheets" view=TimeSheets>
+                                    <Route path="" view=TimeSheetsList/>
+                                    <Route path="/adjustment" view=TimeSheetsAdjustment/>
+                                    <Route path="/pending" view=TimeSheetsPending/>
+                                </Route>
+                                <Route path="/users" view=Users>
+                                    <Route path="" view=UsersList />
+                                    <Route path="/create" view=UserCreate />
+                                    <Route path="/edit/:id" view=UserUpdate />
+                                </Route>
                             </Route>
-                            <Route path="/users" view=Users>
-                                <Route path="" view=UsersList/>
-                                <Route path="/create" view=UserCreate/>
-                                <Route path="/:id" view=UserUpdate/>
-                            </Route>
-                            <Route
-                                path="/check_in"
-                                view=move || view! { <CheckInView check_in status/> }
-                            />
                             <Route path="/settings" view=Settings/>
                         </Route>
                     </Routes>
@@ -232,6 +243,7 @@ async fn logout() -> Result<(), ServerFnError> {
         .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
     session.clear();
 
+    leptos_axum::redirect("/");
     Ok(())
 }
 
@@ -304,7 +316,7 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
         }
     };
 
-    leptos_axum::redirect("/");
+    leptos_axum::redirect("/app");
 
     Ok(())
 }
@@ -360,59 +372,40 @@ async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
 }
 
 #[derive(Clone, Params, PartialEq)]
-struct PhoneQuery {
+struct PhoneParams {
     phone: String,
 }
 
 #[component]
 pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> impl IntoView {
-    let (_pin_input, set_pin_input) = create_signal(String::with_capacity(6));
+    let (pin_input, set_pin_input) = create_signal(String::with_capacity(6));
 
-    let phone_query = use_query::<PhoneQuery>();
-
-    let (error_text, _set_error_text) = create_signal::<String>(String::new());
-    let get_pin = create_server_action::<GetPin>();
-
+    let phone_params = use_params::<PhoneParams>();
     let pattern = "[0-9]{6}";
 
     let value = authenticate.value();
+
+    create_effect(move |_| {
+        if pin_input().len() == 6 {
+            leptos::logging::log!("Reached Max Length")
+        }
+    });
 
     view! {
         <Title text="Dental Care | Authenticating"/>
         <section class="center-center">
 
             <Show
-                when=move || phone_query().is_ok()
+                when=move || phone_params().is_ok()
                 fallback=move || {
-                    view! {
-                        <ActionForm class="center-center" action=get_pin>
-                            <label>"Phone Number"</label>
-                            <input
-                                id="phone"
-                                label="Phone Number"
-                                type="tel"
-                                name="phone"
-                                autoComplete="tel"
-                                placeholder="+1 (893) 234-2345"
-                                inputMode="tel"
-                                required
-                            />
-                            <button type="submit" disabled=get_pin.pending()>
-                                "Get Pin"
-                            </button>
-                            <Show when=get_pin.pending()>
-                                <div>"Loading..."</div>
-                            </Show>
-                            <div data-state="error">{error_text}</div>
-                        </ActionForm>
-                    }
+                    view! { <div>"Should not see"</div> }
                 }
             >
 
-                {move || match phone_query() {
+                {move || match phone_params() {
                     Ok(query) => {
                         view! {
-                            <ActionForm action=authenticate class="center-center">
+                            <ActionForm action=authenticate class="center-center solo-action">
                                 <input type="hidden" value=query.phone name="phone"/>
                                 <label id="pin">"Enter Pin From SMS"</label>
                                 <input
@@ -433,17 +426,19 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                                 </Show>
                             </ActionForm>
                         }
+                            .into_view()
                     }
                     Err(_e) => {
                         view! {
-                            <ActionForm action=authenticate class="center-center">
+                            <div>
                                 <input type="hidden" value="" name="phone"/>
                                 <input type="hidden" name="pin"/>
                                 <Show when=move || value.with(Option::is_some)>
                                     <div>{value}</div>
                                 </Show>
-                            </ActionForm>
+                            </div>
                         }
+                            .into_view()
                     }
                 }}
 
@@ -453,7 +448,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
 }
 
 #[server]
-async fn get_pin(phone: String) -> Result<Pin, ServerFnError> {
+async fn get_pin(phone: String) -> Result<(), ServerFnError> {
     use crate::models::user::get_user_by_phone;
     use crate::service::sms::send_message;
 
@@ -477,19 +472,19 @@ async fn get_pin(phone: String) -> Result<Pin, ServerFnError> {
 
     send_message(pin.number.to_string(), format!("+1{phone}")).await;
 
-    leptos_axum::redirect(&("/?phone=".to_string() + &phone));
+    leptos_axum::redirect(&("/p/".to_string() + &phone));
 
-    Ok(pin)
+    Ok(())
 }
 
 #[component]
 pub fn PhoneNumber() -> impl IntoView {
-    let (error_text, _set_error_text) = create_signal::<String>(String::new());
     let get_pin = create_server_action::<GetPin>();
+    let value = get_pin.value();
     view! {
         <Title text="Dental Care | Authentication"/>
 
-        <ActionForm class="center-center" action=get_pin>
+        <ActionForm class="center-center solo-action" action=get_pin>
             <label>"Phone Number"</label>
             <input
                 id="phone"
@@ -504,10 +499,18 @@ pub fn PhoneNumber() -> impl IntoView {
             <button type="submit" disabled=move || get_pin.pending()>
                 "Get Pin"
             </button>
-            <Show when=get_pin.pending()>
-                <div>"Loading..."</div>
-            </Show>
-            <div data-state="error">{error_text}</div>
         </ActionForm>
+        <Show when=get_pin.pending()>
+            <div>"Loading..."</div>
+        </Show>
+        <Show when=move || {
+            value().is_some()
+        }>
+            {match value() {
+                Some(Err(e)) => view! { <div data-state="error">"Error: " {e.to_string()}</div> },
+                _ => view! { <div data-state="error">"something is messed up"</div> },
+            }}
+
+        </Show>
     }
 }
