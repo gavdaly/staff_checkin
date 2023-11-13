@@ -10,7 +10,7 @@ pub fn HomePage<F>(status: F) -> impl IntoView where F: Fn() -> bool + 'static {
     // upcomming vacations
     view! {
         <section class="stack">
-            <A href="/check_in">
+            <A href="/app/check_in">
                 {move || {
                     view! {
                         <aside id="checked_in" data-checked-in=status().to_string()>
@@ -18,6 +18,7 @@ pub fn HomePage<F>(status: F) -> impl IntoView where F: Fn() -> bool + 'static {
                         </aside>
                     }
                 }}
+
             </A>
         </section>
     }
