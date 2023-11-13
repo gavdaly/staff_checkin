@@ -241,7 +241,7 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
     }
     session.set_longterm(true);
     session.set("id", user.id);
-    leptos_axum::redirect("/");
+    leptos_axum::redirect("/app");
     Ok(())
 }
 
@@ -313,7 +313,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                                     inputMode="numeric"
                                     on:input=move |v| set_pin_input(event_target_value(&v))
                                 />
-                                <button type="submit" disabled=move || authenticate.pending()>
+                                <button type="submit">
                                     "Log In"
                                 </button>
                                 <Show when=authenticate.pending()>
@@ -346,7 +346,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
 }
 
 #[server]
-async fn get_pin(phone: String) -> Result<(), ServerFnError> {
+async fn submit_phone_number(phone: String) -> Result<(), ServerFnError> {
     use crate::models::user::get_user_by_phone;
     use crate::service::sms::send_message;
     use crate::models::pins::Pin;
@@ -378,12 +378,12 @@ async fn get_pin(phone: String) -> Result<(), ServerFnError> {
 
 #[component]
 pub fn PhoneNumber() -> impl IntoView {
-    let get_pin = create_server_action::<GetPin>();
-    let value = get_pin.value();
+    let submit = create_server_action::<SubmitPhoneNumber>();
+    let value = submit.value();
     view! {
         <Title text="Dental Care | Authentication"/>
 
-        <ActionForm class="center-center solo-action" action=get_pin>
+        <ActionForm class="center-center solo-action" action=submit>
             <label>"Phone Number"</label>
             <input
                 id="phone"
@@ -395,11 +395,11 @@ pub fn PhoneNumber() -> impl IntoView {
                 inputMode="tel"
                 required
             />
-            <button type="submit" disabled=move || get_pin.pending()>
+            <button type="submit">
                 "Get Pin"
             </button>
         </ActionForm>
-        <Show when=get_pin.pending()>
+        <Show when=submit.pending()>
             <div>"Loading..."</div>
         </Show>
         <Show when=move || {
