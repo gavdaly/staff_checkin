@@ -30,54 +30,27 @@ body {
     }
 }
 
-#nav {
-    grid-area: nav;
-    position: fixed;
-    transform: translate(-100vh);
-    top: 0;
-    left: 0;
-    height: 100%;
-    z-index: 999;
+#nav-button {
+    position: sticky;
+    bottom: var(--size-3);
+    left: var(--size-3);
+    width: fit-content;
+    padding: var(--size-3);
+}
+
+#menu {
     background: var(--surface-2);
-    width: auto;
-}
-#nav[data-show] {
-    transform: translate(0);
+    border-radius: var(--radius-2);
 }
 
-#nav:target,
-#nav[aria-expanded="true"] {
-    display: block;
-    left: 0;
-    outline: none;
+menu {
+    display: flex;
+    flex-direction: column;
 }
 
-@media (min-width: 1150px) {
-    #nav {
-        position: sticky;
-        transform: translate(0);
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        top: 0;
-        height: 100%;
-    }
 
-    button.close {
-        display: none;
-    }
-
-    button.hamburger {
-        display: none;
-    }
-
-    body {
-        grid-template-areas:
-            "header header header header"
-            "nav    main   main   main";
-        grid-template-columns: auto 1fr 1fr 1fr;
-        grid-template-rows: auto 1fr;
-    }
+.version {
+    font-size: var(--font-size-2);
 }
 
 .center-center {
@@ -116,25 +89,34 @@ button[data-size="small"] {
     font-size: 0.75rem;
 }
 
-#nav > * {
-    margin: 0;
-    padding: var(--size-2);
-    transition: color 300ms;
-    text-decoration: none;
+menu li {
+    list-style: none;
+}
+
+menu {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: color 200ms ease-in-out;
+    flex-direction: column;
+}
+#menu {
+    padding: var(--size-4);
+}
+#menu > * {
+    padding: var(--size-3);
 }
 
-#nav a:not([aria-current="page"]):hover {
-    background: var(--surface-2);
+::backdrop {
+    backdrop-filter: blur(6px);
 }
 
-#nav a[aria-current="page"] {
-    color: var(--text-1);
-    background: var(--surface-1);
-}
+:popover-open {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0 var(--size-4);
+    border-radius: var(--radius--2);
+    box-shadow: var(--shadow-5);
+  }
 
 .sr-only {
     position: absolute;
