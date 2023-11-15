@@ -1,5 +1,6 @@
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::models::user::UserPublic;
+use crate::screens::clock_in_link::ClockInLink;
 use crate::screens::home::{ HomePage, Settings};
 use crate::screens::magic_link::MagicLink;
 use crate::screens::timesheet::{TimeSheetDisplay, TimeSheetMissing};
@@ -87,6 +88,7 @@ pub fn App() -> impl IntoView {
                         >
 
                             <Route path="" view=move || view! { <HomePage status/> }/>
+                            <Route path="/c/:link" view=ClockInLink />
                             <Route path="/app" view=move || view! { <Outlet/> }>
                                 <Route path="" view=move || view! { <HomePage status/> }/>
                                 <Route path="/timesheet" view=TimeSheetDisplay/>
