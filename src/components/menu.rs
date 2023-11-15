@@ -1,6 +1,6 @@
 use leptos::*;
 use leptos_router::*;
-use crate::app::Logout;
+use crate::screens::authenticate::Logout;
 
 #[component]
 pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>) -> impl IntoView where F: Fn() -> bool + 'static {
