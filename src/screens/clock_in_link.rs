@@ -1,6 +1,5 @@
 use leptos::*;
 use leptos_router::*;
-use uuid::Uuid;
 
 #[derive(Clone, Params, PartialEq)]
 struct ClockInLinkParams {
@@ -13,6 +12,7 @@ pub fn ClockInLink() -> impl IntoView {
     let clock_in = create_server_action::<ClockInLinkInitiateSession>();
     match params() {
         Ok(ClockInLinkParams {link}) => { 
+            clock_in.dispatch(ClockInLinkInitiateSession {link: link.clone()});
             view! {
             <div>"Loading..." {link}</div>
         }},
@@ -23,7 +23,32 @@ pub fn ClockInLink() -> impl IntoView {
 }
 
 #[server]
-async fn clock_in_link_initiate_session(link: String, user_id: Uuid) -> Result<(), ServerFnError> {
-    
+async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFnError> {
+    use crate::models::sessions::{close_session, get_open_session, new_session};
+    use uuid::Uuid;
+    // Get User
+    use axum_session::SessionPgSession;
+    let session = use_context::<SessionPgSession>()
+        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+    let id = session
+        .get::<Uuid>("id")
+        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+
+    // check to see if link is valid!!
+    leptos::logging::log!("link: {link}");
+
+    // check for existing session
+    match get_open_session(&id).await {
+        Ok(sess) => {
+            // if no session create new session
+            let _ = close_session(&sess.id).await;
+        }
+        Err(_) => {
+            // else close exsiting session
+            let _ = new_session(&id).await;
+        }
+    };
+    leptos_axum::redirect("/app");
+
     Ok(())
 }
