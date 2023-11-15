@@ -1,6 +1,7 @@
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::models::user::UserPublic;
 use crate::screens::home::{ HomePage, Settings};
+use crate::screens::magic_link::MagicLink;
 use crate::screens::timesheet::{TimeSheetDisplay, TimeSheetMissing};
 use crate::screens::timesheets::{
     TimeSheets, TimeSheetsAdjustment, TimeSheetsList, TimeSheetsPending,
@@ -73,7 +74,7 @@ pub fn App() -> impl IntoView {
                 <main id="main">
                     <Routes>
                         <Route path="/p/:phone" view=move || view! { <Auth authenticate/> }/>
-                        <Route path="/l/:link" view=move || view! { <div>"TODO"</div> }/>
+                        <Route path="/l/:link" view=MagicLink />
                         <Route
                             path=""
                             view=move || {

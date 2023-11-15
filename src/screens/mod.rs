@@ -4,3 +4,4 @@ pub mod timesheet;
 pub mod timesheets;
 pub mod users;
 pub mod vacations;
+pub mod magic_link;
