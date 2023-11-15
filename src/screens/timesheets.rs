@@ -1,4 +1,4 @@
-use crate::models::user::{UserPublic};
+use crate::models::user::UserPublic;
 use leptos::*;
 use leptos_router::*;
 use crate::components::timesheet::TimeSheetDisplay;
