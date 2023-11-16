@@ -50,6 +50,8 @@ pub fn App() -> impl IntoView {
         None => false,
     };
 
+    let (show_menu, set_show_menu) = create_signal(false);
+
     view! {
         <Stylesheet id="leptos" href="/pkg/staff.css"/>
 
@@ -71,7 +73,7 @@ pub fn App() -> impl IntoView {
                 </header>
 
                 <Show when=move || user().is_some()>
-                    <Menu status log_out/>
+                    <Menu status log_out show_menu set_show_menu/>
                 </Show>
                 <main id="main">
                     <Routes>

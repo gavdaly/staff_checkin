@@ -3,44 +3,43 @@ use leptos_router::*;
 use crate::screens::authenticate::Logout;
 
 #[component]
-pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>) -> impl IntoView where F: Fn() -> bool + 'static {
+pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, show_menu: ReadSignal<bool>, set_show_menu: WriteSignal<bool>) -> impl IntoView where F: Fn() -> bool + 'static {
 
     view! {
-        <nav aria-label="Main menu" id="nav">
-            <div id="menu" popover anchor="nav-button">
+        <nav aria-label="Main menu" id="nav" data-visible={move || show_menu().to_string()}  /*  popover anchor="nav-button" */>
                 <span>
-                    <button class="close" popovertarget="menu">
+                    <button class="close" on:click=move |_| set_show_menu(false) /*  popovertarget="menu" */>
                         "close"
                     </button>
                 </span>
                 <menu>
                     <li>
-                        <A href="/app" class="link" exact=true>
+                        <A href="/app" on:click=move |_| set_show_menu(false) class="link" exact=true >
                             "dashboard"
                         </A>
                     </li>
                     <li>
-                        <A href="/app/check_in" class="link">
+                        <A href="/app/check_in" class="link" on:click=move |_| set_show_menu(false)>
                             {move || if status() { "check out" } else { "check in" }}
                         </A>
                     </li>
                     <li>
-                        <A href="/app/timesheet" class="link">
+                        <A href="/app/timesheet" class="link" on:click=move |_| set_show_menu(false)>
                             "timesheet"
                         </A>
                     </li>
                     <li>
-                        <A href="/app/vacations" class="link">
+                        <A href="/app/vacations" class="link" on:click=move |_| set_show_menu(false)>
                             "vacations"
                         </A>
                     </li>
                     <li>
-                        <A href="/app/users" class="link">
+                        <A href="/app/users" class="link" on:click=move |_| set_show_menu(false)>
                             "users"
                         </A>
                     </li>
                     <li>
-                        <A href="/settings" class="link">
+                        <A href="/settings" class="link" on:click=move |_| set_show_menu(false)>
                             "settings"
                         </A>
                     </li>
@@ -58,9 +57,8 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>) ->
                     </button>
                 </ActionForm>
 
-            </div>
         </nav>
-        <button id="nav-button" popovertarget="menu">
+        <button id="nav-button" /*popovertarget="menu"*/ on:click=move |_| set_show_menu(true)>
             "open menu"
         </button>
     }
