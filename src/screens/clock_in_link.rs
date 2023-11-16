@@ -12,7 +12,7 @@ pub fn ClockInLink(clock_in_link: Action<ClockInLinkInitiateSession, Result<(), 
     match params() {
         Ok(ClockInLinkParams {link}) => { 
             clock_in_link.dispatch(ClockInLinkInitiateSession {link: link.clone()});
-            view! { <div>"Loading..." {link}</div> }},
+            view! { <div>"Loading..."<Redirect path="/app" /></div> }},
         Err(e) => view! { <div>"Something went wrong: " {e.to_string()}</div> }
     }
 }
