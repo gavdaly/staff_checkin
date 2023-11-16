@@ -44,13 +44,11 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                                     inputMode="numeric"
                                     on:input=move |v| set_pin_input(event_target_value(&v))
                                 />
-                                <button type="submit">
-                                    "Log In"
-                                </button>
-                                
+                                <button type="submit">"Log In"</button>
+
                             </ActionForm>
                             <Show when=authenticate.pending()>
-                                    <div>"Loading..."</div>
+                                <div>"Loading..."</div>
                             </Show>
                             <Show when=move || value.with(Option::is_some)>
                                 <div>{value}</div>

@@ -7,23 +7,18 @@ struct ClockInLinkParams {
 }
 
 #[component]
-pub fn ClockInLink() -> impl IntoView {
+pub fn ClockInLink(clock_in_link: Action<ClockInLinkInitiateSession, Result<(), ServerFnError>>) -> impl IntoView {
     let params = use_params::<ClockInLinkParams>();
-    let clock_in = create_server_action::<ClockInLinkInitiateSession>();
     match params() {
         Ok(ClockInLinkParams {link}) => { 
-            clock_in.dispatch(ClockInLinkInitiateSession {link: link.clone()});
-            view! {
-            <div>"Loading..." {link}</div>
-        }},
-        Err(e) => view! {
-            <div>"Something went wrong: "{e.to_string()}</div>    
-        }
+            clock_in_link.dispatch(ClockInLinkInitiateSession {link: link.clone()});
+            view! { <div>"Loading..." {link}</div> }},
+        Err(e) => view! { <div>"Something went wrong: " {e.to_string()}</div> }
     }
 }
 
 #[server]
-async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFnError> {
+pub async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFnError> {
     use crate::models::sessions::{close_session, get_open_session, new_session};
     use uuid::Uuid;
     // Get User

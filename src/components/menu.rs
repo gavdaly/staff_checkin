@@ -44,11 +44,11 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>) ->
                             "settings"
                         </A>
                     </li>
-                    // <li>
-                    //     <A href="/admin/timesheets" class="link">
-                    //         "timesheets"
-                    //     </A>
-                    // </li>
+                // <li>
+                // <A href="/admin/timesheets" class="link">
+                // "timesheets"
+                // </A>
+                // </li>
                 </menu>
 
                 <ActionForm action=log_out>
@@ -60,6 +60,8 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>) ->
 
             </div>
         </nav>
-        <button id="nav-button" popovertarget="menu">open menu</button>
+        <button id="nav-button" popovertarget="menu">
+            "open menu"
+        </button>
     }
 }

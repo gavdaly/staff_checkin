@@ -5,8 +5,6 @@ use crate::app::CheckIn;
 #[component]
 pub fn CheckInView<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F) -> impl IntoView 
 where F: Fn() -> bool + 'static {
-    
-
     let _value = move || check_in.value();
 
     let window = leptos_use::use_window();

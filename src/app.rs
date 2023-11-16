@@ -1,6 +1,6 @@
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::models::user::UserPublic;
-use crate::screens::clock_in_link::ClockInLink;
+use crate::screens::clock_in_link::{ClockInLink, ClockInLinkInitiateSession};
 use crate::screens::home::{ HomePage, Settings};
 use crate::screens::magic_link::MagicLink;
 use crate::screens::timesheet::{TimeSheetDisplay, TimeSheetMissing};
@@ -28,9 +28,10 @@ pub fn App() -> impl IntoView {
     let log_out = create_server_action::<Logout>();
     let check_in = create_server_action::<CheckIn>();
     let authenticate = create_server_action::<Authenticate>();
+    let clock_in_link = create_server_action::<ClockInLinkInitiateSession>();
 
     let user_fetch = create_resource(move || (log_out.version().get(), authenticate.version().get()), |_| get_curent_user());
-    let session_status = create_resource(move || check_in.version().get(), |_| get_session_status());
+    let session_status = create_resource(move || (check_in.version().get(), clock_in_link.version().get()), |_| get_session_status());
 
     let _error = move || match user_fetch() {
         Some(Err(e)) => Some(e),
@@ -75,7 +76,7 @@ pub fn App() -> impl IntoView {
                 <main id="main">
                     <Routes>
                         <Route path="/p/:phone" view=move || view! { <Auth authenticate/> }/>
-                        <Route path="/l/:link" view=MagicLink />
+                        <Route path="/l/:link" view=MagicLink/>
                         <Route
                             path=""
                             view=move || {
@@ -88,7 +89,10 @@ pub fn App() -> impl IntoView {
                         >
 
                             <Route path="" view=move || view! { <HomePage status/> }/>
-                            <Route path="/c/:link" view=ClockInLink />
+                            <Route
+                                path="/c/:link"
+                                view=move || view! { <ClockInLink clock_in_link/> }
+                            />
                             <Route path="/app" view=move || view! { <Outlet/> }>
                                 <Route path="" view=move || view! { <HomePage status/> }/>
                                 <Route path="/timesheet" view=TimeSheetDisplay/>
@@ -286,9 +290,7 @@ pub fn PhoneNumber() -> impl IntoView {
                 inputMode="tel"
                 required
             />
-            <button type="submit">
-                "Get Pin"
-            </button>
+            <button type="submit">"Get Pin"</button>
         </ActionForm>
         <Show when=submit.pending()>
             <div>"Loading..."</div>
