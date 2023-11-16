@@ -1,8 +1,10 @@
 use leptos::*;
 use leptos_router::*;
 use crate::components::loading_progress::Loading;
+use uuid::Uuid;
 use crate::models::time_sheets::TimeSheet;
 use crate::components::timesheet::TimeSheetDisplay as Tsd;
+use crate::components::session_form::CorrectionForm;
 
 /// Renders the home page of your application.
 #[component]
@@ -49,7 +51,24 @@ pub fn TimeSheetDisplay() -> impl IntoView {
 
 #[component]
 pub fn TimeSheetMissing() -> impl IntoView {
-    view! { <h1>"Missing"</h1> }
+    view! { <CorrectionForm uuid=None/> }
+}
+
+#[derive(Params, Clone, PartialEq)]
+struct TimeSheetEditParams {
+    uuid: Uuid
+}
+
+#[component]
+pub fn TimeSheetEdit() -> impl IntoView {
+    let params = use_params::<TimeSheetEditParams>();
+
+    match params() {
+        Ok(TimeSheetEditParams {
+            uuid
+        }) =>  view! { <CorrectionForm uuid=Some(uuid)/> }.into_view(),
+        Err(e) => view! { <div data-state="error">"Error getting session: " {e.to_string()}</div> }.into_view()
+    }
 }
 
 #[server]

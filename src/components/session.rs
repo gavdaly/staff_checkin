@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_router::A;
 use crate::models::sessions::Session;
 use crate::utils::miliseconds_to_string;
 
@@ -20,9 +21,11 @@ pub fn Session<'a>(session: &'a Session) -> impl IntoView {
                                     .to_string()}
                             </span>
                         </span>
+                        <A href=format!("/app/timesheet/edit/{}", session.id)>edit</A>
                     }
+                        .into_view()
                 }
-                None => view! { <span>"Session not closed yet!"</span> },
+                None => view! { <span>"Session not closed yet!"</span> }.into_view(),
             }}
 
         </div>

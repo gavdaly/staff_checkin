@@ -8,16 +8,16 @@ use crate::utils::miliseconds_to_string;
 #[component]
 pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
     view! {
-        <table>
+        <table id="timesheet_summary">
             <thead>
                 <tr>
-                    <th data-title="day">"day"</th>
-                    <th data-title="checkins">"checkins"</th>
-                    <th data-title="adjustments">"adjustments"</th>
-                    <th data-title="subtotal">"subtotal"</th>
-                    <th data-title="statutory">"statutory"</th>
-                    <th data-title="vacation">"vacation"</th>
-                    <th data-title="total">"total"</th>
+                    <th>"Day"</th>
+                    <th>"Checkins"</th>
+                    <th>"Adjustments"</th>
+                    <th>"Subtotal"</th>
+                    <th>"Statutory"</th>
+                    <th>"Vacation"</th>
+                    <th>"Total"</th>
                 </tr>
             </thead>
             {timesheet
@@ -26,23 +26,24 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                 .map(|(day, (time, b, c, d))| {
                     view! {
                         <tr>
-                            <td data-title="day">{day.to_string()}</td>
-                            <td data-title="checkins">{miliseconds_to_string(time)}</td>
-                            <td data-title="adjustments">{miliseconds_to_string(b)}</td>
-                            <td data-title="subtotal">{miliseconds_to_string(&(time + b))}</td>
-                            <td data-title="statutory">{miliseconds_to_string(c)}</td>
-                            <td data-title="vacation">{miliseconds_to_string(d)}</td>
-                            <td data-title="total">{miliseconds_to_string(&(time + b + c + d))}</td>
+                            <td data-title="Day">{day.to_string()}</td>
+                            <td data-title="Checkins">{miliseconds_to_string(time)}</td>
+                            <td data-title="Adjustments">{miliseconds_to_string(b)}</td>
+                            <td data-title="Subtotal">{miliseconds_to_string(&(time + b))}</td>
+                            <td data-title="Statutory">{miliseconds_to_string(c)}</td>
+                            <td data-title="Vacation">{miliseconds_to_string(d)}</td>
+                            <td data-title="Total">{miliseconds_to_string(&(time + b + c + d))}</td>
                         </tr>
                     }
                 })
                 .collect_view()}
         </table>
+
         <table>
             <thead>
                 <tr>
-                    <th>"day"</th>
-                    <th>"entries"</th>
+                    <th>"Day"</th>
+                    <th>"Entries"</th>
                 </tr>
             </thead>
 
@@ -71,4 +72,3 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
 fn EntryEdit(_entry: Session) -> impl IntoView {
     view! { <div></div> }
 }
-
