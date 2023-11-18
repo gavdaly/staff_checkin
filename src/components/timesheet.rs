@@ -55,7 +55,7 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                             <td>{day.to_string()}</td>
                             <td>
                                 {entries
-                                    .into_iter()
+                                    .iter()
                                     .map(|entry| view! { <Entry entry=entry/> })
                                     .collect_view()}
                             </td>
