@@ -171,3 +171,7 @@ aside#checked_in {
     color: var(--sand-11);
     background: var(--gradient-20);
 }
+
+svg.loading {
+    animation: var(--animation-spin) forwards;
+}

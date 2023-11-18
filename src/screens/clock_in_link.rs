@@ -1,5 +1,6 @@
 use leptos::*;
 use leptos_router::*;
+use crate::components::loading_progress::Loading;
 
 #[derive(Clone, Params, PartialEq)]
 struct ClockInLinkParams {
@@ -12,7 +13,12 @@ pub fn ClockInLink(clock_in_link: Action<ClockInLinkInitiateSession, Result<(), 
     match params() {
         Ok(ClockInLinkParams {link}) => { 
             clock_in_link.dispatch(ClockInLinkInitiateSession {link: link.clone()});
-            view! { <div>"Loading..." <Redirect path="/app"/></div> }},
+            view! {
+                <div>
+                    <Loading/>
+                    <Redirect path="/app"/>
+                </div>
+            }},
         Err(e) => view! { <div>"Something went wrong: " {e.to_string()}</div> }
     }
 }

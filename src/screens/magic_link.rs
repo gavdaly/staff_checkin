@@ -1,6 +1,7 @@
 use leptos::*;
 use leptos_router::*;
 use uuid::Uuid;
+use crate::components::loading_progress::Loading;
 
 #[derive(Clone, Params, PartialEq)]
 struct MagicLinkParams {
@@ -14,7 +15,7 @@ pub fn MagicLink() -> impl IntoView {
     match params() {
         Ok(MagicLinkParams{link}) => {
             magic_sign_in.dispatch(MagicSignIn { link });
-            view! { <div>"Loading..."</div> }
+            view! { <div><Loading/></div> }
         },
         Err(e) => view! { <div>"Error parsing Parameters: " {e.to_string()}</div> }
     }

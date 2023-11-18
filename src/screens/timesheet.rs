@@ -1,5 +1,6 @@
 use leptos::*;
 use leptos_router::*;
+use crate::components::loading_progress::Loading;
 use crate::models::time_sheets::TimeSheet;
 use crate::components::timesheet::TimeSheetDisplay as Tsd;
 
@@ -19,7 +20,11 @@ pub fn TimeSheetDisplay() -> impl IntoView {
     {view! {
         <section class="stack">
             <Suspense fallback=move || {
-                view! { <div>"Loading..."</div> }
+                view! {
+                    <div>
+                        <Loading/>
+                    </div>
+                }
             }>
                 {match timesheet() {
                     Some(Ok(timesheet)) => {
