@@ -1,5 +1,6 @@
 use leptos::*;
 use leptos_router::*;
+use crate::components::icon::Icon;
 
 #[derive(Clone, Params, PartialEq)]
 struct PhoneParams {
@@ -44,7 +45,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                                     inputMode="numeric"
                                     on:input=move |v| set_pin_input(event_target_value(&v))
                                 />
-                                <button type="submit">"Log In"</button>
+                                <button type="submit"><Icon name="login"/><span>"Log In"</span></button>
 
                             </ActionForm>
                             <Show when=authenticate.pending()>

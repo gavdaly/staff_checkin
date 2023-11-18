@@ -1,6 +1,7 @@
 use leptos::*;
 use leptos_router::*;
 use crate::screens::authenticate::Logout;
+use crate::components::icon::Icon;
 
 #[component]
 pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, show_menu: ReadSignal<bool>, set_show_menu: WriteSignal<bool>) -> impl IntoView where F: Fn() -> bool + 'static {
@@ -43,23 +44,25 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, sh
                         "settings"
                     </A>
                 </li>
-            // <li>
-            // <A href="/admin/timesheets" class="link">
-            // "timesheets"
-            // </A>
-            // </li>
+                <Show when=|| false>
+                    <li>
+                        <A href="/admin/timesheets" class="link">
+                            "timesheets"
+                        </A>
+                    </li>
+                </Show>
             </menu>
 
             <ActionForm action=log_out>
                 <button type="submit">
-                    <span>"logout"</span>
-                    <img href="/icons.svg#logout"/>
+                    <span>"Logout"</span>
+                    <Icon name="logout"/>
                 </button>
             </ActionForm>
 
         </nav>
         <button id="nav-button" on:click=move |_| set_show_menu(true)>
-            "open menu"
+            <Icon name="horizontal-menu" />
         </button>
     }
 }
