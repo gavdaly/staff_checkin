@@ -45,7 +45,10 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                                     inputMode="numeric"
                                     on:input=move |v| set_pin_input(event_target_value(&v))
                                 />
-                                <button type="submit"><Icon name="login"/><span>"Log In"</span></button>
+                                <button type="submit">
+                                    <Icon name="login"/>
+                                    <span>"Log In"</span>
+                                </button>
 
                             </ActionForm>
                             <Show when=authenticate.pending()>
