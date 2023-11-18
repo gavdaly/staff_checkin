@@ -62,7 +62,7 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, sh
 
         </nav>
         <button id="nav-button" on:click=move |_| set_show_menu(true)>
-            <Icon name="horizontal-menu" />
+            <Icon name="horizontal-menu"/>
         </button>
     }
 }
