@@ -88,6 +88,22 @@ pub async fn get_open_sessions(user_id: &Uuid) -> Result<Vec<Session>, sqlx::Err
 }
 
 #[cfg(feature = "ssr")]
+pub async fn get_session(uuid: &Uuid) -> Result<Session, sqlx::Error> {
+    let db = get_db();
+
+    sqlx::query_as!(
+        Session,
+        "
+            SELECT start_time, end_time, state, id, user_id
+            FROM sessions
+            WHERE id = $1",
+        uuid
+    )
+    .fetch_one(db)
+    .await
+}
+
+#[cfg(feature = "ssr")]
 pub async fn get_open_session(user_id: &Uuid) -> Result<Session, sqlx::Error> {
     let db = get_db();
 

@@ -175,3 +175,8 @@ aside#checked_in {
 svg.loading {
     animation: var(--animation-spin) forwards;
 }
+
+.input {
+    display: flex;
+    flex-direction: column;
+}

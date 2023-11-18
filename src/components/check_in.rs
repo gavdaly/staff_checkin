@@ -48,7 +48,7 @@ fn GeoCheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F
             {match coords() {
                 Some(coords) => {
                     view! {
-                        <div class="center-center">
+                        <div class="center-center stack">
                             <ActionForm class="center-center" action=check_in>
                                 <input type="hidden" value=coords.latitude() name="latitude"/>
                                 <input type="hidden" value=coords.longitude() name="longitude"/>
