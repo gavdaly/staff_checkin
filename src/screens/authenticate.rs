@@ -1,6 +1,6 @@
 use leptos::*;
 use leptos_router::*;
-use crate::components::icon::Icon;
+use crate::components::{icon::Icon, loading_progress::Loading};
 
 #[derive(Clone, Params, PartialEq)]
 struct PhoneParams {
@@ -52,7 +52,9 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
 
                             </ActionForm>
                             <Show when=authenticate.pending()>
-                                <div>"Loading..."</div>
+                                <div>
+                                    <Loading/>
+                                </div>
                             </Show>
                             <Show when=move || value.with(Option::is_some)>
                                 <div>{value}</div>

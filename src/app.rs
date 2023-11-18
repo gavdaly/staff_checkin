@@ -1,3 +1,4 @@
+use crate::components::loading_progress::Loading;
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::models::user::UserPublic;
 use crate::screens::clock_in_link::{ClockInLink, ClockInLinkInitiateSession};
@@ -62,9 +63,7 @@ pub fn App() -> impl IntoView {
             outside_errors.insert_with_default_key(AppError::NotFound);
             view! { <ErrorTemplate outside_errors/> }.into_view()
         }>
-            <Suspense fallback=|| {
-                view! { "Loading..." }
-            }>
+            <Suspense fallback=Loading>
                 <header id="header">
                     <h1>
                         <span>"Click "</span>
@@ -295,7 +294,9 @@ pub fn PhoneNumber() -> impl IntoView {
             <button type="submit">"Get Pin"</button>
         </ActionForm>
         <Show when=submit.pending()>
-            <div>"Loading..."</div>
+            <div>
+                <Loading/>
+            </div>
         </Show>
         <Show when=move || {
             value().is_some()

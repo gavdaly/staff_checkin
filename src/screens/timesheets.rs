@@ -1,3 +1,4 @@
+use crate::components::loading_progress::Loading;
 use crate::models::user::UserPublic;
 use leptos::*;
 use leptos_router::*;
@@ -68,7 +69,11 @@ pub fn TimeSheetsList() -> impl IntoView {
 
     view! {
         <Suspense fallback=move || {
-            view! { <p>"Loading..."</p> }
+            view! {
+                <p>
+                    <Loading/>
+                </p>
+            }
         }>
             {move || match users.get() {
                 Some(Ok(a)) => {
