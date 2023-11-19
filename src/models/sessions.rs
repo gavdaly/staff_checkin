@@ -58,14 +58,14 @@ pub async fn add_correction(id: Option<Uuid>, start_time: DateTime<Local>, end_t
                 FROM sessions
                 WHERE id = $1 AND state = 1", id).fetch_one(db).await?;
             sqlx::query!("UPDATE sessions SET state = 3 WHERE id = $1", id).execute(db).await?;
-            sqlx::query!("INSERT INTO corrections(original_start_time, original_end_time, new_start_time, new_end_time, session_id, reason) 
-            VALUES ($1, $2, $3, $4, $5, $6)", session.start_time, session.end_time, start_time, end_time, id, reason).execute(db).await?;
+            sqlx::query!("INSERT INTO corrections(start_time, end_time, original_start_time, original_end_time, new_start_time, new_end_time, session_id, reason) 
+            VALUES ($1, $2, $1, $2, $3, $4, $5, $6)", session.start_time, session.end_time, start_time, end_time, id, reason).execute(db).await?;
         },
         None => {
             let session = sqlx::query_as!(Session, "INSERT INTO sessions(start_time, end_time, state, user_id)
                 VALUES ($1, $2, 3, $3) RETURNING start_time, end_time, state, user_id, id", start_time, end_time, user_id).fetch_one(db).await?;
-            sqlx::query!("INSERT INTO corrections(original_start_time, original_end_time, new_start_time, new_end_time, session_id, reason)
-                VALUES ($1, $1, $1, $2, $3, $4)", start_time, end_time, session.id, reason).execute(db).await?;
+            sqlx::query!("INSERT INTO corrections(start_time, end_time, original_start_time, original_end_time, new_start_time, new_end_time, session_id, reason)
+                VALUES ($1, $1, $1, $1, $1, $2, $3, $4)", start_time, end_time, session.id, reason).execute(db).await?;
         }
     }
     Ok(())
