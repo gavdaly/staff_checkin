@@ -27,8 +27,15 @@ pub fn Session<'a>(session: &'a Session) -> impl IntoView {
                                     .to_string()}
                             </span>
                         </span>
-                        " "
-                        <A href=format!("/app/timesheet/edit/{}", session.id)>edit</A>
+                        {if session.state == 1 {
+                            view! {
+                                " "
+                                <A href=format!("/app/timesheet/edit/{}", session.id)>edit</A>
+                            }
+                                .into_view()
+                        } else {
+                            view! {}.into_view()
+                        }}
                     }
                         .into_view()
                 }
