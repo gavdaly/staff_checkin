@@ -82,7 +82,6 @@ pub async fn submit_correction_form(id: Option<Uuid>, start_time: String, end_ti
 #[cfg(feature="ssr")]
 fn convert_string_to_local_datetime(date: &str, time: &str) -> Result<DateTime<Local>, ServerFnError> {
     let date_time_string = date.to_owned() + " " + time;
-    leptos::logging::warn!("!! string: {}", date_time_string);
     let Ok(naive) = NaiveDateTime::parse_from_str(&date_time_string, "%y-%m-%d %R") else {
         return Err(ServerFnError::Deserialization(format!("Date in incorrect format: `{date_time_string}` is invalid")))
     };
