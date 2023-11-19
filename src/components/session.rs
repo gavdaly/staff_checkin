@@ -32,15 +32,24 @@ pub fn Session<'a>(session: &'a Session) -> impl IntoView {
                                 .to_string()}
                         </td>
 
-                        {if session.state == 1 {
-                            view! {
+                        {match session.state {
+                            0 => view!{<td>"open"</td>}.into_view(),
+                            1 => view! {
                                 <td>
                                     <A href=format!("/app/timesheet/edit/{}", id)>edit</A>
                                 </td>
                             }
-                                .into_view()
-                        } else {
-                            view! {}.into_view()
+                                .into_view(),
+                            2 => view!{<td><A href=format!("/app/timesheet/edit/{}", id)>error</A></td>}.into_view(),
+                            3 => view!{
+                                <td>
+                                    "pending"
+                                </td>
+                            }.into_view(),
+                            4 => view!{<td>"accepted"</td>}.into_view(),
+                            5 => view!{<td>"rejected"</td>}.into_view(),
+                            6 => view!{<td>"done"</td>}.into_view(),
+                            _ => view!{<td data-state="error">"ERROR"</td>}.into_view(),
                         }}
                     }
                         .into_view()
