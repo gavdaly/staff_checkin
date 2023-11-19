@@ -8,19 +8,19 @@ pub fn Session<'a>(session: &'a Session) -> impl IntoView {
     view! {
         <div id=session.id.to_string()>
             <span>
-                <time>{session.start_time.time().to_string()}</time>
+                <time datetime=session.start_time.to_string()>{session.start_time.format("%I:%M %P").to_string()}</time>
             </span>
             {match session.end_time {
                 Some(t) => {
                     view! {
                         <span>
-                            <span>" to " <time>{t.time().to_string()}</time></span>
+                            <span>" to " <time datetime=t.to_string()>{t.format("%I:%M %P").to_string()}</time></span>
                             " = "
                             <span>
                                 {miliseconds_to_string(&(t - session.start_time).num_milliseconds())
                                     .to_string()}
                             </span>
-                        </span>
+                        </span>" "
                         <A href=format!("/app/timesheet/edit/{}", session.id)>edit</A>
                     }
                         .into_view()
