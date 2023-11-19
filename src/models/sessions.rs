@@ -47,6 +47,31 @@ pub async fn get_sessions_for(
 }
 
 #[cfg(feature = "ssr")]
+use chrono::Local;
+
+#[cfg(feature = "ssr")]
+pub async fn add_correction(id: Option<Uuid>, start_time: DateTime<Local>, end_time: DateTime<Local>, reason: String, user_id: Uuid) -> Result<(), sqlx::Error> {
+    let db = get_db();
+    match id {
+        Some(id) => {
+            let session = sqlx::query_as!(Session, "SELECT start_time, end_time, state, id, user_id
+                FROM sessions
+                WHERE id = $1 AND state = 1", id).fetch_one(db).await?;
+            sqlx::query!("UPDATE sessions SET state = 3 WHERE id = $1", id).execute(db).await?;
+            sqlx::query!("INSERT INTO corrections(original_start_time, original_end_time, new_start_time, new_end_time, session_id, reason) 
+            VALUES ($1, $2, $3, $4, $5, $6)", session.start_time, session.end_time, start_time, end_time, id, reason).execute(db).await?;
+        },
+        None => {
+            let session = sqlx::query_as!(Session, "INSERT INTO sessions(start_time, end_time, state, user_id)
+                VALUES ($1, $2, 3, $3) RETURNING start_time, end_time, state, user_id, id", start_time, end_time, user_id).fetch_one(db).await?;
+            sqlx::query!("INSERT INTO corrections(original_start_time, original_end_time, new_start_time, new_end_time, session_id, reason)
+                VALUES ($1, $1, $1, $2, $3, $4)", start_time, end_time, session.id, reason).execute(db).await?;
+        }
+    }
+    Ok(())
+}
+
+#[cfg(feature = "ssr")]
 pub async fn get_open_sessions(user_id: &Uuid) -> Result<Vec<Session>, sqlx::Error> {
     let db = get_db();
 

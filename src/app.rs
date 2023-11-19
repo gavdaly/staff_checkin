@@ -4,7 +4,7 @@ use crate::models::user::UserPublic;
 use crate::screens::clock_in_link::{ClockInLink, ClockInLinkInitiateSession};
 use crate::screens::home::{ HomePage, Settings};
 use crate::screens::magic_link::MagicLink;
-use crate::screens::timesheet::{TimeSheetDisplay, TimeSheetMissing};
+use crate::screens::timesheet::{TimeSheetDisplay, TimeSheetMissing, TimeSheetEdit};
 use crate::screens::timesheets::{
     TimeSheets, TimeSheetsAdjustment, TimeSheetsList, TimeSheetsPending,
 };
@@ -97,6 +97,7 @@ pub fn App() -> impl IntoView {
                             <Route path="/app" view=move || view! { <Outlet/> }>
                                 <Route path="" view=move || view! { <HomePage status/> }/>
                                 <Route path="/timesheet" view=TimeSheetDisplay/>
+                                <Route path="/timesheet/edit/:uuid" view=TimeSheetEdit/>
                                 <Route path="/timesheet/missing" view=TimeSheetMissing/>
                                 <Route path="/vacations" view=Vacations>
                                     <Route path="" view=VacationsList/>
