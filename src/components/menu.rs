@@ -10,7 +10,7 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, sh
         <nav aria-label="Main menu" id="nav" data-visible=move || show_menu().to_string()>
             <span>
                 <button class="close" on:click=move |_| set_show_menu(false)>
-                    <Icon name="close" />
+                    <Icon name="close"/>
                 </button>
             </span>
             <menu>
