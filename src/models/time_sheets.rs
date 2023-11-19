@@ -13,6 +13,7 @@ pub struct TimeSheet {
     pub state: i32,
     pub entries: BTreeMap<NaiveDate, Vec<Entry>>,
     pub summary: BTreeMap<NaiveDate, (i64, i64, i64, i64)>,
+    pub summary_totals: (i64, i64, i64, i64)
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -76,6 +77,7 @@ impl TimeSheet {
         } = vals.user;
         let entries = generate_entries(vals.adjustments, vals.sessions);
         let summary = generate_summary(&entries);
+        let summary_totals = generate_summary_totals(&summary);
         Self {
             id,
             first_name,
@@ -84,6 +86,7 @@ impl TimeSheet {
             state,
             entries,
             summary,
+            summary_totals,
         }
     }
 }
@@ -184,4 +187,9 @@ fn generate_entries(
         }
     });
     map
+}
+
+#[cfg(feature = "ssr")]
+fn generate_summary_totals(summary: &BTreeMap<NaiveDate, (i64, i64, i64, i64)>) -> (i64, i64, i64, i64) {
+    summary.iter().fold((0, 0, 0, 0), |(s1, s2, s3, s4), (_, (e1, e2, e3, e4))| (s1 + e1, s2 + e2, s3 + e3, s4 + e4))
 }
