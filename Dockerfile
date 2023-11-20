@@ -1,5 +1,5 @@
 # Get started with a build env with Rust nightly
-FROM ghcr.io/rustlang/rust:nightly-bullseye as builder
+FROM rustlang/rust:nightly-bullseye as builder
 
 # Install cargo-binstall, which makes it easier to install other
 # cargo extensions like cargo-leptos
@@ -21,7 +21,7 @@ COPY . .
 # Build the app
 RUN cargo leptos build --release -vv
 
-FROM ghcr.io/rustlang/rust:nightly-bullseye as runner
+FROM rustlang/rust:nightly-bullseye as runner
 # Copy the server binary to the /app directory
 COPY --from=builder /app/target/release/staff /app/
 # /target/site contains our JS/WASM/CSS, etc.
