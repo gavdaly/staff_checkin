@@ -82,8 +82,12 @@ pub async fn submit_correction_form(id: Option<Uuid>, start_time: String, end_ti
 #[cfg(feature="ssr")]
 fn convert_string_to_local_datetime(date: &str, time: &str) -> Result<DateTime<Local>, ServerFnError> {
     let date_time_string = date.to_owned() + " " + time;
-    let Ok(naive) = NaiveDateTime::parse_from_str(&date_time_string, "%y-%m-%d %R") else {
-        return Err(ServerFnError::Deserialization(format!("Date in incorrect format: `{date_time_string}` is invalid")))
+    let parse_date_short = NaiveDateTime::parse_from_str(&date_time_string, "%y-%m-%d %R");
+    let parse_date_long = NaiveDateTime::parse_from_str(&date_time_string, "%Y-%m-%d %R");
+    let naive = match (parse_date_short, parse_date_long) {
+        (Ok(d), _) => d,
+        (_, Ok(d)) => d,
+        (_, _) => return Err(ServerFnError::Deserialization(format!("Date in incorrect format: `{date_time_string}` is invalid")))
     };
     match Local.from_local_datetime(&naive) {
         chrono::LocalResult::Single(dt) => Ok(dt),

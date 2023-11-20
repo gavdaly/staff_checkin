@@ -33,7 +33,7 @@ pub fn Users() -> impl IntoView {
                     Some(Err(e)) => {
                         view! { <div>format!("Error: {}", e.to_string())</div> }.into_view()
                     }
-                    None => view! { }.into_view(),
+                    None => view! {}.into_view(),
                 }}
 
             </table>
@@ -95,7 +95,7 @@ pub fn UsersList() -> impl IntoView {
                         .into_view()
                 }
                 Some(Err(e)) => view! { <div>format!("Error: {}", e.to_string())</div> }.into_view(),
-                None => view! { }.into_view(),
+                None => view! {}.into_view(),
             }}
 
         </section>

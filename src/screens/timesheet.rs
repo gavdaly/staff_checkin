@@ -22,6 +22,7 @@ pub fn TimeSheetDisplay() -> impl IntoView {
     let timesheet = create_resource(|| {},  |_| {get_active_user_timesheet()});
     {view! {
         <section class="stack">
+            <A href="/app/timesheet/missing">"Add missing time"</A>
             <Suspense fallback=move || {
                 view! {
                     <div>
