@@ -3573,6 +3573,7 @@ checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 name = "twilio"
 version = "1.51.0"
 dependencies = [
+ "openssl",
  "reqwest",
  "serde",
  "serde_derive",
