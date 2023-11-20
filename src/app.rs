@@ -2,13 +2,13 @@ use crate::components::loading_progress::Loading;
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::models::user::UserPublic;
 use crate::screens::clock_in_link::{ClockInLink, ClockInLinkInitiateSession};
-use crate::screens::home::{ HomePage, Settings};
+use crate::screens::home::HomePage;
 use crate::screens::magic_link::MagicLink;
 use crate::screens::timesheet::{TimeSheetDisplay, TimeSheetMissing, TimeSheetEdit};
 use crate::screens::timesheets::{
     TimeSheets, TimeSheetsAdjustment, TimeSheetsList, TimeSheetsPending,
 };
-use crate::screens::users::{UserCreate, UserUpdate, Users, UsersList};
+use crate::screens::users::{UserCreate, UserUpdate, Users, UsersList, AdminUsers};
 use crate::screens::vacations::{
     VacationEdit, VacationRequest, Vacations, VacationsList, VacationsPending,
 };
@@ -122,13 +122,12 @@ pub fn App() -> impl IntoView {
                                     <Route path="/adjustment" view=TimeSheetsAdjustment/>
                                     <Route path="/pending" view=TimeSheetsPending/>
                                 </Route>
-                                <Route path="/users" view=Users>
+                                <Route path="/users" view=AdminUsers>
                                     <Route path="" view=UsersList/>
                                     <Route path="/create" view=UserCreate/>
                                     <Route path="/edit/:id" view=UserUpdate/>
                                 </Route>
                             </Route>
-                            <Route path="/settings" view=Settings/>
                         </Route>
                     </Routes>
                 </main>

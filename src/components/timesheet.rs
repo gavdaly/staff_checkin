@@ -19,11 +19,13 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                     } else {
                         view! {}.into_view()
                     }}
+
                     {if vacation_total > 0 {
                         view! { <th>"Vacation"</th> }.into_view()
                     } else {
                         view! {}.into_view()
                     }}
+
                 </tr>
             </thead>
             {timesheet
@@ -40,6 +42,7 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                             } else {
                                 view! {}.into_view()
                             }}
+
                             {if vacation_total > 0 {
                                 view! { <td data-title="Vacation">{miliseconds_to_string(d)}</td> }
                                     .into_view()

@@ -42,15 +42,13 @@ async fn load_timesheet_for<'a>(user_id: String) -> Result<TimeSheet, ServerFnEr
     let end_of_week = now.date().week(Weekday::Mon).last_day() + Duration::days(7);
 
     match TimeSheet::generate_for(id, three_weeks_before, end_of_week).await {
-        Ok(ts) => {
-            leptos::tracing::info!("######| {:?}", ts);
-            Ok(ts)},
+        Ok(ts) => Ok(ts),
         Err(_) => Err(ServerFnError::ServerError("Error Generating Time Sheet".into())),
     }
 }
 
 #[server]
-async fn load_hourly_users() -> Result<Vec<UserPublic>, ServerFnError> {
+pub async fn load_hourly_users() -> Result<Vec<UserPublic>, ServerFnError> {
     match UserPublic::get_all_hourly().await {
         Ok(v) => Ok(v),
         Err(_) => Err(ServerFnError::ServerError("Server Error".to_string())),

@@ -39,11 +39,6 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, sh
                         "users"
                     </A>
                 </li>
-                <li>
-                    <A href="/settings" class="link" on:click=move |_| set_show_menu(false)>
-                        "settings"
-                    </A>
-                </li>
                 <Show when=|| false>
                     <li>
                         <A href="/admin/timesheets" class="link">
