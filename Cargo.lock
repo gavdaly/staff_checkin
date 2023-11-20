@@ -3217,6 +3217,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
+ "twilio",
  "uuid",
  "wasm-bindgen",
  "web-sys",

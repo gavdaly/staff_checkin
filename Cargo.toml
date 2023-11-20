@@ -36,7 +36,7 @@ rand = { version = "0.8.5", features = ["nightly"], optional = true }
 dotenv = {version = "0.15.0", optional = true }
 leptos-use = {version = "0.8.0" }
 web-sys = { version = "0.3.64", features = ["Geolocation"] }
-# twilio = { path = "libs/twilio", optional = true }
+twilio = { path = "libs/twilio", optional = true }
 openssl = { version = "0.10", optional = true, features = ["vendored"] }
 
 [features]
@@ -51,7 +51,7 @@ ssr = [
     "dep:leptos_axum",
     "dep:sqlx",
     "dep:rand",
-    # "dep:twilio",
+    "dep:twilio",
     "leptos/ssr",
     "leptos_meta/ssr",
     "leptos_router/ssr",
