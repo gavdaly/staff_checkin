@@ -6,35 +6,41 @@ use crate::utils::miliseconds_to_string;
 #[component]
 pub fn Session<'a>(session: &'a Session) -> impl IntoView {
     view! {
-        <div id=session.id.to_string()>
-            <span>
+        <tr id=session.id.to_string()>
+            <td>
                 <time datetime=session
                     .start_time
                     .to_string()>{session.start_time.format("%I:%M %P").to_string()}</time>
-            </span>
+            </td>
             {match session.end_time {
                 Some(t) => {
                     view! {
-                        <span>
-                            <span>
-                                " to "
-                                <time datetime=t
-                                    .to_string()>{t.format("%I:%M %P").to_string()}</time>
-                            </span>
-                            " = "
-                            <span>
-                                {miliseconds_to_string(&(t - session.start_time).num_milliseconds())
-                                    .to_string()}
-                            </span>
-                        </span>
-                        " "
-                        <A href=format!("/app/timesheet/edit/{}", session.id)>edit</A>
+                        <td>
+
+                            <time datetime=t.to_string()>{t.format("%I:%M %P").to_string()}</time>
+                        </td>
+
+                        <td>
+                            {miliseconds_to_string(&(t - session.start_time).num_milliseconds())
+                                .to_string()}
+                        </td>
+
+                        {if session.state == 1 {
+                            view! {
+                                <td>
+                                    <A href=format!("/app/timesheet/edit/{}", session.id)>edit</A>
+                                </td>
+                            }
+                                .into_view()
+                        } else {
+                            view! {}.into_view()
+                        }}
                     }
                         .into_view()
                 }
-                None => view! { <span>"Session not closed yet!"</span> }.into_view(),
+                None => view! { <td>"Session not closed yet!"</td> }.into_view(),
             }}
 
-        </div>
+        </tr>
     }
 }
