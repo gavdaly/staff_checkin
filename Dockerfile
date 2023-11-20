@@ -1,6 +1,8 @@
 # Get started with a build env with Rust nightly
 FROM ghcr.io/rust-lang/rust:nightly-bookworm as builder
 
+RUN apt install -y libssl-dev
+
 # Install cargo-binstall, which makes it easier to install other
 # cargo extensions like cargo-leptos
 RUN wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
