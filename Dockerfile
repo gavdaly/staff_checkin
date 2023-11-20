@@ -1,7 +1,5 @@
 # Get started with a build env with Rust nightly
-FROM ghcr.io/rust-lang/rust:nightly-bookworm as builder
-
-RUN apt install -y libssl-dev
+FROM rustlang/rust:nightly-bullseye as builder
 
 # Install cargo-binstall, which makes it easier to install other
 # cargo extensions like cargo-leptos
@@ -23,24 +21,19 @@ COPY . .
 # Build the app
 RUN cargo leptos build --release -vv
 
-FROM ghcr.io/rust-lang/rust:nightly-bookworm as runner
-
+FROM rustlang/rust:nightly-bullseye as runner
 # Copy the server binary to the /app directory
 COPY --from=builder /app/target/release/staff /app/
-
 # /target/site contains our JS/WASM/CSS, etc.
 COPY --from=builder /app/target/site /app/site
-
 # Copy Cargo.toml if it’s needed at runtime
 COPY --from=builder /app/Cargo.toml /app/
 WORKDIR /app
 
 # Set any required env variables and
 ENV RUST_LOG="info"
-ENV APP_ENVIRONMENT="production"
-ENV LEPTOS_SITE_ADDR="0.0.0.0:8080"
+ENV LEPTOS_SITE_ADDR="0.0.0.0:3000"
 ENV LEPTOS_SITE_ROOT="site"
-EXPOSE 8080
-
+EXPOSE 3000
 # Run the server
 CMD ["/app/staff"]
