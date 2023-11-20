@@ -104,10 +104,6 @@ menu {
     padding: var(--size-3);
 }
 
-/* ::backdrop {
-    backdrop-filter: blur(6px);
-} */
-
 #nav {
     background: var(--surface-2);
     position: fixed;
