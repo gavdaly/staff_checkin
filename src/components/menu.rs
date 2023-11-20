@@ -9,7 +9,7 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, sh
     view! {
         <nav aria-label="Main menu" id="nav" data-visible=move || show_menu().to_string()>
             <span>
-                <button class="close" on:click=move |_| set_show_menu(false)>
+                <button class="close nav-button" on:click=move |_| set_show_menu(false)>
                     <Icon name="close"/>
                 </button>
             </span>
@@ -61,7 +61,7 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, sh
             </ActionForm>
 
         </nav>
-        <button id="nav-button" on:click=move |_| set_show_menu(true)>
+        <button class="nav-button" on:click=move |_| set_show_menu(true)>
             <Icon name="horizontal-menu"/>
         </button>
     }
