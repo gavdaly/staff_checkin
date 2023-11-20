@@ -2,6 +2,7 @@ use leptos::*;
 use leptos_router::*;
 use crate::components::loading_progress::Loading;
 use uuid::Uuid;
+use crate::models::sessions::Session;
 use crate::models::time_sheets::TimeSheet;
 use crate::components::timesheet::TimeSheetDisplay as Tsd;
 use crate::components::session_form::CorrectionForm;
@@ -51,7 +52,7 @@ pub fn TimeSheetDisplay() -> impl IntoView {
 
 #[component]
 pub fn TimeSheetMissing() -> impl IntoView {
-    view! { <CorrectionForm uuid=None/> }
+    view! { <CorrectionForm uuid=None date=|| None/> }
 }
 
 #[derive(Params, Clone, PartialEq)]
@@ -62,13 +63,27 @@ struct TimeSheetEditParams {
 #[component]
 pub fn TimeSheetEdit() -> impl IntoView {
     let params = use_params::<TimeSheetEditParams>();
-
+    let session = create_server_action::<GetSession>();
+    let value = session.value();
+    let date = move || match value() {
+        Some(Ok(Session { start_time, ..})) => Some(start_time.format("%y-%m-%d").to_string()),
+        _ => None,
+    };
     match params() {
         Ok(TimeSheetEditParams {
             uuid
-        }) =>  view! { <CorrectionForm uuid=Some(uuid)/> }.into_view(),
+        }) =>  {
+            session.dispatch(GetSession { uuid });
+            
+            view! { <CorrectionForm uuid=Some(uuid) date/> }.into_view()
+        },
         Err(e) => view! { <div data-state="error">"Error getting session: " {e.to_string()}</div> }.into_view()
     }
+}
+
+#[server]
+async fn get_session(uuid: Uuid) -> Result<Session, ServerFnError> {
+    crate::models::sessions::get_session(&uuid).await.or_else(|_| Err(ServerFnError::Request("Error Getting Session".into())))
 }
 
 #[server]
