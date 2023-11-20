@@ -5,7 +5,7 @@ use crate::components::icon::Icon;
 
 #[component]
 pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, show_menu: ReadSignal<bool>, set_show_menu: WriteSignal<bool>) -> impl IntoView where F: Fn() -> bool + 'static {
-
+    
     view! {
         <nav aria-label="Main menu" id="nav" data-visible=move || show_menu().to_string()>
             <span>

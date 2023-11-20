@@ -245,7 +245,7 @@ async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
 #[server]
 async fn submit_phone_number(phone: String) -> Result<(), ServerFnError> {
     use crate::models::user::get_user_by_phone;
-    use crate::service::sms::send_message;
+    // use crate::service::sms::send_message;
     use crate::models::pins::Pin;
 
     let phone = crate::utils::filter_phone_number(&phone);
@@ -266,7 +266,7 @@ async fn submit_phone_number(phone: String) -> Result<(), ServerFnError> {
         return Err(ServerFnError::ServerError("Error Creating Pin!".into()));
     };
 
-    send_message(pin.number.to_string(), format!("+1{phone}")).await;
+    // send_message(pin.number.to_string(), format!("+1{phone}")).await;
 
     leptos_axum::redirect(&("/p/".to_string() + &phone));
 
