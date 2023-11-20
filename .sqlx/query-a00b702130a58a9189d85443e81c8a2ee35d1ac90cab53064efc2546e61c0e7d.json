@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO corrections(start_time, end_time, original_start_time, original_end_time, new_start_time, new_end_time, session_id, reason)\n                VALUES ($1, $1, $1, $1, $1, $2, $3, $4)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Timestamptz",
+        "Timestamptz",
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a00b702130a58a9189d85443e81c8a2ee35d1ac90cab53064efc2546e61c0e7d"
+}
