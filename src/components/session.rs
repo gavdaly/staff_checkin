@@ -1,11 +1,11 @@
 use chrono::Local;
 use leptos::*;
 use leptos_router::A;
-use crate::models::sessions::Session;
+use crate::models::sessions::SessionAndCorrection;
 use crate::utils::miliseconds_to_string;
 
 #[component]
-pub fn Session<'a>(session: &'a Session) -> impl IntoView {
+pub fn Session<'a>(session: &'a SessionAndCorrection) -> impl IntoView {
     let id = session.id.to_string();
     let start_time = session.start_time.with_timezone(&Local);
     let start_string = start_time.format("%I:%M %P").to_string();

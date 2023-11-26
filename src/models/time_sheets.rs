@@ -1,4 +1,4 @@
-use crate::models::{adjustments::Adjustment, sessions::Session};
+use crate::models::{adjustments::Adjustment, sessions::SessionAndCorrection};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -18,14 +18,14 @@ pub struct TimeSheet {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum Entry {
-    Session(Session),
+    Session(SessionAndCorrection),
     Adjustment(Adjustment),
 }
 
 #[cfg(feature = "ssr")]
 use {
     crate::models::{
-        adjustments::get_adjustments_for, corrections::Correction, sessions::get_sessions_for,
+        adjustments::get_adjustments_for, sessions::get_sessions_for,
         user::UserPublic,
     },
     chrono::{DateTime, Duration, NaiveTime, Utc, Weekday},
@@ -35,8 +35,7 @@ use {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 struct InputValues {
     user: UserPublic,
-    sessions: Vec<Session>,
-    corrections: Vec<Correction>,
+    sessions: Vec<SessionAndCorrection>,
     adjustments: Vec<Adjustment>,
 }
 
@@ -49,18 +48,19 @@ impl TimeSheet {
     ) -> Result<Self, sqlx::Error> {
         let midnitght = NaiveTime::default();
         let user = UserPublic::get(user_id).await?;
+        let start = start_date.and_time(midnitght);
+        let end = end_date.and_time(midnitght);
         let sessions = get_sessions_for(
             &user_id,
-            DateTime::from_naive_utc_and_offset(start_date.and_time(midnitght), Utc),
-            DateTime::from_naive_utc_and_offset(end_date.and_time(midnitght), Utc),
+            DateTime::from_naive_utc_and_offset(start, Utc),
+            DateTime::from_naive_utc_and_offset(end, Utc),
         )
         .await?;
-        let adjustments = get_adjustments_for(&user_id, start_date.and_time(midnitght).date(),
-        end_date.and_time(midnitght).date()).await?;
+        let adjustments = get_adjustments_for(&user_id, start.date(), end.date()).await?;
+        // let corrections = get_corrections_for(&user_id).await?;
         let values = InputValues {
             user,
             sessions,
-            corrections: vec![],
             adjustments,
         };
         leptos::tracing::error!("###| {:?}", values);
@@ -161,7 +161,7 @@ fn generate_summary(
 #[cfg(feature = "ssr")]
 fn generate_entries(
     adjustments: Vec<Adjustment>,
-    sessions: Vec<Session>,
+    sessions: Vec<SessionAndCorrection>,
 ) -> BTreeMap<NaiveDate, Vec<Entry>> {
     let mut map: BTreeMap<NaiveDate, Vec<Entry>> = BTreeMap::new();
     adjustments.into_iter().for_each(|adj| {

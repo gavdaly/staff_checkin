@@ -22,29 +22,42 @@ pub struct Session {
     pub user_id: Uuid,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct SessionAndCorrection {
+    pub start_time: DateTime<Utc>,
+    pub end_time: Option<DateTime<Utc>>,
+    pub state: i32,
+    pub id: Uuid,
+    pub user_id: Uuid,
+    pub new_start_time: Option<DateTime<Utc>>,
+    pub new_end_time: Option<DateTime<Utc>>,
+    pub original_start_time: Option<DateTime<Utc>>,
+    pub original_end_time: Option<DateTime<Utc>>,
+    pub reason: Option<String>,
+    pub response: Option<String>
+}
+
 #[cfg(feature = "ssr")]
 use crate::database::get_db;
 
 #[cfg(feature = "ssr")]
-pub async fn get_sessions_for(
-    user_id: &Uuid,
+pub async fn get_sessions_for(user_id: &Uuid,
     start_date: DateTime<Utc>,
-    end_date: DateTime<Utc>,
-) -> Result<Vec<Session>, sqlx::Error> {
-    let db = get_db();
-    sqlx::query_as!(
-        Session,
-        "
-            SELECT start_time, end_time, state, id, user_id
-            FROM sessions
-            WHERE user_id = $1 AND start_time BETWEEN $2 AND $3",
-        user_id,
+    end_date: DateTime<Utc>,) -> Result<Vec<SessionAndCorrection>, sqlx::Error> {
+        let db = get_db();
+        sqlx::query_as!(SessionAndCorrection, r#"
+        SELECT s.start_time, s.end_time, s.id, s.state, s.user_id,
+        c.new_start_time, c.new_end_time, c.original_start_time, c.original_end_time,
+        c.reason, c.response
+    FROM sessions AS s
+    JOIN corrections AS c 
+    ON s.id = c.session_id
+    WHERE s.user_id = $1 AND s.start_time BETWEEN $2 AND $3
+    ORDER BY s.start_time;
+        "#,user_id,
         start_date,
-        end_date
-    )
-    .fetch_all(db)
-    .await
-}
+        end_date).fetch_all(db).await
+    }
 
 #[cfg(feature = "ssr")]
 use chrono::Local;
