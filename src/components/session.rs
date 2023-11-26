@@ -15,53 +15,55 @@ pub fn Session<'a>(session: &'a Session) -> impl IntoView {
         None => None,
     };
     view! {
-        <tr id=id.to_string()>
-            <td>
-                <time datetime=start_dt>{start_string}</time>
-            </td>
-            {match end_time {
-                Some(t) => {
-                    view! {
-                        <td>
+        <span class="start_time">
+            <time datetime=start_dt>{start_string}</time>
+        </span>
+        {match end_time {
+            Some(t) => {
+                view! {
+                    <span class="end_time">
+                        <time datetime=t.to_string()>{t.format("%I:%M %P").to_string()}</time>
+                    </span>
 
-                            <time datetime=t.to_string()>{t.format("%I:%M %P").to_string()}</time>
-                        </td>
+                    <span class="duration">
+                        {miliseconds_to_string(&(t - start_time).num_milliseconds()).to_string()}
+                    </span>
 
-                        <td>
-                            {miliseconds_to_string(&(t - start_time).num_milliseconds())
-                                .to_string()}
-                        </td>
-
-                        {match session.state {
-                            0 => view! { <td>"open"</td> }.into_view(),
-                            1 => {
-                                view! {
-                                    <td>
-                                        <A href=format!("/app/timesheet/edit/{}", id)>edit</A>
-                                    </td>
-                                }
-                                    .into_view()
+                    {match session.state {
+                        0 => view! { <span class="state">"open"</span> }.into_view(),
+                        1 => {
+                            view! {
+                                <A class="state" href=format!("/app/timesheet/edit/{}", id)>
+                                    edit
+                                </A>
                             }
-                            2 => {
-                                view! {
-                                    <td>
-                                        <A href=format!("/app/timesheet/edit/{}", id)>error</A>
-                                    </td>
-                                }
-                                    .into_view()
+                                .into_view()
+                        }
+                        2 => {
+                            view! {
+                                <A class="state" href=format!("/app/timesheet/edit/{}", id)>
+                                    error
+                                </A>
                             }
-                            3 => view! { <td>"pending"</td> }.into_view(),
-                            4 => view! { <td>"accepted"</td> }.into_view(),
-                            5 => view! { <td>"rejected"</td> }.into_view(),
-                            6 => view! { <td>"done"</td> }.into_view(),
-                            _ => view! { <td data-state="error">"ERROR"</td> }.into_view(),
-                        }}
-                    }
-                        .into_view()
+                                .into_view()
+                        }
+                        3 => view! { <span class="state">"pending"</span> }.into_view(),
+                        4 => view! { <span class="state">"accepted"</span> }.into_view(),
+                        5 => view! { <span class="state">"rejected"</span> }.into_view(),
+                        6 => view! { <span class="state">"done"</span> }.into_view(),
+                        _ => {
+                            view! {
+                                <span class="state" data-state="error">
+                                    "ERROR"
+                                </span>
+                            }
+                                .into_view()
+                        }
+                    }}
                 }
-                None => view! { <td>"Session not closed yet!"</td> }.into_view(),
-            }}
-
-        </tr>
+                    .into_view()
+            }
+            None => view! { <span class="open">"Session not closed yet!"</span> }.into_view(),
+        }}
     }
 }

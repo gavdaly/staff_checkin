@@ -71,13 +71,11 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                     view! {
                         <tr class="entry">
                             <td>{day.to_string()}</td>
-                            <td>
-                                <table>
-                                    {entries
-                                        .iter()
-                                        .map(|entry| view! { <Entry entry=entry/> })
-                                        .collect_view()}
-                                </table>
+                            <td class="entries">
+                                {entries
+                                    .iter()
+                                    .map(|entry| view! { <Entry entry=entry/> })
+                                    .collect_view()}
                             </td>
                         </tr>
                     }
