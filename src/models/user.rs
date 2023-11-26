@@ -37,10 +37,12 @@ pub struct UserPublic {
 use sqlx::*;
 
 #[cfg(feature = "ssr")]
+use crate::database::get_db;
+
+#[cfg(feature = "ssr")]
 impl UserPublic {
     pub async fn get_all_hourly() -> Result<Vec<Self>, sqlx::Error> {
-        use crate::database;
-        let db = database::get_db();
+        let db = get_db();
         query_as!(UserPublic, r#"
 SELECT
 	id, last_name, first_name, phone_number, state
@@ -53,8 +55,7 @@ ORDER BY last_name, first_name;
     }
 
     pub async fn get(id: Uuid) -> Result<Self, sqlx::Error> {
-        use crate::database;
-        let db = database::get_db();
+        let db = get_db();
         query_as!(UserPublic, r#"
 SELECT
     id, last_name, first_name, phone_number, state
@@ -63,6 +64,25 @@ FROM
 WHERE
     id = $1
         "#, id).fetch_one(db).await
+    }
+
+    pub async fn update(&self) -> Result<Self, sqlx::Error> {
+        let db = get_db();
+        query_as!(UserPublic, r#"
+UPDATE users 
+SET first_name = $1, last_name = $2, phone_number = $3, state = $4
+WHERE id = $5
+RETURNING first_name, last_name, phone_number, state, id
+"#, self.first_name, self.last_name, self.phone_number, self.state, self.id).fetch_one(db).await
+    }
+
+    pub async fn insert(first_name: &str, last_name: &str, phone_number: &str, state: i32) -> Result<Self, sqlx::Error> {
+        let db = get_db();
+        query_as!(UserPublic, r#"
+INSERT INTO users(first_name, last_name, phone_number, state) 
+VALUES ($1, $2, $3, $4) 
+RETURNING id, first_name, last_name, phone_number, state
+        "#, first_name, last_name, phone_number, state).fetch_one(db).await
     }
 }
 
@@ -76,10 +96,9 @@ pub struct UserPhone {
 #[cfg(feature = "ssr")]
 pub async fn get_user_by_phone(phone: &str) -> Result<UserPhone, sqlx::Error> {
     use sqlx::*;
-    use crate::database;
     leptos::tracing::info!("-- Getting Phone Numeber: {}", phone);
 
-    let db = database::get_db();
+    let db = get_db();
     let result = query_as!(UserPhone, r#"
 SELECT
     id, phone_number
