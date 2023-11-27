@@ -46,15 +46,24 @@ pub async fn get_sessions_for(user_id: &Uuid,
     end_date: DateTime<Utc>,) -> Result<Vec<SessionAndCorrection>, sqlx::Error> {
         let db = get_db();
         sqlx::query_as!(SessionAndCorrection, r#"
-        SELECT s.start_time, s.end_time, s.id, s.state, s.user_id,
-        c.new_start_time, c.new_end_time, c.original_start_time, c.original_end_time,
-        c.reason, c.response
-    FROM sessions AS s
-    JOIN corrections AS c 
-    ON s.id = c.session_id
-    WHERE s.user_id = $1 AND s.start_time BETWEEN $2 AND $3
-    ORDER BY s.start_time;
-        "#,user_id,
+SELECT
+    s.start_time,
+    s.end_time,
+    s.id,
+    s.state,
+    s.user_id,
+    c.new_start_time,
+    c.new_end_time,
+    c.original_start_time,
+    c.original_end_time,
+    c.reason,
+    c.response
+FROM sessions AS s
+LEFT JOIN corrections AS c
+ON s.id = c.session_id
+WHERE s.user_id = $1 AND s.start_time BETWEEN $2 AND $3
+ORDER BY s.start_time;"#,
+        user_id,
         start_date,
         end_date).fetch_all(db).await
     }
