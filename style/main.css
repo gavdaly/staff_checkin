@@ -177,3 +177,12 @@ svg.loading {
     display: flex;
     flex-direction: column;
 }
+
+.entries {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.reason {
+    grid-column: span 3;
+}

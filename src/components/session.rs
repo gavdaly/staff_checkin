@@ -65,5 +65,29 @@ pub fn Session<'a>(session: &'a SessionAndCorrection) -> impl IntoView {
             }
             None => view! { <span class="open">"Session not closed yet!"</span> }.into_view(),
         }}
+        {match session.new_start_time {
+            Some(t) => view! {<span>{t.format("%I:%M %P").to_string()}</span>}.into_view(),
+            None => view!{}.into_view()
+        }}
+        {match session.new_end_time {
+            Some(t) => view! {<span>{t.format("%I:%M %P").to_string()}</span><span>"new"</span><span></span>}.into_view(),
+            None => view!{}.into_view()
+        }}
+        {match session.original_start_time {
+            Some(t) => view! {<span>{t.format("%I:%M %P").to_string()}</span>}.into_view(),
+            None => view!{}.into_view()
+        }}
+        {match session.original_end_time {
+            Some(t) => view! {<span>{t.format("%I:%M %P").to_string()}</span><span>"original"</span><span></span>}.into_view(),
+            None => view!{}.into_view()
+        }}
+        {match &session.reason {
+            Some(r) => view! {<span>"reason"</span><span class="reason">{r}</span>}.into_view(),
+            None => view!{}.into_view()
+        }}
+        {match &session.response {
+            Some(r) => view! {<span>"response"</span><span class="reason">{r}</span>}.into_view(),
+            None => view!{}.into_view()
+        }}
     }
 }
