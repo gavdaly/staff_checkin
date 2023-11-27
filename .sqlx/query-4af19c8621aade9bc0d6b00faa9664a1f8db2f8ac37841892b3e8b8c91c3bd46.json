@@ -1,27 +1,27 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT start_time, end_time, state, id, user_id\n            FROM sessions\n            WHERE user_id = $1 AND start_time BETWEEN $2 AND $3",
+  "query": "\n        SELECT \n            id,\n            start_time,\n            end_time,\n            state, \n            user_id\n        FROM sessions\n        WHERE user_id = $1 AND start_time BETWEEN $2 AND $3",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
         "name": "start_time",
         "type_info": "Timestamptz"
       },
       {
-        "ordinal": 1,
+        "ordinal": 2,
         "name": "end_time",
         "type_info": "Timestamptz"
       },
       {
-        "ordinal": 2,
+        "ordinal": 3,
         "name": "state",
         "type_info": "Int4"
-      },
-      {
-        "ordinal": 3,
-        "name": "id",
-        "type_info": "Uuid"
       },
       {
         "ordinal": 4,
@@ -38,11 +38,11 @@
     },
     "nullable": [
       false,
-      true,
       false,
+      true,
       false,
       false
     ]
   },
-  "hash": "31f1cac8a8494cf20b1f24091e5562b0c9e1f3079ba6fa938fa64163ee1e7e8d"
+  "hash": "4af19c8621aade9bc0d6b00faa9664a1f8db2f8ac37841892b3e8b8c91c3bd46"
 }

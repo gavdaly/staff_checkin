@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\nUPDATE users \nSET first_name = $1, last_name = $2, phone_number = $3, state = $4\nWHERE id = $5\nRETURNING first_name, last_name, phone_number, state, id\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "first_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "last_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "phone_number",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "state",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar",
+        "Varchar",
+        "Int4",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c06dc1600f8f62d7c6f55f8cd6bdb0b33f48dce14ff8acf697fd7bf5a60d389c"
+}
