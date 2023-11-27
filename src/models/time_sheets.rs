@@ -3,7 +3,7 @@ use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use uuid::Uuid;
-
+// TODO: Make Btrees into vecs to not ship btrees to client.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TimeSheet {
     pub id: Uuid,
@@ -12,7 +12,9 @@ pub struct TimeSheet {
     pub phone_number: String,
     pub state: i32,
     pub entries: BTreeMap<NaiveDate, Vec<Entry>>,
+    // entries: Vec<(NaiveDate, Vec<Entry>>)>,
     pub summary: BTreeMap<NaiveDate, (i64, i64, i64, i64)>,
+    // summary: Vec<(NaiveDate, (i64, i64, i64, i64))>
     pub summary_totals: (i64, i64, i64, i64)
 }
 
@@ -57,7 +59,6 @@ impl TimeSheet {
         )
         .await?;
         let adjustments = get_adjustments_for(&user_id, start.date(), end.date()).await?;
-        // let corrections = get_corrections_for(&user_id).await?;
         let values = InputValues {
             user,
             sessions,

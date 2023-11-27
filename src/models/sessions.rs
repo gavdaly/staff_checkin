@@ -1,8 +1,9 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use crate::models::corrections::Correction;
 use uuid::Uuid;
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum State {
     Active = 0,
     Editable = 1,
@@ -24,17 +25,12 @@ pub struct Session {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SessionAndCorrection {
+    pub id: Uuid,
     pub start_time: DateTime<Utc>,
     pub end_time: Option<DateTime<Utc>>,
     pub state: i32,
-    pub id: Uuid,
     pub user_id: Uuid,
-    pub new_start_time: Option<DateTime<Utc>>,
-    pub new_end_time: Option<DateTime<Utc>>,
-    pub original_start_time: Option<DateTime<Utc>>,
-    pub original_end_time: Option<DateTime<Utc>>,
-    pub reason: Option<String>,
-    pub response: Option<String>
+    pub correction: Option<Correction>,
 }
 
 #[cfg(feature = "ssr")]
@@ -44,29 +40,43 @@ use crate::database::get_db;
 pub async fn get_sessions_for(user_id: &Uuid,
     start_date: DateTime<Utc>,
     end_date: DateTime<Utc>,) -> Result<Vec<SessionAndCorrection>, sqlx::Error> {
+        use crate::models::corrections::get_corrections_for;
         let db = get_db();
-        sqlx::query_as!(SessionAndCorrection, r#"
-SELECT
-    s.start_time,
-    s.end_time,
-    s.id,
-    s.state,
-    s.user_id,
-    c.new_start_time,
-    c.new_end_time,
-    c.original_start_time,
-    c.original_end_time,
-    c.reason,
-    c.response
-FROM sessions AS s
-LEFT JOIN corrections AS c
-ON s.id = c.session_id
-WHERE s.user_id = $1 AND s.start_time BETWEEN $2 AND $3
-ORDER BY s.start_time;"#,
+        let sessions = sqlx::query_as!(Session, r##"
+        SELECT 
+            id,
+            start_time,
+            end_time,
+            state, 
+            user_id
+        FROM sessions
+        WHERE user_id = $1 AND start_time BETWEEN $2 AND $3"##,
         user_id,
         start_date,
-        end_date).fetch_all(db).await
+        end_date
+    ).fetch_all(db).await?;
+
+    let mut result = Vec::with_capacity(sessions.len());
+    // TODO: remove N + 1 query. LEFT JOINs were only fetching the data as an inner join in sqlx.
+    for session in sessions {
+        let correction =  match get_corrections_for(&session.id).await {
+            Ok(s) => s,
+            Err(e) => {leptos::tracing::error!("Error getting collection: {e}"); None}
+        };
+        let s = SessionAndCorrection {
+            id: session.id,
+            start_time: session.start_time,
+            end_time: session.end_time,
+            state: session.state,
+            user_id: session.user_id,
+            correction
+        };
+        result.push(s);
     }
+
+    Ok(result)
+     
+}
 
 #[cfg(feature = "ssr")]
 use chrono::Local;
