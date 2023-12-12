@@ -3,9 +3,17 @@ use leptos_router::*;
 use crate::screens::authenticate::Logout;
 use crate::components::icon::Icon;
 
+/// Generates a menu component for a web application.
+///
+/// # Arguments
+///
+/// * `status` - A function that returns a boolean value indicating the current status.
+/// * `log_out` - An action that triggers the logout functionality.
+/// * `show_menu` - A signal variable that indicates whether the menu should be shown or hidden.
+/// * `set_show_menu` - A signal variable that allows updating the value of `show_menu`.
 #[component]
 pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, show_menu: ReadSignal<bool>, set_show_menu: WriteSignal<bool>) -> impl IntoView where F: Fn() -> bool + 'static {
-    
+
     view! {
         <nav aria-label="Main menu" id="nav" data-visible=move || show_menu().to_string()>
             <span>

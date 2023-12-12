@@ -1,4 +1,18 @@
-/// Filters out the leading 1 from a North American phone number and only keep the remaining digits
+/// Filters a phone number string by removing non-numeric characters and the leading '1'.
+///
+/// # Arguments
+///
+/// * `number` - A string representing the phone number to be filtered.
+///
+/// # Example
+///
+/// ```
+/// # use staff::utils::filter_phone_number;
+/// let number = "+1 (800) 222-3333";
+/// let filtered_number = filter_phone_number(number);
+/// println!("{}", filtered_number);
+/// // Output: "8002223333"
+/// ```
 pub fn filter_phone_number(number: &str) -> String {
     let (_, n) = number.chars().fold(
         (false, String::with_capacity(10)),
@@ -16,14 +30,45 @@ pub fn filter_phone_number(number: &str) -> String {
     n
 }
 
-/// Formats a phonenumber from an North Americian 10 digit number
+/// Formats a phone number string into a formatted phone number string.
+///
+/// # Arguments
+///
+/// * `number` - A string representing a phone number.
+///
+/// # Example
+///
+/// ```
+/// # use staff::utils::format_phone_number;
+/// let number = "2345677890";
+/// let formatted_number = format_phone_number(number);
+/// assert_eq!(formatted_number, "+1 (234) 567-7890")
+/// ```
 pub fn format_phone_number(number: &str) -> String {
     let (area, number) = number.split_at(3);
     let (middle, last) = number.split_at(3);
     format!("+1 ({area}) {middle}-{last}")
 }
 
-/// Calculates the distance between to points in meters
+/// Calculates the distance between two points on the Earth's surface using the Haversine formula.
+///
+/// # Arguments
+///
+/// * `lat1` - Latitude of the first point in degrees.
+/// * `lon1` - Longitude of the first point in degrees.
+/// * `lat2` - Latitude of the second point in degrees.
+/// * `lon2` - Longitude of the second point in degrees.
+///
+/// # Example
+///
+/// ```
+/// let lat1 = 37.7749;
+/// let lon1 = -122.4194;
+/// let lat2 = 34.0522;
+/// let lon2 = -118.2437;
+/// // let distance = calculate_distance(lat1, lon1, lat2, lon2);
+/// // assert_eq!(distance, 559.2);
+/// ```
 pub fn caluclate_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
     use std::f64::consts::PI;
     let r = 6371000.; // metres
@@ -39,12 +84,40 @@ pub fn caluclate_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
     r * c
 }
 
-/// Convert miliseconds to decimal hours
+/// Converts a duration in milliseconds to hours.
+///
+/// # Arguments
+///
+/// * `duration` - A reference to an `i64` duration in milliseconds.
+///
+/// # Example
+///
+/// ```
+/// # use staff::utils::miliseconds_to_hour;
+/// let duration = 3661000;
+/// let result = miliseconds_to_hour(&duration);
+/// println!("{}", result);
+/// // Output: 1.0175
+/// ```
 pub fn miliseconds_to_hour(duration: &i64) -> f64 {
     *duration as f64 / 1000. / 60. / 60.
 }
 
-/// Convert miliseconds to hours and minutes and seconds
+/// Converts a duration in milliseconds to hours, minutes, and seconds.
+///
+/// # Arguments
+///
+/// * `duration` - A reference to an `i64` duration in milliseconds.
+///
+/// # Example
+///
+/// ```
+/// # use staff::utils::miliseconds_to_hour_minute;
+/// let duration = 3661000;
+/// let result = miliseconds_to_hour_minute(&duration);
+/// println!("{:?}", result);
+/// // Output: (1, 1, 1)
+/// ```
 pub fn miliseconds_to_hour_minute(duration: &i64) -> (i64, i64, i64) {
     let hours = duration / 1000 / 60 / 60;
     let minutes = duration / 1000 / 60 % 60;
@@ -52,10 +125,27 @@ pub fn miliseconds_to_hour_minute(duration: &i64) -> (i64, i64, i64) {
     (hours, minutes, seconds)
 }
 
-/// Convert miliseconds to a string:
-/// `#.##h (#h ##m)`
+/// Converts a duration in milliseconds to a formatted string representation.
+///
+/// # Arguments
+///
+/// * `duration` - A reference to the duration in milliseconds.
+///
+/// # Returns
+///
+/// * `#.##h (#h ##m)`
 /// and when there are no hours:
-/// `#.#### (#m #s)`
+/// * `#.####h (#m #s)`
+///
+/// # Example
+///
+/// ```
+/// # use staff::utils::miliseconds_to_string;
+/// let duration = 3661000;
+/// let result = miliseconds_to_string(&duration);
+/// println!("{}", result);
+/// // Output: "1.02h (1h 1m)"
+/// ```
 pub fn miliseconds_to_string(duration: &i64) -> String {
     let hours_dec = miliseconds_to_hour(duration);
     let (hours, minutes, seconds) = miliseconds_to_hour_minute(duration);

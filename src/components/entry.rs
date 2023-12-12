@@ -4,6 +4,7 @@ use crate::components::session::Session;
 use crate::components::adjustment::Adjustment;
 
 
+/// Renders a view based on the type of the model `time_sheets::Entry`. Which displays a `Session` or `Adjustment`.
 #[component]
 pub fn Entry<'a>(entry: &'a Entry) -> impl IntoView {
     match entry {        
