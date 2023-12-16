@@ -2,6 +2,12 @@ use leptos::*;
 use leptos_router::*;
 use crate::app::CheckIn;
 
+/// This function returns a view component based on whether it is being rendered on the server side or client side.
+///
+/// # Arguments
+///
+/// * `check_in` - An `Action` object representing a check-in action.
+/// * `status` - A closure that returns a boolean value.
 #[component]
 pub fn CheckInView<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F) -> impl IntoView 
 where F: Fn() -> bool + 'static {
@@ -25,6 +31,13 @@ where F: Fn() -> bool + 'static {
     }
 }
 
+/// This function is a Rust component called `GeoCheckIn` that returns a view component.
+/// It uses the `use_geolocation_with_options` function from the `leptos_use` module to get the user's geolocation coordinates.
+/// It then conditionally renders different views based on whether the coordinates are available or if there is an error.
+///
+/// # Inputs
+/// - `check_in`: An `Action` object representing a check-in action.
+/// - `status`: A closure that returns a boolean value.
 #[component]
 fn GeoCheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F) -> impl IntoView where F: Fn() -> bool + 'static {
     use leptos_use::{use_geolocation_with_options, UseGeolocationReturn};
@@ -53,23 +66,22 @@ fn GeoCheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F
                                 <input type="hidden" value=coords.latitude() name="latitude"/>
                                 <input type="hidden" value=coords.longitude() name="longitude"/>
                                 <input type="hidden" value=coords.accuracy() name="accuracy"/>
-                                <button type="submit" data-size="huge" disable=check_in.pending()>
-                                    "Check "
-                                    {if stat { "Out" } else { "In" }}
+                                <button type="submit" data-size="huge">
+                                    {if stat { "Check Out" } else { "Check In" }}
                                 </button>
                             </ActionForm>
                         </div>
                     }
                 }
                 None => {
-                    view! { <div>"?"</div> }
+                    view! { <div class="center-center stack">"Shound not show"</div> }
                 }
             }}
 
         </Show>
 
         <Show when=move || error().is_some()>
-            <div data-state="error" class="center-center">
+            <div data-state="error" class="center-center stack">
                 {move || match error() {
                     Some(error) => location_error(error.code()),
                     None => "No Error code given".to_string(),
@@ -78,9 +90,13 @@ fn GeoCheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F
             </div>
         </Show>
     }
-
 }
 
+/// Returns a string message based on the given error number.
+///
+/// # Arguments
+///
+/// * `error_number` - An unsigned 16-bit integer representing the error code.
 fn location_error(error_number: u16) -> String {
     match error_number {
         1 => "Location Services are disabled, please enable and try again.".to_string(),

@@ -5,6 +5,36 @@ use leptos::*;
 #[cfg(feature = "ssr")]
 use chrono::{Local, DateTime, TimeZone, NaiveDateTime};
 
+/// Generates a form for submitting corrections.
+///
+/// # Arguments
+///
+/// * `uuid` - An optional UUID representing the correction form.
+/// * `date` - A function that returns an optional string representing the date.
+///
+/// # Example
+///
+/// ```rust
+/// let form = CorrectionForm(Some(Uuid::new_v4()), || Some("2022-01-01".to_string()));
+/// let view = form.into_view();
+/// ```
+///
+/// # Flow
+///
+/// 1. Create a server action using `create_server_action` and assign it to the `action` variable.
+/// 2. Get the value of the server action using `action.value()` and assign it to the `value` variable.
+/// 3. Generate the form using the `ActionForm` component and set the `action` attribute to the server action.
+/// 4. Render a hidden input field with the `id` value if `uuid` is `Some`, otherwise render an empty span.
+/// 5. Render a hidden input field with the `date` value if `date()` returns `Some`, otherwise render a div with a label and an input field for selecting the date.
+/// 6. Render input fields for the start time, end time, and reason.
+/// 7. Render a submit button.
+/// 8. Render a success message if the value of the server action is `Some(Ok(_))`.
+/// 9. Render an error message with the error string if the value of the server action is `Some(Err(e))`.
+/// 10. Render an empty span if the value of the server action is `None`.
+///
+/// # Returns
+///
+/// The generated form as an `IntoView`.
 #[component]
 pub fn CorrectionForm<F>(uuid: Option<Uuid>, date: F) -> impl IntoView where
     F: Fn() -> Option<String> + 'static
@@ -58,6 +88,20 @@ pub fn CorrectionForm<F>(uuid: Option<Uuid>, date: F) -> impl IntoView where
     }
 }
 
+/// # submit_correction_form
+///
+/// This function handles the submission of a correction form.
+///
+/// ## Parameters
+/// - `id` (optional): The UUID of the correction form.
+/// - `start_time`: The start time of the correction.
+/// - `end_time`: The end time of the correction.
+/// - `reason`: The reason for the correction.
+/// - `date`: The date of the correction.
+///
+/// ## Returns
+/// - `Ok(())`: If the correction is added successfully.
+/// - `Err(ServerFnError)`: If there is an error adding the correction.
 #[server]
 pub async fn submit_correction_form(id: Option<Uuid>, start_time: String, end_time: String, reason: String, date: String) -> Result<(), ServerFnError> {
     use crate::models::sessions::add_correction;
@@ -78,7 +122,16 @@ pub async fn submit_correction_form(id: Option<Uuid>, start_time: String, end_ti
     }
 }
 
-///"23-11-16" "13:01"
+/// Converts a date and time string to a `DateTime` object in the local timezone.
+///
+/// # Arguments
+///
+/// * `date` - A string representing the date in the format "dd-mm-yy".
+/// * `time` - A string representing the time in the format "hh:mm".
+///
+/// # Returns
+///
+/// Returns a `Result` containing a `DateTime` object if the conversion is successful, or a `ServerFnError` if there is an error in the conversion process.
 #[cfg(feature="ssr")]
 fn convert_string_to_local_datetime(date: &str, time: &str) -> Result<DateTime<Local>, ServerFnError> {
     let date_time_string = date.to_owned() + " " + time;

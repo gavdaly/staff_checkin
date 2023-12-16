@@ -15,7 +15,7 @@ use crate::components::icon::Icon;
 pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, show_menu: ReadSignal<bool>, set_show_menu: WriteSignal<bool>) -> impl IntoView where F: Fn() -> bool + 'static {
 
     view! {
-        <nav aria-label="Main menu" id="nav" data-visible=move || show_menu().to_string()>
+        <nav aria-label="Main Menu" id="nav" data-visible=move || show_menu().to_string()>
             <span>
                 <button class="close nav-button" on:click=move |_| set_show_menu(false)>
                     <Icon name="close"/>
@@ -53,6 +53,9 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, sh
                             "timesheets"
                         </A>
                     </li>
+                    <li>
+                        <A href="/admin/vacations" class="link">"vacations"</A>
+                    </li>
                 </Show>
             </menu>
 
@@ -62,7 +65,6 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, sh
                     <Icon name="logout"/>
                 </button>
             </ActionForm>
-
         </nav>
         <button class="nav-button" on:click=move |_| set_show_menu(true)>
             <Icon name="horizontal-menu"/>
