@@ -10,14 +10,7 @@ use chrono::{Local, DateTime, TimeZone, NaiveDateTime};
 /// # Arguments
 ///
 /// * `uuid` - An optional UUID representing the correction form.
-/// * `date` - A function that returns an optional string representing the date.
-///
-/// # Example
-///
-/// ```rust
-/// let form = CorrectionForm(Some(Uuid::new_v4()), || Some("2022-01-01".to_string()));
-/// let view = form.into_view();
-/// ```
+/// * `date` - A function that returns an optional string representing the date.s
 ///
 /// # Flow
 ///
