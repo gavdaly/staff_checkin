@@ -2,6 +2,7 @@ use chrono::Local;
 use leptos::*;
 use leptos_router::A;
 use crate::models::sessions::SessionAndCorrection;
+use crate::models::corrections::Correction;
 use crate::utils::miliseconds_to_string;
 
 #[component]
@@ -68,19 +69,25 @@ pub fn Session<'a>(session: &'a SessionAndCorrection) -> impl IntoView {
 
         {match session.correction.clone() {
             Some(correction) => {
-                view! {
-                    <span>{correction.new_start_time.format("%I:%M %P").to_string()}</span>
-                    <span>{correction.new_end_time.format("%I:%M %P").to_string()}</span>
-                    <span>"pending time"</span>
-                    <span></span>
-                    <span>"reason"</span>
-                    <span class="reason">{correction.reason}</span>
-                    <span>"response"</span>
-                    <span class="reason">{correction.response}</span>
-                }
-                    .into_view()
+               view! {<Correction correction />}
             }
             None => view! {}.into_view(),
         }}
+    }
+}
+
+#[component]
+fn Correction(correction: Correction) -> impl IntoView {
+    let start = correction.new_start_time.with_timezone(&Local).format("%I:%M %P").to_string();
+    let end = correction.new_end_time.with_timezone(&Local).format("%I:%M %P").to_string();
+    view! {
+        <span>{start}</span>
+        <span>{end}</span>
+        <span>"pending time"</span>
+        <span></span>
+        <span>"reason"</span>
+        <span class="reason">{correction.reason}</span>
+        <span>"response"</span>
+        <span class="reason">{correction.response}</span>
     }
 }
