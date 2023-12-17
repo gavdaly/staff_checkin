@@ -71,11 +71,7 @@ pub fn Session<'a>(session: &'a SessionAndCorrection) -> impl IntoView {
                 view! {
                     <span>{correction.new_start_time.format("%I:%M %P").to_string()}</span>
                     <span>{correction.new_end_time.format("%I:%M %P").to_string()}</span>
-                    <span>"new"</span>
-                    <span></span>
-                    <span>{correction.original_start_time.format("%I:%M %P").to_string()}</span>
-                    <span>{correction.original_end_time.format("%I:%M %P").to_string()}</span>
-                    <span>"original"</span>
+                    <span>"pending time"</span>
                     <span></span>
                     <span>"reason"</span>
                     <span class="reason">{correction.reason}</span>
