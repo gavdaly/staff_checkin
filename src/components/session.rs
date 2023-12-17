@@ -1,6 +1,6 @@
 use chrono::Local;
 use leptos::*;
-use leptos_router::A;
+use leptos_router::{A, ActionForm};
 use crate::models::sessions::SessionAndCorrection;
 use crate::models::corrections::Correction;
 use crate::utils::miliseconds_to_string;
@@ -74,7 +74,7 @@ pub fn Session<'a>(session: &'a SessionAndCorrection) -> impl IntoView {
 
         {match session.correction.clone() {
             Some(correction) => {
-               view! {<Correction correction />}
+                view! { <Correction correction session_state=session.state/> }
             }
             None => view! {}.into_view(),
         }}
@@ -82,17 +82,48 @@ pub fn Session<'a>(session: &'a SessionAndCorrection) -> impl IntoView {
 }
 
 #[component]
-fn Correction(correction: Correction) -> impl IntoView {
+fn Correction(correction: Correction, session_state: i32) -> impl IntoView {
     let start = correction.new_start_time.with_timezone(&Local).format("%I:%M %P").to_string();
     let end = correction.new_end_time.with_timezone(&Local).format("%I:%M %P").to_string();
-    view! {
-        <span>{start}</span>
-        <span>{end}</span>
-        <span>"pending time"</span>
-        <span></span>
-        <span>"reason"</span>
-        <span class="reason">{correction.reason}</span>
-        <span>"response"</span>
-        <span class="reason">{correction.response}</span>
+    let handle_correction_response = create_server_action::<HandleCorrectionResponse>();
+    match session_state {
+        3 =>  view! {
+            <span>{start}</span>
+            <span>{end}</span>
+            <span>"pending time"</span>
+            <span></span>
+            <span>"reason"</span>
+            <span class="reason">{correction.reason}</span>
+            <ActionForm action=handle_correction_response>
+                <div>
+                    <label for="response">"response"</label>
+                    <textarea id="response" name="response"></textarea>
+                </div>
+                <fieldset>
+                    <div>
+                        <legend>"Response Status"</legend>
+                        <input type="radio" id="accepted" name="status" value="4" checked=true/>
+                        <label for="accepted">"accepted"</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="rejected" name="status" value="5"/>
+                        <label for="rejected">"rejected"</label>
+                    </div>
+                </fieldset>
+                <button type="submit">"submit"</button>
+            </ActionForm>
+        }.into_view(),
+        4 | 5 => view! {
+            <span>"response"</span>
+            <span class="reason">{correction.response}</span>
+        }.into_view(),
+        _ => view! { }.into_view(),
     }
+}
+
+#[server]
+async fn handle_correction_response(response: String, response_status: i32) -> Result<(), ServerFnError> {
+    println!("response: {}", response);
+    println!("response_status: {}", response_status);
+    Ok(())
 }
