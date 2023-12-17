@@ -54,7 +54,9 @@ pub fn Menu<F>(status: F, log_out: Action<Logout, Result<(), ServerFnError>>, sh
                         </A>
                     </li>
                     <li>
-                        <A href="/admin/vacations" class="link">"vacations"</A>
+                        <A href="/admin/vacations" class="link">
+                            "vacations"
+                        </A>
                     </li>
                 </Show>
             </menu>
