@@ -5,6 +5,11 @@ use crate::models::sessions::SessionAndCorrection;
 use crate::models::corrections::Correction;
 use crate::utils::miliseconds_to_string;
 
+/// Renders a session component that displays session information.
+/// 
+/// # Arguments
+/// 
+/// * `session` - A reference to a `SessionAndCorrection` struct that contains session data.
 #[component]
 pub fn Session<'a>(session: &'a SessionAndCorrection) -> impl IntoView {
     let id = session.id.to_string();
