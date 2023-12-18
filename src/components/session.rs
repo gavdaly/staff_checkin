@@ -1,6 +1,7 @@
 use chrono::Local;
 use leptos::*;
 use leptos_router::{A, ActionForm};
+use uuid::Uuid;
 use crate::models::sessions::SessionAndCorrection;
 use crate::models::corrections::Correction;
 use crate::utils::miliseconds_to_string;
@@ -95,6 +96,7 @@ fn Correction(correction: Correction, session_state: i32) -> impl IntoView {
             <span>"reason"</span>
             <span class="reason">{correction.reason}</span>
             <ActionForm action=handle_correction_response>
+                <input type="hidden" name="id" value=correction.id.to_string()/>
                 <div>
                     <label for="response">"response"</label>
                     <textarea id="response" name="response"></textarea>
@@ -122,8 +124,10 @@ fn Correction(correction: Correction, session_state: i32) -> impl IntoView {
 }
 
 #[server]
-async fn handle_correction_response(response: String, response_status: i32) -> Result<(), ServerFnError> {
-    println!("response: {}", response);
-    println!("response_status: {}", response_status);
-    Ok(())
+async fn handle_correction_response(response: String, status: u32, id: Uuid) -> Result<(), ServerFnError> {
+    use crate::models::corrections::correction_response;
+    match correction_response(id, status, &response).await {
+        Ok(_) => Ok(()),
+        Err(e) => Err( ServerFnError::ServerError(e.to_string())),
+    }
 }

@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE sessions\n                    SET start_time = (SELECT new_start_time FROM corrections WHERE id = $1),\n                        end_time = (SELECT new_end_time FROM corrections WHERE id = $1),\n                        state = 4\n                    WHERE id = (SELECT session_id FROM corrections WHERE id = $1)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5740265a2e19a72824719a59edd530104dc9424278cd22b182d21daec3a68c97"
+}
