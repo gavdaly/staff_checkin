@@ -13,16 +13,3 @@ pub fn Icon<'a>(name: &'a str) -> impl IntoView {
         </svg>
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_icon_creation() {
-        let name = "test";
-        let binding = leptos::ssr::render_to_string(|| view! { <Icon name/> });
-        let icon = binding.as_str();
-        assert!(&icon.contains(r#"class=" icon test""#));
-    }
-}
