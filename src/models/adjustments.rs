@@ -32,6 +32,25 @@ pub enum State {
 }
 
 #[cfg(feature = "ssr")]
+pub async fn create_adjustment(user_id: &Uuid, date: NaiveDate, time: i32, reason: &str) -> Result<(), sqlx::Error> {
+    use crate::database::get_db;
+    let db = get_db();
+
+    sqlx::query!(
+        "INSERT INTO adjustments (user_id, category, start_date, duration, reason, state)
+        VALUES ($1, 0, $2, $3, $4, 4)",
+        user_id,
+        date,
+        time,
+        reason
+    )
+    .execute(db)
+    .await?;
+
+    Ok(())
+}
+
+#[cfg(feature = "ssr")]
 pub async fn get_adjustments_for(
     user_id: &Uuid,
     start_date: NaiveDate,

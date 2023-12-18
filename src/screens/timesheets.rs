@@ -1,7 +1,9 @@
 use crate::components::loading_progress::Loading;
 use crate::models::user::UserPublic;
+use chrono::NaiveDate;
 use leptos::*;
 use leptos_router::*;
+use uuid::Uuid;
 use crate::components::timesheet::TimeSheetDisplay;
 use crate::models::time_sheets::TimeSheet;
 
@@ -127,7 +129,63 @@ pub fn TimeSheetsList() -> impl IntoView {
 
 #[component]
 pub fn TimeSheetsAdjustment() -> impl IntoView {
-    view! { <h1>"Adjustment | To Do"</h1> }
+    let users = create_resource(move || {}, move |_| load_hourly_users());
+    let create_adjustment = create_server_action::<CreateAdjustment>();
+    view! {
+        <ActionForm action=create_adjustment>
+            <Suspense fallback=move || {
+                view! {
+                    <p>
+                        <Loading/>
+                    </p>
+                }
+            }>
+                {move || match users.get() {
+                    Some(Ok(a)) => {
+                        view! {
+                            <div>
+                                <label for="user_id">"User"</label>
+                                <select name="user_id" id="user_id">
+                                    {a
+                                        .iter()
+                                        .map(|user| {
+                                            view! {
+                                                <option value=user
+                                                    .id
+                                                    .to_string()>
+                                                    {user.last_name.clone()} ", " {user.first_name.clone()}
+                                                </option>
+                                            }
+                                        })
+                                        .collect_view()}
+                                </select>
+                            </div>
+                        }
+                    }
+                    _ => view! { <div>"Server Error"</div> },
+                }}
+
+            </Suspense>
+            <div>
+                <label for="date">"Date"</label>
+                <input type="date" name="date" id="date"/>
+            </div>
+            <div>
+                <label for="hours">"Hours"</label>
+                <input type="number" name="hours" id="hours"/>
+            </div>
+        </ActionForm>
+    }
+}
+
+#[server]
+pub async fn create_adjustment(user_id: Uuid, date: NaiveDate, hours: i32, response: String) -> Result<(), ServerFnError> {
+    use crate::models::adjustments::create_adjustment;
+
+    match create_adjustment(&user_id, date, hours, &response).await {
+        Ok(_) => Ok(()),
+        Err(_) => Err(ServerFnError::ServerError("Server Error".to_string())),
+    }
 }
 
 #[component]
