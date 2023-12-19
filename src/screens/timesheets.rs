@@ -180,9 +180,9 @@ pub fn TimeSheetsAdjustment() -> impl IntoView {
 
 #[server]
 pub async fn create_adjustment(user_id: Uuid, date: NaiveDate, hours: i32, response: String) -> Result<(), ServerFnError> {
-    use crate::models::adjustments::create_adjustment;
+    use crate::models::adjustments::create_adjustment as create_adjustment_fn;
 
-    match create_adjustment(&user_id, date, hours, &response).await {
+    match create_adjustment_fn(&user_id, date, hours, &response).await {
         Ok(_) => Ok(()),
         Err(_) => Err(ServerFnError::ServerError("Server Error".to_string())),
     }
