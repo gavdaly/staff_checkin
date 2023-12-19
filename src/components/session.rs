@@ -22,7 +22,7 @@ pub fn Session<'a>(session: &'a SessionAndCorrection) -> impl IntoView {
         None => None,
     };
     view! {
-        <span class="start_time">
+        <span class="start_time" data-id={id.clone()}>
             <time datetime=start_dt>{start_string}</time>
         </span>
         {match end_time {
