@@ -174,6 +174,7 @@ pub fn TimeSheetsAdjustment() -> impl IntoView {
                 <label for="hours">"Hours"</label>
                 <input type="number" name="hours" id="hours"/>
             </div>
+            <button type="submit">"Submit"</button>
         </ActionForm>
     }
 }
