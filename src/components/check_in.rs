@@ -16,7 +16,7 @@ where F: Fn() -> bool + 'static {
     let window = leptos_use::use_window();
 
     // Checks to see if the component is SSR or Hydrated. Stops the crashing on SSR
-    match window.is_some() {
+    {match window.is_some() {
         true => view! {
             <section class="center-center">
                 <GeoCheckIn check_in status/>
@@ -28,7 +28,7 @@ where F: Fn() -> bool + 'static {
                 <A href="/">"Refresh"</A>
             </section>
         }
-    }
+    }}
 }
 
 /// This function is a Rust component called `GeoCheckIn` that returns a view component.
@@ -78,6 +78,10 @@ fn GeoCheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F
                 }
             }}
 
+        </Show>
+
+        <Show when=move || { coords.with(Option::is_none) }>
+            <div class="center-center stack">"Getting Location"</div>
         </Show>
 
         <Show when=move || error().is_some()>
