@@ -18,7 +18,7 @@ pub fn MagicLink() -> impl IntoView {
             view! {
                 <div>
                     <Loading/>
-                    <Redirect path="/app"/> // Fix: Import the `Redirect` component and use the `to` method to specify the redirect path.
+                    <Redirect path="/app"/>
                 </div>
             }
         },
