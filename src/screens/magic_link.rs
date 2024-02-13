@@ -12,17 +12,18 @@ struct MagicLinkParams {
 pub fn MagicLink() -> impl IntoView {
     let params = use_params::<MagicLinkParams>();
     let magic_sign_in = create_server_action::<MagicSignIn>();
-    match params() {
+    move || {match params() {
         Ok(MagicLinkParams{link}) => {
             magic_sign_in.dispatch(MagicSignIn { link });
             view! {
                 <div>
                     <Loading/>
+                    <Redirect path="/app"/> // Fix: Import the `Redirect` component and use the `to` method to specify the redirect path.
                 </div>
             }
         },
         Err(e) => view! { <div>"Error parsing Parameters: " {e.to_string()}</div> }
-    }
+    }}
 }
 
 #[server]
