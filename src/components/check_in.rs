@@ -81,7 +81,7 @@ fn GeoCheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F
         </Show>
 
         <Show when=move || { coords.with(Option::is_none) }>
-            <div class="center-center stack">"Getting Location"</div>
+            <div class="center-center">"Getting Location"</div>
         </Show>
 
         <Show when=move || error().is_some()>
