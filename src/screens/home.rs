@@ -3,7 +3,7 @@ use leptos_router::A;
 
 /// Renders the home page of your application.
 #[component]
-pub fn HomePage<F>(status: F) -> impl IntoView where F: Fn() -> bool + 'static {
+pub fn HomePage<F>(status: F) -> impl IntoView where F: Fn() -> bool + Copy + 'static {
 
     // get settings
     // show week summary
@@ -15,6 +15,8 @@ pub fn HomePage<F>(status: F) -> impl IntoView where F: Fn() -> bool + 'static {
                     view! {
                         <aside id="checked_in" data-checked-in=status().to_string()>
                             {if status() { "In" } else { "Out" }}
+                            " | "
+                            {status().to_string()}
                         </aside>
                     }
                 }}

@@ -6,3 +6,7 @@ pub mod sessions;
 pub mod time_sheets;
 pub mod user;
 pub mod magic_link;
+pub mod instance; 
+pub mod vacation_pays;
+pub mod manual_entries;
+pub mod vacations;
