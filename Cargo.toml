@@ -10,31 +10,31 @@ members = ["libs/*"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-axum = { version = "0.6.4", optional = true }
+axum = { version = "0.6.20", optional = true }
 console_error_panic_hook = "0.1"
 console_log = "1"
 cfg-if = "1"
-leptos = { version = "0.5", features = ["nightly"] }
-leptos_axum = { version = "0.5", optional = true }
-leptos_meta = { version = "0.5", features = ["nightly"] }
-leptos_router = { version = "0.5", features = ["nightly"] }
+leptos = { version = "0.5.7", features = ["nightly"] }
+leptos_axum = { version = "0.5.7", optional = true }
+leptos_meta = { version = "0.5.7", features = ["nightly"] }
+leptos_router = { version = "0.5.7", features = ["nightly"] }
 log = "0.4"
 simple_logger = "4"
 tokio = { version = "1.25.0", optional = true }
 tower = { version = "0.4.13", optional = true }
-tower-http = { version = "0.4", features = ["fs"], optional = true }
+tower-http = { version = "0.4.4", features = ["fs"], optional = true }
 wasm-bindgen = "0.2.88"
 thiserror = "1.0.38"
 tracing = { version = "0.1.37", optional = true }
-http = "0.2.8"
+http = "0.2.11"
 serde = { version = "1.0.189", features = ["derive"] }
-axum_session = { version = "0.8.0", features = ["postgres-rustls"], optional = true }
+axum_session = { version = "0.9.0", features = ["postgres-rustls"], optional = true }
 sqlx = { version = "0.7.2", features = ["runtime-tokio-rustls", "sqlx-postgres", "uuid", "postgres", "json", "chrono", "bigdecimal"], optional = true }
 uuid = { version = "1.5.0", features = ["v4", "js", "serde"] }
 chrono = { version = "0.4.31", features = ["serde"] }
 rand = { version = "0.8.5", features = ["nightly"], optional = true }
 dotenv = {version = "0.15.0", optional = true }
-leptos-use = {version = "0.8.0" }
+leptos-use = {version = "0.9.0" }
 web-sys = { version = "0.3.64", features = ["Geolocation"] }
 twilio = { path = "libs/twilio", optional = true }
 openssl = { version = "0.10", optional = true, features = ["vendored"] }
