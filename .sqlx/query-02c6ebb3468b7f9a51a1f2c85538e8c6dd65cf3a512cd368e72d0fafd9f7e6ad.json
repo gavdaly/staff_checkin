@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\nSELECT\n    id, last_name, first_name, phone_number, state\nFROM\n    users\nWHERE\n    id = $1\n        ",
+  "query": "\nSELECT\n    u.id,\n    u.last_name,\n    u.first_name,\n    u.phone_number,\n    u.state,\n    s.check_in\nFROM\n    users u\nLEFT JOIN (\n    SELECT\n        user_id,\n        MAX(start_time) AS check_in\n    FROM\n        sessions\n    WHERE\n        end_time IS NULL\n        AND start_time >= CURRENT_DATE -- Ensuring the session started today\n    GROUP BY\n        user_id\n) s ON u.id = s.user_id\nWHERE\n    u.id = $1;\n        ",
   "describe": {
     "columns": [
       {
@@ -27,6 +27,11 @@
         "ordinal": 4,
         "name": "state",
         "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "check_in",
+        "type_info": "Timestamptz"
       }
     ],
     "parameters": {
@@ -39,8 +44,9 @@
       false,
       false,
       false,
-      false
+      false,
+      null
     ]
   },
-  "hash": "93343b694449adef4ff2e2105ac93cb43fc3c001ea3b82862d76b196688242d5"
+  "hash": "02c6ebb3468b7f9a51a1f2c85538e8c6dd65cf3a512cd368e72d0fafd9f7e6ad"
 }
