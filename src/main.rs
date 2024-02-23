@@ -1,29 +1,25 @@
-#[cfg(feature = "ssr")]
-use {axum::extract::FromRef, leptos::LeptosOptions};
-
-#[cfg(feature = "ssr")]
-#[derive(FromRef, Debug, Clone)]
-pub struct AppState {
-    leptos_options: LeptosOptions,
-}
+mod app_state;
 
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
+    use app_state::AppState;
     use axum::{
         body::Body as AxumBody,
-        extract::{Path, RawQuery, State},
+        extract::{Path, State},
         response::{IntoResponse, Response},
-        routing::{get, post},
+        routing::get,
+        http::Request,
         Router,
     };
-    use axum_session::*;
+    use axum_session::{SessionConfig, SessionLayer, SessionStore, SessionPgPool, SessionPgSession};
     use dotenv;
-    use http::{HeaderMap, Request};
-    use leptos::*;
+    use leptos::{provide_context, get_configuration};
     use leptos_axum::{generate_route_list, handle_server_fns_with_context, LeptosRoutes};
     use staff::app::*;
     use staff::fileserv::file_and_error_handler;
+    
+
 
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
 
@@ -43,17 +39,13 @@ async fn main() {
 
     async fn server_fn_handler(
         session_store: SessionPgSession,
+        State(_app_state): State<AppState>,
         path: Path<String>,
-        headers: HeaderMap,
-        raw_query: RawQuery,
         request: Request<AxumBody>,
     ) -> impl IntoResponse {
         log::info!("{:?}", path);
 
         handle_server_fns_with_context(
-            path,
-            headers,
-            raw_query,
             move || {
                 provide_context(session_store.clone());
             },
@@ -67,8 +59,10 @@ async fn main() {
         State(app_state): State<AppState>,
         req: Request<AxumBody>,
     ) -> Response {
-        let handler = leptos_axum::render_app_to_stream_with_context(
+
+        let handler = leptos_axum::render_route_with_context(
             app_state.leptos_options.clone(),
+            app_state.routes.clone(),
             move || {
                 provide_context(session_store.clone());
             },
@@ -87,21 +81,22 @@ async fn main() {
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
 
-    let app_state = AppState { leptos_options };
+    let app_state = AppState { leptos_options, routes: routes.clone() };
 
     // build our application with a route
     let app = Router::new()
-        .route("/api/*fn_name", post(server_fn_handler))
+    .route(
+        "/api/*fn_name",
+        get(server_fn_handler).post(server_fn_handler),
+    )
         .leptos_routes_with_handler(routes, get(leptos_routes_handler))
         .layer(SessionLayer::new(session_store))
         .fallback(file_and_error_handler)
         .with_state(app_state);
 
-    // run our app with hyper
-    // `axum::Server` is a re-export of `hyper::Server`
     log::info!("listening on http://{}", &addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
+    axum::serve(listener, app.into_make_service())
         .await
         .unwrap();
 }
