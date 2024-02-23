@@ -130,9 +130,6 @@ pub fn App() -> impl IntoView {
                             </Route>
                         </Route>
                     </Routes>
-                    <pre>
-                            {format!("{:#?}", user())}
-                    </pre>
                 </main>
             </Suspense>
         </Router>
