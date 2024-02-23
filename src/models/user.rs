@@ -1,4 +1,5 @@
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -23,13 +24,22 @@ pub enum State {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct UserPublic {
+pub struct UserDisplay {
     pub id: Uuid,
     pub first_name: String,
     pub last_name: String,
     pub phone_number: String,
     pub state: i32,
-    // pub check_in: Option<DateTime<Utc>>,
+    pub check_in: Option<DateTime<Utc>>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct UserUpdate {
+    pub id: Uuid,
+    pub first_name: String,
+    pub last_name: String,
+    pub phone_number: String,
+    pub state: i32,
 }
 
 #[cfg(feature = "ssr")]
@@ -39,35 +49,74 @@ use {
 };
 
 #[cfg(feature = "ssr")]
-impl UserPublic {
+impl UserDisplay {
     pub async fn get_all_hourly() -> Result<Vec<Self>, sqlx::Error> {
         let db = get_db();
-        query_as!(UserPublic, r#"
+        query_as!(UserDisplay, r#"
 SELECT
-	id, last_name, first_name, phone_number, state
+    u.id,
+    u.last_name,
+    u.first_name,
+    u.phone_number,
+    u.state,
+    s.check_in
 FROM
-	users
+    users u
+LEFT JOIN (
+    SELECT
+        user_id,
+        MAX(start_time) AS check_in
+    FROM
+        sessions
+    WHERE
+        end_time IS NULL
+        AND start_time >= CURRENT_DATE -- Ensuring the session started today
+    GROUP BY
+        user_id
+) s ON u.id = s.user_id
 WHERE
-	state = 2
-ORDER BY last_name, first_name;
-                            "#).fetch_all(db).await
+    u.state = 2 -- Ensuring that the user's state is 2
+ORDER BY
+    u.last_name ASC,
+    u.first_name ASC;"#).fetch_all(db).await
     }
 
     pub async fn get(id: Uuid) -> Result<Self, sqlx::Error> {
         let db = get_db();
-        query_as!(UserPublic, r#"
+        query_as!(UserDisplay, r#"
 SELECT
-    id, last_name, first_name, phone_number, state
+    u.id,
+    u.last_name,
+    u.first_name,
+    u.phone_number,
+    u.state,
+    s.check_in
 FROM
-    users
+    users u
+LEFT JOIN (
+    SELECT
+        user_id,
+        MAX(start_time) AS check_in
+    FROM
+        sessions
+    WHERE
+        end_time IS NULL
+        AND start_time >= CURRENT_DATE -- Ensuring the session started today
+    GROUP BY
+        user_id
+) s ON u.id = s.user_id
 WHERE
-    id = $1
+    u.id = $1;
         "#, id).fetch_one(db).await
     }
+}
+
+#[cfg(feature = "ssr")]
+impl UserUpdate {
 
     pub async fn update(&self) -> Result<Self, sqlx::Error> {
         let db = get_db();
-        query_as!(UserPublic, r#"
+        query_as!(UserUpdate, r#"
 UPDATE users 
 SET first_name = $1, last_name = $2, phone_number = $3, state = $4
 WHERE id = $5
@@ -77,7 +126,7 @@ RETURNING first_name, last_name, phone_number, state, id
 
     pub async fn insert(first_name: &str, last_name: &str, phone_number: &str, state: i32) -> Result<Self, sqlx::Error> {
         let db = get_db();
-        query_as!(UserPublic, r#"
+        query_as!(UserUpdate, r#"
 INSERT INTO users(first_name, last_name, phone_number, state) 
 VALUES ($1, $2, $3, $4) 
 RETURNING id, first_name, last_name, phone_number, state

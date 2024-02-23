@@ -1,13 +1,13 @@
 use leptos::*;
 use uuid::Uuid;
 
-use crate::models::user::UserPublic;
+use crate::models::user::UserUpdate;
 
 #[server]
-async fn submit_user_form(user_id: Option<Uuid>, first_name: String, last_name: String, phone_number: String, state: i32) -> Result<UserPublic, ServerFnError> {
+async fn submit_user_form(user_id: Option<Uuid>, first_name: String, last_name: String, phone_number: String, state: i32) -> Result<UserUpdate, ServerFnError> {
     match user_id {
-        Some(id) => UserPublic { id, first_name, last_name, phone_number, state }.update().await.or_else(|_| Err(ServerFnError::Request("Error Updating User".into()))),
-        None => UserPublic::insert(&first_name, &last_name, &phone_number, state).await.or_else(|_| Err(ServerFnError::Request("".into())))
+        Some(id) => UserUpdate { id, first_name, last_name, phone_number, state }.update().await.or_else(|_| Err(ServerFnError::Request("Error Updating User".into()))),
+        None => UserUpdate::insert(&first_name, &last_name, &phone_number, state).await.or_else(|_| Err(ServerFnError::Request("".into())))
     }
 }
 

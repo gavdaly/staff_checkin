@@ -28,7 +28,7 @@ pub enum Entry {
 use {
     crate::models::{
         adjustments::get_adjustments_for, sessions::get_sessions_for,
-        user::UserPublic,
+        user::UserDisplay,
     },
     chrono::{DateTime, Duration, NaiveTime, Utc, Weekday},
 };
@@ -36,7 +36,7 @@ use {
 #[cfg(feature = "ssr")]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 struct InputValues {
-    user: UserPublic,
+    user: UserDisplay,
     sessions: Vec<SessionAndCorrection>,
     adjustments: Vec<Adjustment>,
 }
@@ -49,7 +49,7 @@ impl TimeSheet {
         end_date: NaiveDate,
     ) -> Result<Self, sqlx::Error> {
         let midnitght = NaiveTime::default();
-        let user = UserPublic::get(user_id).await?;
+        let user = UserDisplay::get(user_id).await?;
         let start = start_date.and_time(midnitght);
         let end = end_date.and_time(midnitght);
         let sessions = get_sessions_for(
@@ -69,12 +69,13 @@ impl TimeSheet {
     }
 
     fn from(vals: InputValues) -> Self {
-        let UserPublic {
+        let UserDisplay {
             id,
             first_name,
             last_name,
             phone_number,
             state,
+            ..
         } = vals.user;
         let entries = generate_entries(vals.adjustments, vals.sessions);
         let summary = generate_summary(&entries);

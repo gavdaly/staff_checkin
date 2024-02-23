@@ -1,7 +1,7 @@
 use leptos::*;
 use serde::{Deserialize, Serialize};
 
-use crate::models::user::UserPublic;
+use crate::models::user::UserDisplay;
 
 pub fn provide_user_context() {
     if use_context::<User>().is_none() {
@@ -11,7 +11,7 @@ pub fn provide_user_context() {
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct User {
-    pub data: Option<UserPublic>,
+    pub data: Option<UserDisplay>,
 }
 
 impl User {
@@ -42,7 +42,7 @@ impl User {
 }
 
 #[server]
-pub async fn get_curent_user() -> Result<Option<UserPublic>, ServerFnError> {
+pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
     use uuid::Uuid;
     use axum_session::SessionPgSession;
 
@@ -56,7 +56,7 @@ pub async fn get_curent_user() -> Result<Option<UserPublic>, ServerFnError> {
         return Ok(None);
     };
 
-    let Ok(user) = UserPublic::get(id).await else {
+    let Ok(user) = UserDisplay::get(id).await else {
         leptos::tracing::error!("| * Could not find User for session");
         return Err(ServerFnError::ServerError("Could Not Find User.".into()));
     };
