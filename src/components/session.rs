@@ -1,4 +1,5 @@
 use chrono::Local;
+use leptos::server_fn::error::NoCustomError;
 use leptos::*;
 use leptos_router::{A, ActionForm};
 use uuid::Uuid;
@@ -130,14 +131,14 @@ async fn handle_correction_response(response: String, status: u32, id: Uuid) -> 
     use crate::models::user::UserDisplay;
 
     let session = use_context::<SessionPgSession>()
-        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let user_id = session
         .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
     let user = UserDisplay::get(user_id).await?;
 
     if user.state != 1 {
-        return Err(ServerFnError::ServerError("User not authorized!".into()));
+        return Err(ServerFnError::<NoCustomError>::ServerError("User not authorized!".into()));
     }
 
     match correction_response(id, status, &response).await {

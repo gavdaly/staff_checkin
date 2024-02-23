@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{server_fn::error::NoCustomError, *};
 use leptos_router::*;
 use crate::components::loading_progress::Loading;
 
@@ -30,10 +30,10 @@ pub async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFn
     // Get User
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
-        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session
         .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
 
     // check to see if link is valid!!
     leptos::logging::log!("link: {link}");

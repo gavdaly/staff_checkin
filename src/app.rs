@@ -15,6 +15,7 @@ use crate::screens::vacations::{
 use crate::components::check_in::CheckInView;
 use crate::components::menu::Menu;
 use crate::screens::authenticate::{Auth, Authenticate, Logout};
+use leptos::server_fn::error::NoCustomError;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -173,13 +174,13 @@ async fn get_session_status() -> Result<bool, ServerFnError> {
     use axum_session::SessionPgSession;
 
     let session = use_context::<SessionPgSession>()
-        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session
         .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
     match get_open_sessions(&id).await {
         Ok(a) => Ok(a.len() != 0),
-        Err(_) => Err(ServerFnError::ServerError("Error getting one".into()))
+        Err(_) => Err(ServerFnError::<NoCustomError>::ServerError("Error getting one".into()))
     }
 }
 
@@ -190,10 +191,10 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     // Get User
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
-        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session
         .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
 
     match is_close(latitude, longitude, accuracy).await {
         Ok(_) => (),
