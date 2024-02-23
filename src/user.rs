@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{server_fn::error::NoCustomError, *};
 use serde::{Deserialize, Serialize};
 
 use crate::models::user::UserDisplay;
@@ -71,7 +71,7 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
     use crate::models::pins::Pin;
 
     let Ok(pin) = Pin::get_pin(pin).await else {
-        return Err(ServerFnError::ServerError("Internal Server Error".into()));
+        return Err(ServerFnError::<NoCustomError>::ServerError("Internal Server Error".into()));
     };
 
     let Ok(user) = get_user_by_phone(&phone).await else {
@@ -79,7 +79,7 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
     };
 
     let session = use_context::<SessionPgSession>()
-        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
 
     if pin.user_id != user.id {
         return Err(ServerFnError::Request("Unauthorized Try Again!".into()));
@@ -94,7 +94,7 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
 pub async fn logout() -> Result<(), ServerFnError> {
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
-        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     session.clear();
 
     leptos_axum::redirect("/");
@@ -108,10 +108,10 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     // Get User
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
-        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session
         .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
 
     match is_close(latitude, longitude, accuracy).await {
         Ok(_) => (),
@@ -167,10 +167,10 @@ pub async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFn
     // Get User
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
-        .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session
         .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
 
     // check to see if link is valid!!
     leptos::logging::log!("link: {link}");

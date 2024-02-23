@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{server_fn::error::NoCustomError, *};
 use leptos_router::*;
 use uuid::Uuid;
 use crate::components::loading_progress::Loading;
@@ -31,8 +31,8 @@ async fn magic_sign_in(link: Uuid) -> Result<(), ServerFnError> {
     use axum_session::SessionPgSession;
     use crate::models::magic_link::MagicLink;
 
-    let session = use_context::<SessionPgSession>().ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
-    let user_id = MagicLink::get(link).await.or_else(|_| Err(ServerFnError::ServerError("Invalid Link".into())))?;
+    let session = use_context::<SessionPgSession>().ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
+    let user_id = MagicLink::get(link).await.or_else(|_| Err(ServerFnError::<NoCustomError>::ServerError("Invalid Link".into())))?;
 
     // find session 
     leptos::logging::log!("magic_link: {link}");
