@@ -30,14 +30,13 @@ pub struct UserPublic {
     pub phone_number: String,
     pub state: i32,
     // pub check_in: Option<DateTime<Utc>>,
-    // pub checked_in: Option<bool>,
 }
 
 #[cfg(feature = "ssr")]
-use sqlx::*;
-
-#[cfg(feature = "ssr")]
-use crate::database::get_db;
+use {
+    sqlx::*,
+    crate::database::get_db
+};
 
 #[cfg(feature = "ssr")]
 impl UserPublic {
