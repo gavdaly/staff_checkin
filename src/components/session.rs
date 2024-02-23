@@ -127,14 +127,14 @@ fn Correction(correction: Correction, session_state: i32) -> impl IntoView {
 async fn handle_correction_response(response: String, status: u32, id: Uuid) -> Result<(), ServerFnError> {
     use crate::models::corrections::correction_response;
     use axum_session::SessionPgSession;
-    use crate::models::user::UserPublic;
+    use crate::models::user::UserDisplay;
 
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::ServerError("Session missing.".into()))?;
     let user_id = session
         .get::<Uuid>("id")
         .ok_or_else(|| ServerFnError::ServerError("Error getting Session!".into()))?;
-    let user = UserPublic::get(user_id).await?;
+    let user = UserDisplay::get(user_id).await?;
 
     if user.state != 1 {
         return Err(ServerFnError::ServerError("User not authorized!".into()));

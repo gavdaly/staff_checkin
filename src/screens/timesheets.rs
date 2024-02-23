@@ -1,5 +1,5 @@
 use crate::components::loading_progress::Loading;
-use crate::models::user::UserPublic;
+use crate::models::user::UserDisplay;
 use chrono::NaiveDate;
 use leptos::*;
 use leptos_router::*;
@@ -50,8 +50,8 @@ async fn load_timesheet_for<'a>(user_id: String) -> Result<TimeSheet, ServerFnEr
 }
 
 #[server]
-pub async fn load_hourly_users() -> Result<Vec<UserPublic>, ServerFnError> {
-    match UserPublic::get_all_hourly().await {
+pub async fn load_hourly_users() -> Result<Vec<UserDisplay>, ServerFnError> {
+    match UserDisplay::get_all_hourly().await {
         Ok(v) => Ok(v),
         Err(_) => Err(ServerFnError::ServerError("Server Error".to_string())),
     }

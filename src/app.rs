@@ -1,6 +1,6 @@
 use crate::components::loading_progress::Loading;
 use crate::error_template::{AppError, ErrorTemplate};
-use crate::models::user::UserPublic;
+use crate::models::user::UserDisplay;
 use crate::screens::clock_in_link::{ClockInLink, ClockInLinkInitiateSession};
 use crate::screens::home::HomePage;
 use crate::screens::magic_link::MagicLink;
@@ -31,8 +31,9 @@ pub fn App() -> impl IntoView {
     let authenticate = create_server_action::<Authenticate>();
     let clock_in_link = create_server_action::<ClockInLinkInitiateSession>();
 
-    let user_fetch = create_resource(move || (log_out.version().get(), authenticate.version().get()), |_| get_curent_user());
-    let session_status = create_resource(move || (check_in.version().get(), clock_in_link.version().get()), |_| get_session_status());
+    let user_fetch = create_resource(move || 
+        (log_out.version().get(), authenticate.version().get(), check_in.version().get(), clock_in_link.version().get()), 
+        |_| get_curent_user());
 
     let _error = move || match user_fetch() {
         Some(Err(e)) => Some(e),
@@ -45,9 +46,8 @@ pub fn App() -> impl IntoView {
         _ => None
     };
 
-    let status = move || match session_status() {
-        Some(Ok(status)) => status,
-        Some(Err(_)) => false,
+    let status = move || match user() {
+        Some(user) => user.check_in.is_some(),
         None => false,
     };
 
@@ -144,7 +144,7 @@ pub struct Status {
 }
 
 #[server]
-pub async fn get_curent_user() -> Result<Option<UserPublic>, ServerFnError> {
+pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
     use uuid::Uuid;
     use axum_session::SessionPgSession;
 
@@ -158,7 +158,7 @@ pub async fn get_curent_user() -> Result<Option<UserPublic>, ServerFnError> {
         return Ok(None);
     };
 
-    let Ok(user) = UserPublic::get(id).await else {
+    let Ok(user) = UserDisplay::get(id).await else {
         leptos::tracing::error!("| * Could not find User for session");
         return Err(ServerFnError::ServerError("Could Not Find User.".into()));
     };
