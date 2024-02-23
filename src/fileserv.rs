@@ -1,15 +1,13 @@
-use crate::app::App;
-use axum::{
+#[cfg(feature = "ssr")]
+use {crate::app::App, axum::{
     body::Body,
     extract::State,
     http::{Request, Response, StatusCode, Uri},
     response::IntoResponse,
-};
-use axum::response::Response as AxumResponse;
-use leptos::*;
-use tower::ServiceExt;
-use tower_http::services::ServeDir;
+},
+ axum::response::Response as AxumResponse, leptos::*, tower::ServiceExt, tower_http::services::ServeDir};
 
+ #[cfg(feature = "ssr")]
 pub async fn file_and_error_handler(uri: Uri, State(options): State<LeptosOptions>, req: Request<Body>) -> AxumResponse {
     let root = options.site_root.clone();
     let res = get_static_file(uri.clone(), &root).await.unwrap();
@@ -22,6 +20,7 @@ pub async fn file_and_error_handler(uri: Uri, State(options): State<LeptosOption
     }
 }
 
+#[cfg(feature = "ssr")]
 async fn get_static_file(
     uri: Uri,
     root: &str,
