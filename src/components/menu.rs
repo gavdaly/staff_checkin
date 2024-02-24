@@ -52,6 +52,7 @@ pub fn Menu<F, U>(status: F, user: U, log_out: Action<Logout, Result<(), ServerF
                     </A>
                 </li>
                 <Show when=move || user().state == 1>
+                    <h2>"Admin"</h2>
                     <li>
                         <A href="/admin/timesheets" class="link">
                             "timesheets"
