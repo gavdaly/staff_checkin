@@ -73,7 +73,7 @@ pub fn App() -> impl IntoView {
                 </header>
 
                 <Show when=move || user().is_some()>
-                    <Menu status log_out show_menu set_show_menu/>
+                    <Menu user={move || user().unwrap()} status log_out show_menu set_show_menu/>
                 </Show>
                 <main id="main">
                     <Routes>
