@@ -17,9 +17,9 @@ pub struct User {
 impl User {
     pub fn new() -> Self {
         let log_out = create_server_action::<Logout>();
-        let check_in = create_server_action::<CheckIn>();
+        let _check_in = create_server_action::<CheckIn>();
         let authenticate = create_server_action::<Authenticate>();
-        let clock_in_link = create_server_action::<ClockInLinkInitiateSession>();
+        let _clock_in_link = create_server_action::<ClockInLinkInitiateSession>();
 
         let user_fetch = create_resource(move || (log_out.version().get(), authenticate.version().get()), |_| get_curent_user());
 
