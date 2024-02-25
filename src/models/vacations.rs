@@ -1,11 +1,11 @@
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::NaiveDate;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct Vacation {
     id: Uuid,
-	user_id: Uuid,
+    user_id: Uuid,
     category: i32,
     start_on: NaiveDate,
     end_on: NaiveDate,

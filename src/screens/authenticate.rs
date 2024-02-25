@@ -1,7 +1,7 @@
-use leptos::*;
-use leptos::server_fn::error::NoCustomError;
-use leptos_router::*;
 use crate::components::{icon::Icon, loading_progress::Loading};
+use leptos::server_fn::error::NoCustomError;
+use leptos::*;
+use leptos_router::*;
 
 #[derive(Clone, Params, PartialEq)]
 struct PhoneParams {
@@ -84,23 +84,29 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
 
 #[server]
 async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
+    use crate::models::pins::Pin;
     use crate::models::user::get_user_by_phone;
     use axum_session::SessionPgSession;
-    use crate::models::pins::Pin;
 
     let Ok(pin) = Pin::get_pin(pin).await else {
-        return Err(ServerFnError::<NoCustomError>::ServerError("Internal Server Error".into()));
+        return Err(ServerFnError::<NoCustomError>::ServerError(
+            "Internal Server Error".into(),
+        ));
     };
 
     let Ok(user) = get_user_by_phone(&phone).await else {
-        return Err(ServerFnError::<NoCustomError>::ServerError("Internal Server Error".into()));
+        return Err(ServerFnError::<NoCustomError>::ServerError(
+            "Internal Server Error".into(),
+        ));
     };
 
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
 
     if pin.user_id != user.id {
-        return Err(ServerFnError::<NoCustomError>::Request("Unauthorized Try Again!".into()));
+        return Err(ServerFnError::<NoCustomError>::Request(
+            "Unauthorized Try Again!".into(),
+        ));
     }
     session.set_longterm(true);
     session.set("id", user.id);

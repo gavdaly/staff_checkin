@@ -1,5 +1,5 @@
-use leptos::*;
 use super::icon::Icon;
+use leptos::*;
 
 /// Renders a loading state with an icon and a text.
 ///

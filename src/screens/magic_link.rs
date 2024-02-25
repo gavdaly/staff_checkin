@@ -1,8 +1,8 @@
-use leptos::*;
+use crate::components::loading_progress::Loading;
 use leptos::server_fn::error::NoCustomError;
+use leptos::*;
 use leptos_router::*;
 use uuid::Uuid;
-use crate::components::loading_progress::Loading;
 
 #[derive(Clone, Params, PartialEq)]
 struct MagicLinkParams {
@@ -13,8 +13,8 @@ struct MagicLinkParams {
 pub fn MagicLink() -> impl IntoView {
     let params = use_params::<MagicLinkParams>();
     let magic_sign_in = create_server_action::<MagicSignIn>();
-    move || {match params() {
-        Ok(MagicLinkParams{link}) => {
+    move || match params() {
+        Ok(MagicLinkParams { link }) => {
             magic_sign_in.dispatch(MagicSignIn { link });
             view! {
                 <div>
@@ -22,20 +22,23 @@ pub fn MagicLink() -> impl IntoView {
                     <Redirect path="/app"/>
                 </div>
             }
-        },
-        Err(e) => view! { <div>"Error parsing Parameters: " {e.to_string()}</div> }
-    }}
+        }
+        Err(e) => view! { <div>"Error parsing Parameters: " {e.to_string()}</div> },
+    }
 }
 
 #[server]
 async fn magic_sign_in(link: Uuid) -> Result<(), ServerFnError> {
-    use axum_session::SessionPgSession;
     use crate::models::magic_link::MagicLink;
+    use axum_session::SessionPgSession;
 
-    let session = use_context::<SessionPgSession>().ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
-    let user_id = MagicLink::get(link).await.map_err(|_| ServerFnError::<NoCustomError>::ServerError("Invalid Link".into()))?;
+    let session = use_context::<SessionPgSession>()
+        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
+    let user_id = MagicLink::get(link)
+        .await
+        .map_err(|_| ServerFnError::<NoCustomError>::ServerError("Invalid Link".into()))?;
 
-    // find session 
+    // find session
     leptos::logging::log!("magic_link: {link}");
 
     session.set_longterm(true);

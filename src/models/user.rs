@@ -1,4 +1,3 @@
-
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -43,16 +42,15 @@ pub struct UserUpdate {
 }
 
 #[cfg(feature = "ssr")]
-use {
-    sqlx::*,
-    crate::database::get_db
-};
+use {crate::database::get_db, sqlx::*};
 
 #[cfg(feature = "ssr")]
 impl UserDisplay {
     pub async fn get_all_hourly() -> Result<Vec<Self>, sqlx::Error> {
         let db = get_db();
-        query_as!(UserDisplay, r#"
+        query_as!(
+            UserDisplay,
+            r#"
 SELECT
     u.id,
     u.last_name,
@@ -78,12 +76,17 @@ WHERE
     u.state = 2 -- Ensuring that the user's state is 2
 ORDER BY
     u.last_name ASC,
-    u.first_name ASC;"#).fetch_all(db).await
+    u.first_name ASC;"#
+        )
+        .fetch_all(db)
+        .await
     }
 
     pub async fn get(id: Uuid) -> Result<Self, sqlx::Error> {
         let db = get_db();
-        query_as!(UserDisplay, r#"
+        query_as!(
+            UserDisplay,
+            r#"
 SELECT
     u.id,
     u.last_name,
@@ -107,30 +110,57 @@ LEFT JOIN (
 ) s ON u.id = s.user_id
 WHERE
     u.id = $1;
-        "#, id).fetch_one(db).await
+        "#,
+            id
+        )
+        .fetch_one(db)
+        .await
     }
 }
 
 #[cfg(feature = "ssr")]
 impl UserUpdate {
-
     pub async fn update(&self) -> Result<Self, sqlx::Error> {
         let db = get_db();
-        query_as!(UserUpdate, r#"
+        query_as!(
+            UserUpdate,
+            r#"
 UPDATE users 
 SET first_name = $1, last_name = $2, phone_number = $3, state = $4
 WHERE id = $5
 RETURNING first_name, last_name, phone_number, state, id
-"#, self.first_name, self.last_name, self.phone_number, self.state, self.id).fetch_one(db).await
+"#,
+            self.first_name,
+            self.last_name,
+            self.phone_number,
+            self.state,
+            self.id
+        )
+        .fetch_one(db)
+        .await
     }
 
-    pub async fn insert(first_name: &str, last_name: &str, phone_number: &str, state: i32) -> Result<Self, sqlx::Error> {
+    pub async fn insert(
+        first_name: &str,
+        last_name: &str,
+        phone_number: &str,
+        state: i32,
+    ) -> Result<Self, sqlx::Error> {
         let db = get_db();
-        query_as!(UserUpdate, r#"
+        query_as!(
+            UserUpdate,
+            r#"
 INSERT INTO users(first_name, last_name, phone_number, state) 
 VALUES ($1, $2, $3, $4) 
 RETURNING id, first_name, last_name, phone_number, state
-        "#, first_name, last_name, phone_number, state).fetch_one(db).await
+        "#,
+            first_name,
+            last_name,
+            phone_number,
+            state
+        )
+        .fetch_one(db)
+        .await
     }
 }
 
@@ -147,14 +177,20 @@ pub async fn get_user_by_phone(phone: &str) -> Result<UserPhone, sqlx::Error> {
     leptos::tracing::info!("-- Getting Phone Numeber: {}", phone);
 
     let db = get_db();
-    let result = query_as!(UserPhone, r#"
+    let result = query_as!(
+        UserPhone,
+        r#"
 SELECT
     id, phone_number
 FROM
     users
 WHERE
     phone_number = $1;
-       "#, phone).fetch_one(db).await;
+       "#,
+        phone
+    )
+    .fetch_one(db)
+    .await;
 
     leptos::tracing::info!("-- Got User: {:?}", result);
     result

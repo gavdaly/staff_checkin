@@ -2,24 +2,30 @@
 mod app_state;
 
 #[cfg(feature = "ssr")]
+mod jobs;
+
+#[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
     use app_state::AppState;
     use axum::{
         body::Body as AxumBody,
         extract::{Path, State},
+        http::Request,
         response::{IntoResponse, Response},
         routing::get,
-        http::Request,
         Router,
     };
-    use axum_session::{SessionConfig, SessionLayer, SessionStore, SessionPgPool, SessionPgSession};
+    use axum_session::{
+        SessionConfig, SessionLayer, SessionPgPool, SessionPgSession, SessionStore,
+    };
     use dotenv;
     use jobs::jobs;
+    use leptos::{get_configuration, provide_context};
     use leptos_axum::{generate_route_list, handle_server_fns_with_context, LeptosRoutes};
     use staff::app::*;
     use staff::fileserv::file_and_error_handler;
-    
+
     jobs().await.expect("jobs should run");
 
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
@@ -60,7 +66,6 @@ async fn main() {
         State(app_state): State<AppState>,
         req: Request<AxumBody>,
     ) -> Response {
-
         let handler = leptos_axum::render_route_with_context(
             app_state.leptos_options.clone(),
             app_state.routes.clone(),
@@ -82,14 +87,17 @@ async fn main() {
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
 
-    let app_state = AppState { leptos_options, routes: routes.clone() };
+    let app_state = AppState {
+        leptos_options,
+        routes: routes.clone(),
+    };
 
     // build our application with a route
     let app = Router::new()
-    .route(
-        "/api/*fn_name",
-        get(server_fn_handler).post(server_fn_handler),
-    )
+        .route(
+            "/api/*fn_name",
+            get(server_fn_handler).post(server_fn_handler),
+        )
         .leptos_routes_with_handler(routes, get(leptos_routes_handler))
         .layer(SessionLayer::new(session_store))
         .fallback(file_and_error_handler)

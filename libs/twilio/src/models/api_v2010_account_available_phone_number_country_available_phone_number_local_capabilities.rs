@@ -10,8 +10,6 @@
 
 /// ApiV2010AccountAvailablePhoneNumberCountryAvailablePhoneNumberLocalCapabilities : The set of Boolean properties that indicate whether a phone number can receive calls or messages.  Capabilities are: `Voice`, `SMS`, and `MMS` and each capability can be: `true` or `false`.
 
-
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ApiV2010AccountAvailablePhoneNumberCountryAvailablePhoneNumberLocalCapabilities {
     #[serde(rename = "mms", skip_serializing_if = "Option::is_none")]
@@ -32,7 +30,8 @@ impl Default for ApiV2010AccountAvailablePhoneNumberCountryAvailablePhoneNumberL
 
 impl ApiV2010AccountAvailablePhoneNumberCountryAvailablePhoneNumberLocalCapabilities {
     /// The set of Boolean properties that indicate whether a phone number can receive calls or messages.  Capabilities are: `Voice`, `SMS`, and `MMS` and each capability can be: `true` or `false`.
-    pub fn new() -> ApiV2010AccountAvailablePhoneNumberCountryAvailablePhoneNumberLocalCapabilities {
+    pub fn new() -> ApiV2010AccountAvailablePhoneNumberCountryAvailablePhoneNumberLocalCapabilities
+    {
         ApiV2010AccountAvailablePhoneNumberCountryAvailablePhoneNumberLocalCapabilities {
             mms: None,
             sms: None,
@@ -41,5 +40,3 @@ impl ApiV2010AccountAvailablePhoneNumberCountryAvailablePhoneNumberLocalCapabili
         }
     }
 }
-
-

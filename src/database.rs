@@ -5,7 +5,7 @@ use {
 };
 
 /// Static variable representing a connection pool to a PostgreSQL database.
-/// 
+///
 /// The `DB` variable is of type `OnceLock<Pool<Postgres>>` and is declared as `static`, meaning it will have a single instance shared across all threads.
 /// The `OnceLock` type ensures that the variable is only initialized once, even if the code is executed multiple times.
 #[cfg(feature = "ssr")]

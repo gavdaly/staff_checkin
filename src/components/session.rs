@@ -1,16 +1,16 @@
+use crate::models::corrections::Correction;
+use crate::models::sessions::SessionAndCorrection;
+use crate::utils::miliseconds_to_string;
 use chrono::Local;
 use leptos::server_fn::error::NoCustomError;
 use leptos::*;
-use leptos_router::{A, ActionForm};
+use leptos_router::{ActionForm, A};
 use uuid::Uuid;
-use crate::models::sessions::SessionAndCorrection;
-use crate::models::corrections::Correction;
-use crate::utils::miliseconds_to_string;
 
 /// Renders a session component that displays session information.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `session` - A reference to a `SessionAndCorrection` struct that contains session data.
 #[component]
 pub fn Session(session: SessionAndCorrection) -> impl IntoView {
@@ -82,11 +82,19 @@ pub fn Session(session: SessionAndCorrection) -> impl IntoView {
 
 #[component]
 fn Correction(correction: Correction, session_state: i32) -> impl IntoView {
-    let start = correction.new_start_time.with_timezone(&Local).format("%I:%M %P").to_string();
-    let end = correction.new_end_time.with_timezone(&Local).format("%I:%M %P").to_string();
+    let start = correction
+        .new_start_time
+        .with_timezone(&Local)
+        .format("%I:%M %P")
+        .to_string();
+    let end = correction
+        .new_end_time
+        .with_timezone(&Local)
+        .format("%I:%M %P")
+        .to_string();
     let handle_correction_response = create_server_action::<HandleCorrectionResponse>();
     match session_state {
-        3 =>  view! {
+        3 => view! {
             <span>{start}</span>
             <span>{end}</span>
             <span>"pending time"</span>
@@ -112,30 +120,38 @@ fn Correction(correction: Correction, session_state: i32) -> impl IntoView {
                 </fieldset>
                 <button type="submit">"submit"</button>
             </ActionForm>
-        }.into_view(),
+        }
+        .into_view(),
         4 | 5 => view! {
             <span>"response"</span>
             <span class="reason">{correction.response}</span>
-        }.into_view(),
-        _ => view! { }.into_view(),
+        }
+        .into_view(),
+        _ => view! {}.into_view(),
     }
 }
 
 #[server]
-async fn handle_correction_response(response: String, status: u32, id: Uuid) -> Result<(), ServerFnError> {
+async fn handle_correction_response(
+    response: String,
+    status: u32,
+    id: Uuid,
+) -> Result<(), ServerFnError> {
     use crate::models::corrections::correction_response;
-    use axum_session::SessionPgSession;
     use crate::models::user::UserDisplay;
+    use axum_session::SessionPgSession;
 
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
-    let user_id = session
-        .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
+    let user_id = session.get::<Uuid>("id").ok_or_else(|| {
+        ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
+    })?;
     let user = UserDisplay::get(user_id).await?;
 
     if user.state != 1 {
-        return Err(ServerFnError::<NoCustomError>::ServerError("User not authorized!".into()));
+        return Err(ServerFnError::<NoCustomError>::ServerError(
+            "User not authorized!".into(),
+        ));
     }
 
     match correction_response(id, status, &response).await {

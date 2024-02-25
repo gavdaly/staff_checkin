@@ -3,8 +3,10 @@ use leptos_router::A;
 
 /// Renders the home page of your application.
 #[component]
-pub fn HomePage<F>(status: F) -> impl IntoView where F: Fn() -> bool + Copy + 'static {
-
+pub fn HomePage<F>(status: F) -> impl IntoView
+where
+    F: Fn() -> bool + Copy + 'static,
+{
     // get settings
     // show week summary
     // upcomming vacations

@@ -1,20 +1,20 @@
+use crate::components::check_in::CheckInView;
 use crate::components::loading_progress::Loading;
+use crate::components::menu::Menu;
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::models::user::UserDisplay;
+use crate::screens::authenticate::{Auth, Authenticate, Logout};
 use crate::screens::clock_in_link::{ClockInLink, ClockInLinkInitiateSession};
 use crate::screens::home::HomePage;
 use crate::screens::magic_link::MagicLink;
-use crate::screens::timesheet::{TimeSheetDisplay, TimeSheetMissing, TimeSheetEdit};
+use crate::screens::timesheet::{TimeSheetDisplay, TimeSheetEdit, TimeSheetMissing};
 use crate::screens::timesheets::{
     TimeSheets, TimeSheetsAdjustment, TimeSheetsList, TimeSheetsPending,
 };
-use crate::screens::users::{UserCreate, UserUpdate, Users, UsersList, AdminUsers};
+use crate::screens::users::{AdminUsers, UserCreate, UserUpdate, Users, UsersList};
 use crate::screens::vacations::{
     VacationEdit, VacationRequest, Vacations, VacationsList, VacationsPending,
 };
-use crate::components::check_in::CheckInView;
-use crate::components::menu::Menu;
-use crate::screens::authenticate::{Auth, Authenticate, Logout};
 use leptos::server_fn::error::NoCustomError;
 use leptos::*;
 use leptos_meta::*;
@@ -32,19 +32,27 @@ pub fn App() -> impl IntoView {
     let authenticate = create_server_action::<Authenticate>();
     let clock_in_link = create_server_action::<ClockInLinkInitiateSession>();
 
-    let user_fetch = create_resource(move || 
-        (log_out.version().get(), authenticate.version().get(), check_in.version().get(), clock_in_link.version().get()), 
-        |_| get_curent_user());
+    let user_fetch = create_resource(
+        move || {
+            (
+                log_out.version().get(),
+                authenticate.version().get(),
+                check_in.version().get(),
+                clock_in_link.version().get(),
+            )
+        },
+        |_| get_curent_user(),
+    );
 
     let _error = move || match user_fetch() {
         Some(Err(e)) => Some(e),
         Some(Ok(_)) => None,
-        _ => None
+        _ => None,
     };
 
     let user = move || match user_fetch() {
         Some(Ok(user)) => user,
-        _ => None
+        _ => None,
     };
 
     let status = move || match user() {
@@ -73,7 +81,7 @@ pub fn App() -> impl IntoView {
                 </header>
 
                 <Show when=move || user().is_some()>
-                    <Menu user={move || user().unwrap()} status log_out show_menu set_show_menu/>
+                    <Menu user=move || user().unwrap() status log_out show_menu set_show_menu/>
                 </Show>
                 <main id="main">
                     <Routes>
@@ -146,12 +154,14 @@ pub struct Status {
 
 #[server]
 pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
-    use uuid::Uuid;
     use axum_session::SessionPgSession;
+    use uuid::Uuid;
 
     let Some(session) = use_context::<SessionPgSession>() else {
         leptos::tracing::error!("| * Error getting settion");
-        return Err(ServerFnError::ServerError("Error Finding Session 30".into()));
+        return Err(ServerFnError::ServerError(
+            "Error Finding Session 30".into(),
+        ));
     };
 
     let Some(id) = session.get::<Uuid>("id") else {
@@ -169,18 +179,20 @@ pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
 
 #[server]
 async fn get_session_status() -> Result<bool, ServerFnError> {
-    use uuid::Uuid;
     use crate::models::sessions::get_open_sessions;
     use axum_session::SessionPgSession;
+    use uuid::Uuid;
 
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
-    let id = session
-        .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
+    let id = session.get::<Uuid>("id").ok_or_else(|| {
+        ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
+    })?;
     match get_open_sessions(&id).await {
         Ok(a) => Ok(!a.is_empty()),
-        Err(_) => Err(ServerFnError::<NoCustomError>::ServerError("Error getting one".into()))
+        Err(_) => Err(ServerFnError::<NoCustomError>::ServerError(
+            "Error getting one".into(),
+        )),
     }
 }
 
@@ -192,9 +204,9 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
-    let id = session
-        .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
+    let id = session.get::<Uuid>("id").ok_or_else(|| {
+        ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
+    })?;
 
     match is_close(latitude, longitude, accuracy).await {
         Ok(_) => (),
@@ -218,19 +230,28 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     Ok(())
 }
 
-#[cfg(feature = "ssr")] 
+#[cfg(feature = "ssr")]
 async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
     use crate::models::location_trackers::insert;
     use crate::utils::caluclate_distance;
     use std::env;
 
-    let base_latitude: f64 = env::var("LATITUDE").expect("To have ENV VAR: LATITUDE").parse::<f64>().expect("`LATITUDE` to be a floating point number");
-    let base_longitude: f64 = env::var("LONGITUDE").expect("To have ENV VAR: LONGITUDE").parse::<f64>().expect("`LONGITUDE` to be a floating point number");
-    let base_accuracy: f64 = env::var("ACCURACY").expect("To have ENV VAR: ACCURACY").parse::<f64>().expect("`ACCURACY` to be a floating point number");
+    let base_latitude: f64 = env::var("LATITUDE")
+        .expect("To have ENV VAR: LATITUDE")
+        .parse::<f64>()
+        .expect("`LATITUDE` to be a floating point number");
+    let base_longitude: f64 = env::var("LONGITUDE")
+        .expect("To have ENV VAR: LONGITUDE")
+        .parse::<f64>()
+        .expect("`LONGITUDE` to be a floating point number");
+    let base_accuracy: f64 = env::var("ACCURACY")
+        .expect("To have ENV VAR: ACCURACY")
+        .parse::<f64>()
+        .expect("`ACCURACY` to be a floating point number");
 
-    let _ = insert(latitude, longitude, accuracy).await.map_err(|e|
-        leptos::tracing::error!("Insert Tracing Error: {:?}", e)
-    );
+    let _ = insert(latitude, longitude, accuracy)
+        .await
+        .map_err(|e| leptos::tracing::error!("Insert Tracing Error: {:?}", e));
     if caluclate_distance(latitude, longitude, base_latitude, base_longitude) > base_accuracy {
         return Err(ServerFnError::Request("You are too far away.".into()));
     };
@@ -244,16 +265,16 @@ async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
 
 #[server]
 async fn submit_phone_number(phone: String) -> Result<(), ServerFnError> {
+    use crate::models::pins::Pin;
     use crate::models::user::get_user_by_phone;
     use crate::service::sms::send_message;
-    use crate::models::pins::Pin;
 
     let phone = crate::utils::filter_phone_number(&phone);
 
     leptos::tracing::info!("**| phone: {:?}", phone);
 
     let Ok(user) = get_user_by_phone(&phone).await else {
-        leptos::tracing::warn!("Could not find phone number: {:?}", phone);    
+        leptos::tracing::warn!("Could not find phone number: {:?}", phone);
         return Err(ServerFnError::Deserialization(
             "Could not Find Phone Number!".into(),
         ));

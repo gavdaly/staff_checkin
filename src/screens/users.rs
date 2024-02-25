@@ -1,9 +1,9 @@
+use super::timesheets::load_hourly_users;
+use crate::components::icon::Icon;
+use crate::components::user_form::UserForm;
 use leptos::*;
 use leptos_router::*;
 use uuid::Uuid;
-use crate::components::icon::Icon;
-use super::timesheets::load_hourly_users;
-use crate::components::user_form::UserForm;
 
 /// Renders the home page of your application.
 #[component]
@@ -102,7 +102,6 @@ pub fn UsersList() -> impl IntoView {
     }
 }
 
-
 #[component]
 pub fn UserCreate() -> impl IntoView {
     view! { <UserForm uuid=None/> }
@@ -110,14 +109,16 @@ pub fn UserCreate() -> impl IntoView {
 
 #[derive(Clone, Params, PartialEq)]
 struct UserUpdateP {
-    uuid: Uuid
+    uuid: Uuid,
 }
 
 #[component]
 pub fn UserUpdate() -> impl IntoView {
     let params = use_params::<UserUpdateP>();
-    {move || match params() {
-        Ok(UserUpdateP {uuid}) => view! { <UserForm uuid=Some(uuid)/> }.into_view(),
-        Err(e) => view! { <div data-state="error">{e.to_string()}</div> }.into_view(),
-    }}
+    {
+        move || match params() {
+            Ok(UserUpdateP { uuid }) => view! { <UserForm uuid=Some(uuid)/> }.into_view(),
+            Err(e) => view! { <div data-state="error">{e.to_string()}</div> }.into_view(),
+        }
+    }
 }

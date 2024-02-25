@@ -1,7 +1,7 @@
-use leptos::*;
-use leptos::server_fn::error::NoCustomError;
-use leptos_router::*;
 use crate::components::loading_progress::Loading;
+use leptos::server_fn::error::NoCustomError;
+use leptos::*;
+use leptos_router::*;
 
 #[derive(Clone, Params, PartialEq)]
 struct ClockInLinkParams {
@@ -9,18 +9,21 @@ struct ClockInLinkParams {
 }
 
 #[component]
-pub fn ClockInLink(clock_in_link: Action<ClockInLinkInitiateSession, Result<(), ServerFnError>>) -> impl IntoView {
+pub fn ClockInLink(
+    clock_in_link: Action<ClockInLinkInitiateSession, Result<(), ServerFnError>>,
+) -> impl IntoView {
     let params = use_params::<ClockInLinkParams>();
     match params() {
-        Ok(ClockInLinkParams {link}) => { 
-            clock_in_link.dispatch(ClockInLinkInitiateSession {link: link.clone()});
+        Ok(ClockInLinkParams { link }) => {
+            clock_in_link.dispatch(ClockInLinkInitiateSession { link: link.clone() });
             view! {
                 <div>
                     <Loading/>
                     <Redirect path="/app"/>
                 </div>
-            }},
-        Err(e) => view! { <div>"Something went wrong: " {e.to_string()}</div> }
+            }
+        }
+        Err(e) => view! { <div>"Something went wrong: " {e.to_string()}</div> },
     }
 }
 
@@ -32,9 +35,9 @@ pub async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFn
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
-    let id = session
-        .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
+    let id = session.get::<Uuid>("id").ok_or_else(|| {
+        ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
+    })?;
 
     // check to see if link is valid!!
     leptos::logging::log!("link: {link}");

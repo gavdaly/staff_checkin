@@ -1,9 +1,9 @@
+use leptos::*;
 use leptos_router::ActionForm;
 use uuid::Uuid;
-use leptos::*;
 
 #[cfg(feature = "ssr")]
-use chrono::{Local, DateTime, TimeZone, NaiveDateTime};
+use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
 
 /// Generates a form for submitting corrections.
 ///
@@ -29,8 +29,9 @@ use chrono::{Local, DateTime, TimeZone, NaiveDateTime};
 ///
 /// The generated form as an `IntoView`.
 #[component]
-pub fn CorrectionForm<F>(uuid: Option<Uuid>, date: F) -> impl IntoView where
-    F: Fn() -> Option<String> + 'static
+pub fn CorrectionForm<F>(uuid: Option<Uuid>, date: F) -> impl IntoView
+where
+    F: Fn() -> Option<String> + 'static,
 {
     let action = create_server_action::<SubmitCorrectionForm>();
     let value = action.value();
@@ -96,21 +97,32 @@ pub fn CorrectionForm<F>(uuid: Option<Uuid>, date: F) -> impl IntoView where
 /// - `Ok(())`: If the correction is added successfully.
 /// - `Err(ServerFnError)`: If there is an error adding the correction.
 #[server]
-pub async fn submit_correction_form(id: Option<Uuid>, start_time: String, end_time: String, reason: String, date: String) -> Result<(), ServerFnError> {
-    use crate::models::sessions::add_correction;
+pub async fn submit_correction_form(
+    id: Option<Uuid>,
+    start_time: String,
+    end_time: String,
+    reason: String,
+    date: String,
+) -> Result<(), ServerFnError> {
     use crate::app::get_curent_user;
+    use crate::models::sessions::add_correction;
 
     let start_date = convert_string_to_local_datetime(&date, &start_time)?;
     let end_date = convert_string_to_local_datetime(&date, &end_time)?;
-    let Ok(Some(user_id)) = get_curent_user().await else { return Err(ServerFnError::Args("Unathorized".into()))};
+    let Ok(Some(user_id)) = get_curent_user().await else {
+        return Err(ServerFnError::Args("Unathorized".into()));
+    };
     match add_correction(id, start_date, end_date, reason, user_id.id).await {
         Ok(_) => {
             leptos_axum::redirect("/app/timesheet");
             Ok(())
-        },
+        }
         Err(e) => {
             leptos::logging::error!("Error adding correction: {}", e.to_string());
-            Err(ServerFnError::MissingArg(format!("Error adding correction: {}", e)))
+            Err(ServerFnError::MissingArg(format!(
+                "Error adding correction: {}",
+                e
+            )))
         }
     }
 }
@@ -125,19 +137,28 @@ pub async fn submit_correction_form(id: Option<Uuid>, start_time: String, end_ti
 /// # Returns
 ///
 /// Returns a `Result` containing a `DateTime` object if the conversion is successful, or a `ServerFnError` if there is an error in the conversion process.
-#[cfg(feature="ssr")]
-fn convert_string_to_local_datetime(date: &str, time: &str) -> Result<DateTime<Local>, ServerFnError> {
+#[cfg(feature = "ssr")]
+fn convert_string_to_local_datetime(
+    date: &str,
+    time: &str,
+) -> Result<DateTime<Local>, ServerFnError> {
     let date_time_string = date.to_owned() + " " + time;
     let parse_date_short = NaiveDateTime::parse_from_str(&date_time_string, "%y-%m-%d %R");
     let parse_date_long = NaiveDateTime::parse_from_str(&date_time_string, "%Y-%m-%d %R");
     let naive = match (parse_date_short, parse_date_long) {
         (Ok(d), _) => d,
         (_, Ok(d)) => d,
-        (_, _) => return Err(ServerFnError::Deserialization(format!("Date in incorrect format: `{date_time_string}` is invalid")))
+        (_, _) => {
+            return Err(ServerFnError::Deserialization(format!(
+                "Date in incorrect format: `{date_time_string}` is invalid"
+            )))
+        }
     };
     match Local.from_local_datetime(&naive) {
         chrono::LocalResult::Single(dt) => Ok(dt),
         chrono::LocalResult::Ambiguous(dt, _) => Ok(dt),
-        chrono::LocalResult::None => Err(ServerFnError::Deserialization("Error Deserializaing Local".into())),
+        chrono::LocalResult::None => Err(ServerFnError::Deserialization(
+            "Error Deserializaing Local".into(),
+        )),
     }
 }

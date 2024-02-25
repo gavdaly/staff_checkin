@@ -4,7 +4,7 @@ use uuid::Uuid;
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct ManualEntry {
     id: Uuid,
-	instance_id: Uuid,
+    instance_id: Uuid,
     category: Category,
 }
 

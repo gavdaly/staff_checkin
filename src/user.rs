@@ -1,5 +1,5 @@
-use leptos::*;
 use leptos::server_fn::error::NoCustomError;
+use leptos::*;
 use serde::{Deserialize, Serialize};
 
 use crate::models::user::UserDisplay;
@@ -22,30 +22,29 @@ impl User {
         let authenticate = create_server_action::<Authenticate>();
         let _clock_in_link = create_server_action::<ClockInLinkInitiateSession>();
 
-        let user_fetch = create_resource(move || (log_out.version().get(), authenticate.version().get()), |_| get_curent_user());
+        let user_fetch = create_resource(
+            move || (log_out.version().get(), authenticate.version().get()),
+            |_| get_curent_user(),
+        );
 
         let data = match user_fetch() {
             Some(Ok(user)) => user,
             _ => None,
-        
         };
 
-        Self {
-            data,
-        }
+        Self { data }
     }
     pub fn log_out(&self) -> Result<(), ServerFnError> {
         let log_out = create_server_action::<Logout>();
-        log_out.dispatch(Logout {  });
+        log_out.dispatch(Logout {});
         Ok(())
     }
-
 }
 
 #[server]
 pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
-    use uuid::Uuid;
     use axum_session::SessionPgSession;
+    use uuid::Uuid;
 
     let Some(session) = use_context::<SessionPgSession>() else {
         leptos::tracing::error!("| * Error getting settion");
@@ -67,12 +66,14 @@ pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
 
 #[server]
 async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
+    use crate::models::pins::Pin;
     use crate::models::user::get_user_by_phone;
     use axum_session::SessionPgSession;
-    use crate::models::pins::Pin;
 
     let Ok(pin) = Pin::get_pin(pin).await else {
-        return Err(ServerFnError::<NoCustomError>::ServerError("Internal Server Error".into()));
+        return Err(ServerFnError::<NoCustomError>::ServerError(
+            "Internal Server Error".into(),
+        ));
     };
 
     let Ok(user) = get_user_by_phone(&phone).await else {
@@ -110,9 +111,9 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
-    let id = session
-        .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
+    let id = session.get::<Uuid>("id").ok_or_else(|| {
+        ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
+    })?;
 
     match is_close(latitude, longitude, accuracy).await {
         Ok(_) => (),
@@ -136,19 +137,28 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     Ok(())
 }
 
-#[cfg(feature = "ssr")] 
+#[cfg(feature = "ssr")]
 async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
     use crate::models::location_trackers::insert;
     use crate::utils::caluclate_distance;
     use std::env;
 
-    let base_latitude: f64 = env::var("LATITUDE").expect("To have ENV VAR: LATITUDE").parse::<f64>().expect("`LATITUDE` to be a floating point number");
-    let base_longitude: f64 = env::var("LONGITUDE").expect("To have ENV VAR: LONGITUDE").parse::<f64>().expect("`LONGITUDE` to be a floating point number");
-    let base_accuracy: f64 = env::var("ACCURACY").expect("To have ENV VAR: ACCURACY").parse::<f64>().expect("`ACCURACY` to be a floating point number");
+    let base_latitude: f64 = env::var("LATITUDE")
+        .expect("To have ENV VAR: LATITUDE")
+        .parse::<f64>()
+        .expect("`LATITUDE` to be a floating point number");
+    let base_longitude: f64 = env::var("LONGITUDE")
+        .expect("To have ENV VAR: LONGITUDE")
+        .parse::<f64>()
+        .expect("`LONGITUDE` to be a floating point number");
+    let base_accuracy: f64 = env::var("ACCURACY")
+        .expect("To have ENV VAR: ACCURACY")
+        .parse::<f64>()
+        .expect("`ACCURACY` to be a floating point number");
 
-    let _ = insert(latitude, longitude, accuracy).await.map_err(|e|
-        leptos::tracing::error!("Insert Tracing Error: {:?}", e)
-    );
+    let _ = insert(latitude, longitude, accuracy)
+        .await
+        .map_err(|e| leptos::tracing::error!("Insert Tracing Error: {:?}", e));
     if caluclate_distance(latitude, longitude, base_latitude, base_longitude) > base_accuracy {
         return Err(ServerFnError::Request("You are too far away.".into()));
     };
@@ -160,7 +170,6 @@ async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     Ok(())
 }
 
-
 #[server]
 pub async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFnError> {
     use crate::models::sessions::{close_session, get_open_session, new_session};
@@ -169,9 +178,9 @@ pub async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFn
     use axum_session::SessionPgSession;
     let session = use_context::<SessionPgSession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
-    let id = session
-        .get::<Uuid>("id")
-        .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
+    let id = session.get::<Uuid>("id").ok_or_else(|| {
+        ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
+    })?;
 
     // check to see if link is valid!!
     leptos::logging::log!("link: {link}");

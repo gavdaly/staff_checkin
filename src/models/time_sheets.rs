@@ -15,7 +15,7 @@ pub struct TimeSheet {
     // entries: Vec<(NaiveDate, Vec<Entry>>)>,
     pub summary: BTreeMap<NaiveDate, (i64, i64, i64, i64)>,
     // summary: Vec<(NaiveDate, (i64, i64, i64, i64))>
-    pub summary_totals: (i64, i64, i64, i64)
+    pub summary_totals: (i64, i64, i64, i64),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -27,8 +27,7 @@ pub enum Entry {
 #[cfg(feature = "ssr")]
 use {
     crate::models::{
-        adjustments::get_adjustments_for, sessions::get_sessions_for,
-        user::UserDisplay,
+        adjustments::get_adjustments_for, sessions::get_sessions_for, user::UserDisplay,
     },
     chrono::{DateTime, Duration, NaiveTime, Utc, Weekday},
 };
@@ -107,8 +106,10 @@ fn _calculate_statuatory_hours(
                         total = end_time - s.start_time + total;
                     }
                 }
-                Entry::Adjustment(a) => if a.category == 1 {
-                    total = Duration::milliseconds(a.duration as i64) + total;
+                Entry::Adjustment(a) => {
+                    if a.category == 1 {
+                        total = Duration::milliseconds(a.duration as i64) + total;
+                    }
                 }
             }
         }
@@ -187,6 +188,12 @@ fn generate_entries(
 }
 
 #[cfg(feature = "ssr")]
-fn generate_summary_totals(summary: &BTreeMap<NaiveDate, (i64, i64, i64, i64)>) -> (i64, i64, i64, i64) {
-    summary.iter().fold((0, 0, 0, 0), |(s1, s2, s3, s4), (_, (e1, e2, e3, e4))| (s1 + e1, s2 + e2, s3 + e3, s4 + e4))
+fn generate_summary_totals(
+    summary: &BTreeMap<NaiveDate, (i64, i64, i64, i64)>,
+) -> (i64, i64, i64, i64) {
+    summary
+        .iter()
+        .fold((0, 0, 0, 0), |(s1, s2, s3, s4), (_, (e1, e2, e3, e4))| {
+            (s1 + e1, s2 + e2, s3 + e3, s4 + e4)
+        })
 }

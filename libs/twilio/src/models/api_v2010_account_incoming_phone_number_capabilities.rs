@@ -10,8 +10,6 @@
 
 /// ApiV2010AccountIncomingPhoneNumberCapabilities : The set of Boolean properties that indicate whether a phone number can receive calls or messages.  Capabilities are  `Voice`, `SMS`, and `MMS` and each capability can be: `true` or `false`.
 
-
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ApiV2010AccountIncomingPhoneNumberCapabilities {
     #[serde(rename = "mms", skip_serializing_if = "Option::is_none")]
@@ -41,5 +39,3 @@ impl ApiV2010AccountIncomingPhoneNumberCapabilities {
         }
     }
 }
-
-

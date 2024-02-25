@@ -1,11 +1,11 @@
 use crate::components::loading_progress::Loading;
+use crate::components::timesheet::TimeSheetDisplay;
+use crate::models::time_sheets::TimeSheet;
 use crate::models::user::UserDisplay;
 use chrono::NaiveDate;
 use leptos::*;
 use leptos_router::*;
 use uuid::Uuid;
-use crate::components::timesheet::TimeSheetDisplay;
-use crate::models::time_sheets::TimeSheet;
 
 /// Renders the home page of your application.
 #[component]
@@ -30,13 +30,13 @@ pub fn TimeSheets() -> impl IntoView {
 
 #[server]
 async fn load_timesheet_for<'a>(user_id: String) -> Result<TimeSheet, ServerFnError> {
+    use chrono::{Duration, Local, NaiveDateTime, Weekday};
     use uuid::Uuid;
-    use chrono::{NaiveDateTime, Local, Duration, Weekday};
 
     let Ok(id) = Uuid::parse_str(&user_id) else {
         return Err(ServerFnError::Deserialization("Error parsing ID".into()));
     };
-    
+
     let Some(now) = NaiveDateTime::from_timestamp_opt(Local::now().timestamp(), 0) else {
         return Err(ServerFnError::ServerError("Error Converting Time".into()));
     };
@@ -45,7 +45,9 @@ async fn load_timesheet_for<'a>(user_id: String) -> Result<TimeSheet, ServerFnEr
 
     match TimeSheet::generate_for(id, three_weeks_before, end_of_week).await {
         Ok(ts) => Ok(ts),
-        Err(_) => Err(ServerFnError::ServerError("Error Generating Time Sheet".into())),
+        Err(_) => Err(ServerFnError::ServerError(
+            "Error Generating Time Sheet".into(),
+        )),
     }
 }
 
@@ -63,9 +65,7 @@ pub fn TimeSheetsList() -> impl IntoView {
     let users = create_resource(move || {}, move |_| load_hourly_users());
     let timesheet = create_resource(current_user, load_timesheet_for);
 
-    create_effect( { move |_|
-        leptos::logging::log!("{:?}", current_user())
-    });
+    create_effect({ move |_| leptos::logging::log!("{:?}", current_user()) });
 
     view! {
         <Suspense fallback=move || {
@@ -180,7 +180,12 @@ pub fn TimeSheetsAdjustment() -> impl IntoView {
 }
 
 #[server]
-pub async fn create_adjustment(user_id: Uuid, date: NaiveDate, hours: i32, response: String) -> Result<(), ServerFnError> {
+pub async fn create_adjustment(
+    user_id: Uuid,
+    date: NaiveDate,
+    hours: i32,
+    response: String,
+) -> Result<(), ServerFnError> {
     use crate::models::adjustments::create_adjustment as create_adjustment_fn;
 
     match create_adjustment_fn(&user_id, date, hours, &response).await {

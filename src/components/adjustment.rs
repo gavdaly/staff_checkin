@@ -1,5 +1,5 @@
-use leptos::*;
 use crate::models::adjustments::Adjustment as AdjustmentState;
+use leptos::*;
 
 /// This function generates a view component that displays information about an adjustment.
 ///
@@ -16,11 +16,11 @@ pub fn Adjustment(adjustment: AdjustmentState) -> impl IntoView {
         0 => "Adjustment",
         1 => "Vacation",
         2 => "Statutory",
-        _ => "Unknown"
+        _ => "Unknown",
     };
     let hours = match adjustment.duration {
         0 => String::new(),
-        a => format!(" for {a} miliseconds")
+        a => format!(" for {a} miliseconds"),
     };
     view! {
         <div id=adjustment.id.to_string() data-category=category_string(adjustment.category)>

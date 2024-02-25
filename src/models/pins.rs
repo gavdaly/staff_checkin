@@ -17,7 +17,8 @@ impl Pin {
             .execute(db)
             .await;
         sqlx::query_as!(
-            Pin, "
+            Pin,
+            "
                 INSERT
                     INTO pins
                         (user_id)
@@ -35,7 +36,8 @@ impl Pin {
         use crate::database;
         let db = database::get_db();
         sqlx::query_as!(
-            Pin, "
+            Pin,
+            "
                     SELECT id, user_id, number FROM pins WHERE number = $1
                 ",
             number

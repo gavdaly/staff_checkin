@@ -1,8 +1,8 @@
-use leptos::*;
-use leptos_router::*;
+use crate::components::icon::Icon;
 use crate::models::user::UserDisplay;
 use crate::screens::authenticate::Logout;
-use crate::components::icon::Icon;
+use leptos::*;
+use leptos_router::*;
 
 /// Generates a menu component for a web application.
 ///
@@ -13,10 +13,16 @@ use crate::components::icon::Icon;
 /// * `show_menu` - A signal variable that indicates whether the menu should be shown or hidden.
 /// * `set_show_menu` - A signal variable that allows updating the value of `show_menu`.
 #[component]
-pub fn Menu<F, U>(status: F, user: U, log_out: Action<Logout, Result<(), ServerFnError>>, show_menu: ReadSignal<bool>, set_show_menu: WriteSignal<bool>) -> impl IntoView 
-    where 
-        F: Fn() -> bool + 'static, 
-        U: Fn() -> UserDisplay + 'static
+pub fn Menu<F, U>(
+    status: F,
+    user: U,
+    log_out: Action<Logout, Result<(), ServerFnError>>,
+    show_menu: ReadSignal<bool>,
+    set_show_menu: WriteSignal<bool>,
+) -> impl IntoView
+where
+    F: Fn() -> bool + 'static,
+    U: Fn() -> UserDisplay + 'static,
 {
     view! {
         <nav aria-label="Main Menu" id="nav" data-visible=move || show_menu().to_string()>

@@ -32,7 +32,12 @@ pub enum State {
 }
 
 #[cfg(feature = "ssr")]
-pub async fn create_adjustment(user_id: &Uuid, date: NaiveDate, time: i32, reason: &str) -> Result<(), sqlx::Error> {
+pub async fn create_adjustment(
+    user_id: &Uuid,
+    date: NaiveDate,
+    time: i32,
+    reason: &str,
+) -> Result<(), sqlx::Error> {
     use crate::database::get_db;
     let db = get_db();
 
@@ -60,7 +65,8 @@ pub async fn get_adjustments_for(
     let db = get_db();
 
     sqlx::query_as!(
-        Adjustment, "
+        Adjustment,
+        "
             SELECT category, start_date, end_date, duration, reason, response, state, id, user_id
             FROM adjustments
             WHERE user_id = $1 AND start_date BETWEEN $2 AND $3",

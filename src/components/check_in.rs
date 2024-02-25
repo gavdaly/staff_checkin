@@ -1,6 +1,6 @@
+use crate::app::CheckIn;
 use leptos::*;
 use leptos_router::*;
-use crate::app::CheckIn;
 
 /// This function returns a view component based on whether it is being rendered on the server side or client side.
 ///
@@ -9,26 +9,33 @@ use crate::app::CheckIn;
 /// * `check_in` - An `Action` object representing a check-in action.
 /// * `status` - A closure that returns a boolean value.
 #[component]
-pub fn CheckInView<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F) -> impl IntoView 
-where F: Fn() -> bool + 'static {
+pub fn CheckInView<F>(
+    check_in: Action<CheckIn, Result<(), ServerFnError>>,
+    status: F,
+) -> impl IntoView
+where
+    F: Fn() -> bool + 'static,
+{
     let _value = move || check_in.value();
 
     let window = leptos_use::use_window();
 
     // Checks to see if the component is SSR or Hydrated. Stops the crashing on SSR
-    {match window.is_some() {
-        true => view! {
-            <section class="center-center">
-                <GeoCheckIn check_in status/>
-            </section>
-        },
-        false => view! {
-            <section class="center-center">
-                // The window doesn't reprocess so send a link back to the route so there is no failure state
-                <A href="/">"Refresh"</A>
-            </section>
+    {
+        match window.is_some() {
+            true => view! {
+                <section class="center-center">
+                    <GeoCheckIn check_in status/>
+                </section>
+            },
+            false => view! {
+                <section class="center-center">
+                    // The window doesn't reprocess so send a link back to the route so there is no failure state
+                    <A href="/">"Refresh"</A>
+                </section>
+            },
         }
-    }}
+    }
 }
 
 /// This function is a Rust component called `GeoCheckIn` that returns a view component.
@@ -39,7 +46,10 @@ where F: Fn() -> bool + 'static {
 /// - `check_in`: An `Action` object representing a check-in action.
 /// - `status`: A closure that returns a boolean value.
 #[component]
-fn GeoCheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F) -> impl IntoView where F: Fn() -> bool + 'static {
+fn GeoCheckIn<F>(check_in: Action<CheckIn, Result<(), ServerFnError>>, status: F) -> impl IntoView
+where
+    F: Fn() -> bool + 'static,
+{
     use leptos_use::{use_geolocation_with_options, UseGeolocationReturn};
 
     let options = leptos_use::UseGeolocationOptions::default().enable_high_accuracy(true);

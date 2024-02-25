@@ -1,6 +1,6 @@
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::{DateTime, Local};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct Instance {
