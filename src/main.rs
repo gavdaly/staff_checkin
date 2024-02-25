@@ -1,3 +1,4 @@
+#[cfg(feature = "ssr")]
 mod app_state;
 
 #[cfg(feature = "ssr")]
