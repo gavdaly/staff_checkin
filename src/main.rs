@@ -15,12 +15,12 @@ async fn main() {
     };
     use axum_session::{SessionConfig, SessionLayer, SessionStore, SessionPgPool, SessionPgSession};
     use dotenv;
-    use leptos::{provide_context, get_configuration};
+    use jobs::jobs;
     use leptos_axum::{generate_route_list, handle_server_fns_with_context, LeptosRoutes};
     use staff::app::*;
     use staff::fileserv::file_and_error_handler;
     
-
+    jobs().await.expect("jobs should run");
 
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
 
