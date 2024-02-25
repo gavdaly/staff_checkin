@@ -33,6 +33,12 @@ pub struct ListMessageResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListMessageResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListMessageResponse {
     pub fn new() -> ListMessageResponse {
         ListMessageResponse {

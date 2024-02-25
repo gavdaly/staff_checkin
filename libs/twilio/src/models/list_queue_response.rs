@@ -33,6 +33,12 @@ pub struct ListQueueResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListQueueResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListQueueResponse {
     pub fn new() -> ListQueueResponse {
         ListQueueResponse {

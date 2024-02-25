@@ -111,6 +111,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodIncomingPhoneNumberPeriodIncomingPho
     pub status: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodIncomingPhoneNumberPeriodIncomingPhoneNumberTollFree {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodIncomingPhoneNumberPeriodIncomingPhoneNumberTollFree {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodIncomingPhoneNumberPeriodIncomingPhoneNumberTollFree {
         ApiPeriodV2010PeriodAccountPeriodIncomingPhoneNumberPeriodIncomingPhoneNumberTollFree {

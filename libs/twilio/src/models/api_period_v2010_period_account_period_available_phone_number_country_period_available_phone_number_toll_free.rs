@@ -53,6 +53,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountryPeriodAva
     pub capabilities: Option<Option<Box<crate::models::ApiV2010AccountAvailablePhoneNumberCountryAvailablePhoneNumberLocalCapabilities>>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountryPeriodAvailablePhoneNumberTollFree {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountryPeriodAvailablePhoneNumberTollFree {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountryPeriodAvailablePhoneNumberTollFree {
         ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountryPeriodAvailablePhoneNumberTollFree {

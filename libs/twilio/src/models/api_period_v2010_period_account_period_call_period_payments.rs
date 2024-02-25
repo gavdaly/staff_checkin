@@ -33,6 +33,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodCallPeriodPayments {
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodCallPeriodPayments {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodCallPeriodPayments {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodCallPeriodPayments {
         ApiPeriodV2010PeriodAccountPeriodCallPeriodPayments {

@@ -33,6 +33,12 @@ pub struct ListAvailablePhoneNumberNationalResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListAvailablePhoneNumberNationalResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListAvailablePhoneNumberNationalResponse {
     pub fn new() -> ListAvailablePhoneNumberNationalResponse {
         ListAvailablePhoneNumberNationalResponse {

@@ -30,6 +30,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomainPeriodSipAuthPerio
     pub sid: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomainPeriodSipAuthPeriodSipAuthCallsPeriodSipAuthCallsCredentialListMapping {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomainPeriodSipAuthPeriodSipAuthCallsPeriodSipAuthCallsCredentialListMapping {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomainPeriodSipAuthPeriodSipAuthCallsPeriodSipAuthCallsCredentialListMapping {
         ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomainPeriodSipAuthPeriodSipAuthCallsPeriodSipAuthCallsCredentialListMapping {

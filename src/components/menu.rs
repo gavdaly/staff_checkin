@@ -22,7 +22,7 @@ pub fn Menu<F, U>(status: F, user: U, log_out: Action<Logout, Result<(), ServerF
         <nav aria-label="Main Menu" id="nav" data-visible=move || show_menu().to_string()>
             <span>
                 <button class="close nav-button" on:click=move |_| set_show_menu(false)>
-                    <Icon name="close"/>
+                    <Icon name="close".into()/>
                 </button>
             </span>
             <menu>
@@ -69,12 +69,12 @@ pub fn Menu<F, U>(status: F, user: U, log_out: Action<Logout, Result<(), ServerF
             <ActionForm action=log_out>
                 <button type="submit">
                     <span>"Logout"</span>
-                    <Icon name="logout"/>
+                    <Icon name="logout".into()/>
                 </button>
             </ActionForm>
         </nav>
         <button class="nav-button" on:click=move |_| set_show_menu(true)>
-            <Icon name="horizontal-menu"/>
+            <Icon name="horizontal-menu".into()/>
         </button>
     }
 }

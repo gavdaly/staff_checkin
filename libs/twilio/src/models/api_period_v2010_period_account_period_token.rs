@@ -36,6 +36,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodToken {
     pub username: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodToken {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodToken {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodToken {
         ApiPeriodV2010PeriodAccountPeriodToken {

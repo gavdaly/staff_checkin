@@ -45,6 +45,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodAuthorizedConnectApp {
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodAuthorizedConnectApp {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodAuthorizedConnectApp {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodAuthorizedConnectApp {
         ApiPeriodV2010PeriodAccountPeriodAuthorizedConnectApp {

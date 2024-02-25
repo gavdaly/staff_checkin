@@ -60,6 +60,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageTrigger {
     pub usage_record_uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageTrigger {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageTrigger {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageTrigger {
         ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageTrigger {

@@ -42,6 +42,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodQueue {
     pub max_size: Option<Option<i32>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodQueue {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodQueue {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodQueue {
         ApiPeriodV2010PeriodAccountPeriodQueue {

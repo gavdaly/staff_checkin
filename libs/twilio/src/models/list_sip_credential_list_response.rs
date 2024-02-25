@@ -33,6 +33,12 @@ pub struct ListSipCredentialListResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListSipCredentialListResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListSipCredentialListResponse {
     pub fn new() -> ListSipCredentialListResponse {
         ListSipCredentialListResponse {

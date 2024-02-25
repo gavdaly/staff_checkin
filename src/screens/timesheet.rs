@@ -84,7 +84,7 @@ pub fn TimeSheetEdit() -> impl IntoView {
 
 #[server]
 async fn get_session(uuid: Uuid) -> Result<Session, ServerFnError> {
-    crate::models::sessions::get_session(&uuid).await.or_else(|_| Err(ServerFnError::Request("Error Getting Session".into())))
+    crate::models::sessions::get_session(&uuid).await.map_err(|_| ServerFnError::Request("Error Getting Session".into()))
 }
 
 #[server]

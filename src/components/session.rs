@@ -13,15 +13,12 @@ use crate::utils::miliseconds_to_string;
 /// 
 /// * `session` - A reference to a `SessionAndCorrection` struct that contains session data.
 #[component]
-pub fn Session<'a>(session: &'a SessionAndCorrection) -> impl IntoView {
+pub fn Session(session: SessionAndCorrection) -> impl IntoView {
     let id = session.id.to_string();
     let start_time = session.start_time.with_timezone(&Local);
     let start_string = start_time.format("%I:%M %P").to_string();
     let start_dt = start_time.to_string();
-    let end_time = match session.end_time {
-        Some(t) => Some(t.with_timezone(&Local)),
-        None => None,
-    };
+    let end_time = session.end_time.map(|t| t.with_timezone(&Local));
     view! {
         <span class="start_time" data-id=id.clone()>
             <time datetime=start_dt>{start_string}</time>

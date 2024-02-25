@@ -63,6 +63,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodAddress {
     pub street_secondary: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodAddress {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodAddress {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodAddress {
         ApiPeriodV2010PeriodAccountPeriodAddress {

@@ -33,6 +33,12 @@ pub struct ListAvailablePhoneNumberMachineToMachineResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListAvailablePhoneNumberMachineToMachineResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListAvailablePhoneNumberMachineToMachineResponse {
     pub fn new() -> ListAvailablePhoneNumberMachineToMachineResponse {
         ListAvailablePhoneNumberMachineToMachineResponse {

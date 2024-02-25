@@ -33,6 +33,12 @@ pub struct ListCallEventResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListCallEventResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListCallEventResponse {
     pub fn new() -> ListCallEventResponse {
         ListCallEventResponse {

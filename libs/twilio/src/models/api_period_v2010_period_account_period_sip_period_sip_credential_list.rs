@@ -36,6 +36,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodSipPeriodSipCredentialList {
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodSipPeriodSipCredentialList {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodSipPeriodSipCredentialList {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodSipPeriodSipCredentialList {
         ApiPeriodV2010PeriodAccountPeriodSipPeriodSipCredentialList {

@@ -35,6 +35,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodCallPeriodSiprec {
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodCallPeriodSiprec {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodCallPeriodSiprec {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodCallPeriodSiprec {
         ApiPeriodV2010PeriodAccountPeriodCallPeriodSiprec {

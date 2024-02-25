@@ -59,6 +59,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageRecordPeriodUsageRec
     pub usage_unit: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageRecordPeriodUsageRecordYesterday {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageRecordPeriodUsageRecordYesterday {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageRecordPeriodUsageRecordYesterday {
         ApiPeriodV2010PeriodAccountPeriodUsagePeriodUsageRecordPeriodUsageRecordYesterday {

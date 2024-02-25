@@ -33,6 +33,12 @@ pub struct ListSipIpAddressResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListSipIpAddressResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListSipIpAddressResponse {
     pub fn new() -> ListSipIpAddressResponse {
         ListSipIpAddressResponse {

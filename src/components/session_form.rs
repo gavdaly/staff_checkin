@@ -110,7 +110,7 @@ pub async fn submit_correction_form(id: Option<Uuid>, start_time: String, end_ti
         },
         Err(e) => {
             leptos::logging::error!("Error adding correction: {}", e.to_string());
-            Err(ServerFnError::MissingArg(format!("Error adding correction: {}", e.to_string())))
+            Err(ServerFnError::MissingArg(format!("Error adding correction: {}", e)))
         }
     }
 }

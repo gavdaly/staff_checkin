@@ -33,6 +33,12 @@ pub struct ListShortCodeResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListShortCodeResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListShortCodeResponse {
     pub fn new() -> ListShortCodeResponse {
         ListShortCodeResponse {

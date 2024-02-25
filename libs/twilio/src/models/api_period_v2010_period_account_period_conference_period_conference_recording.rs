@@ -64,6 +64,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodConferencePeriodConferenceRecording 
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodConferencePeriodConferenceRecording {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodConferencePeriodConferenceRecording {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodConferencePeriodConferenceRecording {
         ApiPeriodV2010PeriodAccountPeriodConferencePeriodConferenceRecording {

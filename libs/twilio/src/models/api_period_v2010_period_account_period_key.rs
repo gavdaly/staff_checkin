@@ -27,6 +27,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodKey {
     pub date_updated: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodKey {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodKey {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodKey {
         ApiPeriodV2010PeriodAccountPeriodKey {

@@ -30,6 +30,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodNewKey {
     pub secret: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodNewKey {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodNewKey {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodNewKey {
         ApiPeriodV2010PeriodAccountPeriodNewKey {

@@ -33,6 +33,12 @@ pub struct ListMediaResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListMediaResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListMediaResponse {
     pub fn new() -> ListMediaResponse {
         ListMediaResponse {

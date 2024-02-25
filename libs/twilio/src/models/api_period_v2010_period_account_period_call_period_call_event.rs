@@ -21,6 +21,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodCallPeriodCallEvent {
     pub response: Option<Option<serde_json::Value>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodCallPeriodCallEvent {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodCallPeriodCallEvent {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodCallPeriodCallEvent {
         ApiPeriodV2010PeriodAccountPeriodCallPeriodCallEvent {

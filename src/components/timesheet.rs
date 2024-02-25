@@ -8,7 +8,8 @@ use crate::utils::miliseconds_to_string;
 #[component]
 pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
     let (_entry_total, _adjustment_total, statuatory_total, vacation_total) = timesheet.summary_totals;
-    view! {
+    let entries = timesheet.entries.clone();
+    move || view! {
         <table id="timesheet_summary">
             <thead>
                 <tr>
@@ -64,8 +65,7 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                 </tr>
             </thead>
 
-            {timesheet
-                .entries
+            {entries
                 .iter()
                 .map(|(day, entries)| {
                     view! {
@@ -74,7 +74,7 @@ pub fn TimeSheetDisplay(timesheet: TimeSheet) -> impl IntoView {
                             <td class="entries">
                                 {entries
                                     .iter()
-                                    .map(|entry| view! { <Entry entry=entry/> })
+                                    .map(|entry| view! { <Entry entry=entry.clone()/> })
                                     .collect_view()}
                             </td>
                         </tr>

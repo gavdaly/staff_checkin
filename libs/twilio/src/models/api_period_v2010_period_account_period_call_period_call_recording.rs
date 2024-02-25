@@ -67,6 +67,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodCallPeriodCallRecording {
     pub track: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodCallPeriodCallRecording {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodCallPeriodCallRecording {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodCallPeriodCallRecording {
         ApiPeriodV2010PeriodAccountPeriodCallPeriodCallRecording {

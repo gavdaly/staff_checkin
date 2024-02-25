@@ -33,6 +33,12 @@ pub struct ListIncomingPhoneNumberAssignedAddOnExtensionResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListIncomingPhoneNumberAssignedAddOnExtensionResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListIncomingPhoneNumberAssignedAddOnExtensionResponse {
     pub fn new() -> ListIncomingPhoneNumberAssignedAddOnExtensionResponse {
         ListIncomingPhoneNumberAssignedAddOnExtensionResponse {

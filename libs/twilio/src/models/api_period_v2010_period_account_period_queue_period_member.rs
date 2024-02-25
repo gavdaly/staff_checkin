@@ -33,6 +33,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodQueuePeriodMember {
     pub queue_sid: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodQueuePeriodMember {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodQueuePeriodMember {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodQueuePeriodMember {
         ApiPeriodV2010PeriodAccountPeriodQueuePeriodMember {

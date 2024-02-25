@@ -33,6 +33,12 @@ pub struct ListSipAuthCallsIpAccessControlListMappingResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListSipAuthCallsIpAccessControlListMappingResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListSipAuthCallsIpAccessControlListMappingResponse {
     pub fn new() -> ListSipAuthCallsIpAccessControlListMappingResponse {
         ListSipAuthCallsIpAccessControlListMappingResponse {

@@ -23,6 +23,12 @@ pub struct ApiV2010AccountTokenIceServersInner {
     pub urls: Option<String>,
 }
 
+impl Default for ApiV2010AccountTokenIceServersInner {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiV2010AccountTokenIceServersInner {
     pub fn new() -> ApiV2010AccountTokenIceServersInner {
         ApiV2010AccountTokenIceServersInner {

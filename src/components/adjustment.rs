@@ -11,7 +11,7 @@ use crate::models::adjustments::Adjustment as AdjustmentState;
 ///
 /// An implementation of the `IntoView` trait representing the view component.
 #[component]
-pub fn Adjustment<'a>(adjustment: &'a AdjustmentState) -> impl IntoView {
+pub fn Adjustment(adjustment: AdjustmentState) -> impl IntoView {
     let category_string = |cat| match cat {
         0 => "Adjustment",
         1 => "Vacation",

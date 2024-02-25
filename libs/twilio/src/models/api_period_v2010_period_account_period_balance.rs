@@ -24,6 +24,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodBalance {
     pub currency: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodBalance {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodBalance {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodBalance {
         ApiPeriodV2010PeriodAccountPeriodBalance {

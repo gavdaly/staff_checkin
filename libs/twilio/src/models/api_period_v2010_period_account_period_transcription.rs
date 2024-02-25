@@ -53,6 +53,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodTranscription {
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodTranscription {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodTranscription {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodTranscription {
         ApiPeriodV2010PeriodAccountPeriodTranscription {

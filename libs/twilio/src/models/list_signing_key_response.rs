@@ -33,6 +33,12 @@ pub struct ListSigningKeyResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListSigningKeyResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListSigningKeyResponse {
     pub fn new() -> ListSigningKeyResponse {
         ListSigningKeyResponse {

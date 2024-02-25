@@ -33,6 +33,12 @@ pub struct ListRecordingAddOnResultResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListRecordingAddOnResultResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListRecordingAddOnResultResponse {
     pub fn new() -> ListRecordingAddOnResultResponse {
         ListRecordingAddOnResultResponse {

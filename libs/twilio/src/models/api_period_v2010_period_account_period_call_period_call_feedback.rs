@@ -33,6 +33,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedback {
     pub sid: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedback {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedback {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedback {
         ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedback {

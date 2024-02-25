@@ -1,4 +1,5 @@
-use leptos::{server_fn::error::NoCustomError, *};
+use leptos::*;
+use leptos::server_fn::error::NoCustomError;
 use leptos_router::*;
 use crate::components::{icon::Icon, loading_progress::Loading};
 
@@ -46,7 +47,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
                                     on:input=move |v| set_pin_input(event_target_value(&v))
                                 />
                                 <button type="submit">
-                                    <Icon name="login"/>
+                                    <Icon name="login".into()/>
                                     <span>"Log In"</span>
                                 </button>
 

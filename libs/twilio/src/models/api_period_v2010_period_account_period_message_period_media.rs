@@ -36,6 +36,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodMessagePeriodMedia {
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodMessagePeriodMedia {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodMessagePeriodMedia {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodMessagePeriodMedia {
         ApiPeriodV2010PeriodAccountPeriodMessagePeriodMedia {

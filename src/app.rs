@@ -179,7 +179,7 @@ async fn get_session_status() -> Result<bool, ServerFnError> {
         .get::<Uuid>("id")
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into()))?;
     match get_open_sessions(&id).await {
-        Ok(a) => Ok(a.len() != 0),
+        Ok(a) => Ok(!a.is_empty()),
         Err(_) => Err(ServerFnError::<NoCustomError>::ServerError("Error getting one".into()))
     }
 }
@@ -224,9 +224,9 @@ async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     use crate::utils::caluclate_distance;
     use std::env;
 
-    let base_latitude: f64 = env::var("LATITUDE").expect("To have ENV VAR: LATITUDE".into()).parse::<f64>().expect("`LATITUDE` to be a floating point number".into());
-    let base_longitude: f64 = env::var("LONGITUDE").expect("To have ENV VAR: LONGITUDE".into()).parse::<f64>().expect("`LONGITUDE` to be a floating point number".into());
-    let base_accuracy: f64 = env::var("ACCURACY").expect("To have ENV VAR: ACCURACY".into()).parse::<f64>().expect("`ACCURACY` to be a floating point number".into());
+    let base_latitude: f64 = env::var("LATITUDE").expect("To have ENV VAR: LATITUDE").parse::<f64>().expect("`LATITUDE` to be a floating point number");
+    let base_longitude: f64 = env::var("LONGITUDE").expect("To have ENV VAR: LONGITUDE").parse::<f64>().expect("`LONGITUDE` to be a floating point number");
+    let base_accuracy: f64 = env::var("ACCURACY").expect("To have ENV VAR: ACCURACY").parse::<f64>().expect("`ACCURACY` to be a floating point number");
 
     let _ = insert(latitude, longitude, accuracy).await.map_err(|e|
         leptos::tracing::error!("Insert Tracing Error: {:?}", e)

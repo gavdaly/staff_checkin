@@ -91,6 +91,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodAddressPeriodDependentPhoneNumber {
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodAddressPeriodDependentPhoneNumber {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodAddressPeriodDependentPhoneNumber {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodAddressPeriodDependentPhoneNumber {
         ApiPeriodV2010PeriodAccountPeriodAddressPeriodDependentPhoneNumber {

@@ -33,6 +33,12 @@ pub struct ListCallNotificationResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListCallNotificationResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListCallNotificationResponse {
     pub fn new() -> ListCallNotificationResponse {
         ListCallNotificationResponse {

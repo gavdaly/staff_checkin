@@ -33,6 +33,12 @@ pub struct ListRecordingAddOnResultPayloadResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListRecordingAddOnResultPayloadResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListRecordingAddOnResultPayloadResponse {
     pub fn new() -> ListRecordingAddOnResultPayloadResponse {
         ListRecordingAddOnResultPayloadResponse {

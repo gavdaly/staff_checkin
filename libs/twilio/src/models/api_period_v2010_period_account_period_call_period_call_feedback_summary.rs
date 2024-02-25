@@ -56,6 +56,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedbackSummary {
     pub status: Option<crate::models::CallFeedbackSummaryEnumStatus>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedbackSummary {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedbackSummary {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedbackSummary {
         ApiPeriodV2010PeriodAccountPeriodCallPeriodCallFeedbackSummary {

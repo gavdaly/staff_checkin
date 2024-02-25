@@ -48,6 +48,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodRecordingPeriodRecordingAddOnResultP
     pub subresource_uris: Option<Option<serde_json::Value>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodRecordingPeriodRecordingAddOnResultPeriodRecordingAddOnResultPayload {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodRecordingPeriodRecordingAddOnResultPeriodRecordingAddOnResultPayload {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodRecordingPeriodRecordingAddOnResultPeriodRecordingAddOnResultPayload {
         ApiPeriodV2010PeriodAccountPeriodRecordingPeriodRecordingAddOnResultPeriodRecordingAddOnResultPayload {

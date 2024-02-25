@@ -27,6 +27,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessage {
     pub date_created: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessage {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessage {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessage {
         ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessage {

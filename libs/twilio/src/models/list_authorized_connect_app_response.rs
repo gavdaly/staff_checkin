@@ -33,6 +33,12 @@ pub struct ListAuthorizedConnectAppResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListAuthorizedConnectAppResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListAuthorizedConnectAppResponse {
     pub fn new() -> ListAuthorizedConnectAppResponse {
         ListAuthorizedConnectAppResponse {

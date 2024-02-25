@@ -73,6 +73,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodMessage {
     pub subresource_uris: Option<Option<serde_json::Value>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodMessage {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodMessage {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodMessage {
         ApiPeriodV2010PeriodAccountPeriodMessage {

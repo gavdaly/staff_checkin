@@ -30,6 +30,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodValidationRequest {
     pub validation_code: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodValidationRequest {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodValidationRequest {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodValidationRequest {
         ApiPeriodV2010PeriodAccountPeriodValidationRequest {

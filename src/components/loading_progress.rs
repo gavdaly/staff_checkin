@@ -9,7 +9,7 @@ use super::icon::Icon;
 pub fn Loading() -> impl IntoView {
     view! {
         <div data-state="loading">
-            <Icon name="loading"/>
+            <Icon name="loading".into()/>
             <span>"Loading..."</span>
         </div>
     }

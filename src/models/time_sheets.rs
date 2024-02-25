@@ -107,12 +107,9 @@ fn _calculate_statuatory_hours(
                         total = end_time - s.start_time + total;
                     }
                 }
-                Entry::Adjustment(a) => match a.category {
-                    1 => {
-                        total = Duration::milliseconds(a.duration as i64) + total;
-                    }
-                    _ => {}
-                },
+                Entry::Adjustment(a) => if a.category == 1 {
+                    total = Duration::milliseconds(a.duration as i64) + total;
+                }
             }
         }
     });
@@ -128,9 +125,7 @@ fn generate_summary(
 
     entries.iter().for_each(|(date, entries)| {
         let week = date.week(Weekday::Mon).first_day();
-        if !map.contains_key(&week) {
-            map.insert(week, (0, 0, 0, 0));
-        }
+        map.entry(week).or_insert((0, 0, 0, 0));
         let Some(totals) = map.get_mut(&week) else {
             return;
         };
@@ -138,7 +133,7 @@ fn generate_summary(
             match entry {
                 Entry::Session(s) => {
                     if let Some(end_time) = s.end_time {
-                        totals.0 = (end_time - s.start_time).num_milliseconds() + totals.0;
+                        totals.0 += (end_time - s.start_time).num_milliseconds();
                     }
                 }
                 Entry::Adjustment(a) => match a.category {

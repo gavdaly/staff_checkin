@@ -49,6 +49,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodConference {
     pub call_sid_ending_conference: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodConference {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodConference {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodConference {
         ApiPeriodV2010PeriodAccountPeriodConference {

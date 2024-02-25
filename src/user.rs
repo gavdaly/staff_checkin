@@ -1,4 +1,5 @@
-use leptos::{server_fn::error::NoCustomError, *};
+use leptos::*;
+use leptos::server_fn::error::NoCustomError;
 use serde::{Deserialize, Serialize};
 
 use crate::models::user::UserDisplay;
@@ -141,9 +142,9 @@ async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     use crate::utils::caluclate_distance;
     use std::env;
 
-    let base_latitude: f64 = env::var("LATITUDE").expect("To have ENV VAR: LATITUDE".into()).parse::<f64>().expect("`LATITUDE` to be a floating point number".into());
-    let base_longitude: f64 = env::var("LONGITUDE").expect("To have ENV VAR: LONGITUDE".into()).parse::<f64>().expect("`LONGITUDE` to be a floating point number".into());
-    let base_accuracy: f64 = env::var("ACCURACY").expect("To have ENV VAR: ACCURACY".into()).parse::<f64>().expect("`ACCURACY` to be a floating point number".into());
+    let base_latitude: f64 = env::var("LATITUDE").expect("To have ENV VAR: LATITUDE").parse::<f64>().expect("`LATITUDE` to be a floating point number");
+    let base_longitude: f64 = env::var("LONGITUDE").expect("To have ENV VAR: LONGITUDE").parse::<f64>().expect("`LONGITUDE` to be a floating point number");
+    let base_accuracy: f64 = env::var("ACCURACY").expect("To have ENV VAR: ACCURACY").parse::<f64>().expect("`ACCURACY` to be a floating point number");
 
     let _ = insert(latitude, longitude, accuracy).await.map_err(|e|
         leptos::tracing::error!("Insert Tracing Error: {:?}", e)

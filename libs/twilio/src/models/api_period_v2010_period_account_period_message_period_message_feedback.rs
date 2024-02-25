@@ -32,6 +32,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodMessagePeriodMessageFeedback {
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodMessagePeriodMessageFeedback {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodMessagePeriodMessageFeedback {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodMessagePeriodMessageFeedback {
         ApiPeriodV2010PeriodAccountPeriodMessagePeriodMessageFeedback {

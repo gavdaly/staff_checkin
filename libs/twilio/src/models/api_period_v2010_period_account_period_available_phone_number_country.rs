@@ -30,6 +30,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountry {
     pub subresource_uris: Option<Option<serde_json::Value>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountry {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountry {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountry {
         ApiPeriodV2010PeriodAccountPeriodAvailablePhoneNumberCountry {

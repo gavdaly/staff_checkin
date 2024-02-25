@@ -24,6 +24,12 @@ pub struct ApiV2010AccountIncomingPhoneNumberCapabilities {
     pub fax: Option<bool>,
 }
 
+impl Default for ApiV2010AccountIncomingPhoneNumberCapabilities {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiV2010AccountIncomingPhoneNumberCapabilities {
     /// The set of Boolean properties that indicate whether a phone number can receive calls or messages.  Capabilities are  `Voice`, `SMS`, and `MMS` and each capability can be: `true` or `false`.
     pub fn new() -> ApiV2010AccountIncomingPhoneNumberCapabilities {

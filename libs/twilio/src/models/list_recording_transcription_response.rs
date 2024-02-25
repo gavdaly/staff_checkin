@@ -33,6 +33,12 @@ pub struct ListRecordingTranscriptionResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListRecordingTranscriptionResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListRecordingTranscriptionResponse {
     pub fn new() -> ListRecordingTranscriptionResponse {
         ListRecordingTranscriptionResponse {

@@ -78,6 +78,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodApplication {
     pub public_application_connect_enabled: Option<Option<bool>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodApplication {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodApplication {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodApplication {
         ApiPeriodV2010PeriodAccountPeriodApplication {

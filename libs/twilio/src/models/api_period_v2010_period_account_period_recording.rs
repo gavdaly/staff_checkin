@@ -70,6 +70,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodRecording {
     pub media_url: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodRecording {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodRecording {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodRecording {
         ApiPeriodV2010PeriodAccountPeriodRecording {

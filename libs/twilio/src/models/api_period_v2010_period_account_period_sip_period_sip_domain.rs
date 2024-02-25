@@ -78,6 +78,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomain {
     pub emergency_caller_sid: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomain {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomain {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomain {
         ApiPeriodV2010PeriodAccountPeriodSipPeriodSipDomain {

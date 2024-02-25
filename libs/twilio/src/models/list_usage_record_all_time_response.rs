@@ -33,6 +33,12 @@ pub struct ListUsageRecordAllTimeResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListUsageRecordAllTimeResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListUsageRecordAllTimeResponse {
     pub fn new() -> ListUsageRecordAllTimeResponse {
         ListUsageRecordAllTimeResponse {

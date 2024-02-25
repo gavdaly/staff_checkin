@@ -33,6 +33,12 @@ pub struct ListConnectAppResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListConnectAppResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListConnectAppResponse {
     pub fn new() -> ListConnectAppResponse {
         ListConnectAppResponse {

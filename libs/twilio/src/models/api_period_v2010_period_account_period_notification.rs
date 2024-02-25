@@ -57,6 +57,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodNotification {
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodNotification {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodNotification {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodNotification {
         ApiPeriodV2010PeriodAccountPeriodNotification {

@@ -30,6 +30,12 @@ pub struct ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessageSubscrip
     pub uri: Option<Option<String>>,
 }
 
+impl Default for ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessageSubscription {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessageSubscription {
     pub fn new() -> ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessageSubscription {
         ApiPeriodV2010PeriodAccountPeriodCallPeriodUserDefinedMessageSubscription {

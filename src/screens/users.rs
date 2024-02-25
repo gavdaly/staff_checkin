@@ -83,7 +83,7 @@ pub fn UsersList() -> impl IntoView {
                                             <span>{user.phone_number}</span>
                                             <span>
                                                 <A href=format!("/admin/user/edit/{}", user.id.to_string())>
-                                                    <Icon name="pencil"/>
+                                                    <Icon name="pencil".into()/>
                                                 </A>
                                             </span>
                                         </div>

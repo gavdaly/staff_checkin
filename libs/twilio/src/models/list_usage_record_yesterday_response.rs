@@ -33,6 +33,12 @@ pub struct ListUsageRecordYesterdayResponse {
     pub uri: Option<String>,
 }
 
+impl Default for ListUsageRecordYesterdayResponse {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ListUsageRecordYesterdayResponse {
     pub fn new() -> ListUsageRecordYesterdayResponse {
         ListUsageRecordYesterdayResponse {
