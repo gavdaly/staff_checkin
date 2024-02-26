@@ -65,7 +65,7 @@ pub fn TimeSheetsList() -> impl IntoView {
     let users = create_resource(move || {}, move |_| load_hourly_users());
     let timesheet = create_resource(current_user, load_timesheet_for);
 
-    create_effect({ move |_| leptos::logging::log!("{:?}", current_user()) });
+    create_effect(move |_| leptos::logging::log!("{:?}", current_user()));
 
     view! {
         <Suspense fallback=move || {
