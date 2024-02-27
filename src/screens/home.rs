@@ -16,9 +16,7 @@ where
                 {move || {
                     view! {
                         <aside id="checked_in" data-checked-in=status().to_string()>
-                            {if status() { "In" } else { "Out" }}
-                            " | "
-                            {status().to_string()}
+                            {if status() { "You are Checked In" } else { "You are Checked Out" }}
                         </aside>
                     }
                 }}
