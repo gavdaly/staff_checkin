@@ -69,6 +69,9 @@ pub fn App() -> impl IntoView {
 
         <Meta name="theme-color" content />
 
+        <Link rel="icon" type_="image/png" href="/logo.png"/>
+        <Link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+
         // sets the document title
         <Title text="Dental Care"/>
         <Router fallback=|| {
