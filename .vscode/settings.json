@@ -2,5 +2,10 @@
     "rust-analyzer.diagnostics.useRustcErrorCode": true,
     "rust-analyzer.linkedProjects": [
         "./Cargo.toml"
-    ]
+    ],
+    "rust-analyzer.procMacro.ignored": {
+        "leptos_macro": [
+            "server"
+        ],
+    }
 }
