@@ -209,7 +209,7 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     })?;
 
     match is_close(latitude, longitude, accuracy).await {
-        Ok(_) => (),
+    //     Ok(_) => (),
         Err(e) => return Err(e),
     };
 
