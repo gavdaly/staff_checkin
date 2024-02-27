@@ -71,7 +71,8 @@ pub fn App() -> impl IntoView {
 
         <Link rel="icon" type_="image/png" href="/logo.png"/>
         <Link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
-
+        <link rel="manifest" href="/site.webmanifest" />
+        
         // sets the document title
         <Title text="Dental Care"/>
         <Router fallback=|| {
