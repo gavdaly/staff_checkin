@@ -3,7 +3,6 @@
 @import "https://unpkg.com/open-props/buttons.min.css";
 
 body {
-    min-height: 100svh;
     display: grid;
     grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr;
@@ -12,30 +11,36 @@ body {
         "main main";
 }
 
+html {
+    background-color: #760045;
+    background-color: oklch(36.94% 0.1685 354.12);
+}
+
 #main {
     height: 100%;
     grid-area: main;
+    background-color: var(--surface-1);
+    border-radius: var(--radius-3);
 }
 
 #header {
     grid-area: header;
     display: flex;
     justify-content: space-between;
-    background: var(--gradient-17);
+    background: none;
     padding: 0.6rem;
     align-items: baseline;
-    box-shadow: var(--shadow-3);
-    h1 {
+    h1 span {
         text-shadow: var(--shadow-4);
     }
 }
 
 .nav-button {
-    position: sticky;
-    bottom: var(--size-3);
-    left: var(--size-3);
+    position: fixed;
+    top: var(--size-3);
+    right: var(--size-3);
     width: fit-content;
-    padding: var(--size-1);
+    padding: var(--size-2);
     border-radius: var(--radius-round);
 }
 

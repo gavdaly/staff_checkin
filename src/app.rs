@@ -62,8 +62,12 @@ pub fn App() -> impl IntoView {
 
     let (show_menu, set_show_menu) = create_signal(false);
 
+    let content = r#"oklch(36.94% 0.1685 354.12)"#;
+
     view! {
         <Stylesheet id="leptos" href="/pkg/staff.css"/>
+
+        <Meta name="theme-color" content />
 
         // sets the document title
         <Title text="Dental Care"/>
@@ -208,10 +212,10 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
         ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
     })?;
 
-    match is_close(latitude, longitude, accuracy).await {
+    // match is_close(latitude, longitude, accuracy).await {
     //     Ok(_) => (),
-        Err(e) => return Err(e),
-    };
+    //     Err(e) => return Err(e),
+    // };
 
     // check for existing session
     match get_open_session(&id).await {
