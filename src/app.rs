@@ -69,7 +69,8 @@ pub fn App() -> impl IntoView {
 
         <Meta name="theme-color" content />
 
-        <Link rel="icon" type_="image/png" href="/logo.png"/>
+        <Link rel="icon" type_="image/png" sizes="48x48" href="/logo-48.png"/>
+        <Link rel="icon" type_="image/svg+xml" sizes="any" href="/logo.svg"/>
         <Link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
         <link rel="manifest" href="/site.webmanifest" />
         
