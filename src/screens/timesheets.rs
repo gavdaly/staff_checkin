@@ -30,16 +30,14 @@ pub fn TimeSheets() -> impl IntoView {
 
 #[server]
 async fn load_timesheet_for<'a>(user_id: String) -> Result<TimeSheet, ServerFnError> {
-    use chrono::{Duration, Local, NaiveDateTime, Weekday};
+    use chrono::{Duration, Local, Weekday};
     use uuid::Uuid;
 
     let Ok(id) = Uuid::parse_str(&user_id) else {
         return Err(ServerFnError::Deserialization("Error parsing ID".into()));
     };
 
-    let Some(now) = NaiveDateTime::from_timestamp_opt(Local::now().timestamp(), 0) else {
-        return Err(ServerFnError::ServerError("Error Converting Time".into()));
-    };
+    let now = Local::now().naive_local();
     let three_weeks_before = now.clone().date().week(Weekday::Mon).first_day() - Duration::days(14);
     let end_of_week = now.date().week(Weekday::Mon).last_day() + Duration::days(7);
 
