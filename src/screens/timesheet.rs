@@ -103,9 +103,8 @@ async fn get_active_user_timesheet() -> Result<TimeSheet, ServerFnError> {
         leptos_axum::redirect("/sign_in");
         return Err(ServerFnError::ServerError("Error getting Session!".into()));
     };
-    let Some(now) = NaiveDateTime::from_timestamp_opt(Local::now().timestamp(), 0) else {
-        return Err(ServerFnError::ServerError("Error Converting Time".into()));
-    };
+
+    let now = Local::now().naive_local();
     let three_weeks_before = now.clone().date().week(Weekday::Mon).first_day() - Duration::days(14);
     let end_of_week = now.date().week(Weekday::Mon).last_day() + Duration::days(7);
 
