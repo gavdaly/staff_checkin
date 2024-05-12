@@ -92,11 +92,11 @@ async fn get_session(uuid: Uuid) -> Result<Session, ServerFnError> {
 
 #[server]
 async fn get_active_user_timesheet() -> Result<TimeSheet, ServerFnError> {
-    use axum_session::SessionPgSession;
-    use chrono::{Duration, Local, NaiveDateTime, Weekday};
+    use axum_session::SessionAnySession;
+    use chrono::{Duration, Local, Weekday};
     use uuid::Uuid;
 
-    let Some(session) = use_context::<SessionPgSession>() else {
+    let Some(session) = use_context::<SessionAnySession>() else {
         return Err(ServerFnError::ServerError("Session missing.".into()));
     };
     let Some(id) = session.get::<Uuid>("id") else {

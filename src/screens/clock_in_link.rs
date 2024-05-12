@@ -32,8 +32,8 @@ pub async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFn
     use crate::models::sessions::{close_session, get_open_session, new_session};
     use uuid::Uuid;
     // Get User
-    use axum_session::SessionPgSession;
-    let session = use_context::<SessionPgSession>()
+    use axum_session::SessionAnySession;
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session.get::<Uuid>("id").ok_or_else(|| {
         ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())

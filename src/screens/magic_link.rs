@@ -30,9 +30,9 @@ pub fn MagicLink() -> impl IntoView {
 #[server]
 async fn magic_sign_in(link: Uuid) -> Result<(), ServerFnError> {
     use crate::models::magic_link::MagicLink;
-    use axum_session::SessionPgSession;
+    use axum_session::SessionAnySession;
 
-    let session = use_context::<SessionPgSession>()
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let user_id = MagicLink::get(link)
         .await

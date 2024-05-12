@@ -163,10 +163,10 @@ pub struct Status {
 
 #[server]
 pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
-    use axum_session::SessionPgSession;
+    use axum_session::SessionAnySession;
     use uuid::Uuid;
 
-    let Some(session) = use_context::<SessionPgSession>() else {
+    let Some(session) = use_context::<SessionAnySession>() else {
         leptos::tracing::error!("| * Error getting settion");
         return Err(ServerFnError::ServerError(
             "Error Finding Session 30".into(),
@@ -189,10 +189,10 @@ pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
 #[server]
 async fn get_session_status() -> Result<bool, ServerFnError> {
     use crate::models::sessions::get_open_sessions;
-    use axum_session::SessionPgSession;
+    use axum_session::SessionAnySession;
     use uuid::Uuid;
 
-    let session = use_context::<SessionPgSession>()
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session.get::<Uuid>("id").ok_or_else(|| {
         ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
@@ -210,8 +210,8 @@ async fn check_in(_latitude: f64, _longitude: f64, _accuracy: f64) -> Result<(),
     use crate::models::sessions::{close_session, get_open_session, new_session};
     use uuid::Uuid;
     // Get User
-    use axum_session::SessionPgSession;
-    let session = use_context::<SessionPgSession>()
+    use axum_session::SessionAnySession;
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session.get::<Uuid>("id").ok_or_else(|| {
         ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())

@@ -139,9 +139,9 @@ async fn handle_correction_response(
 ) -> Result<(), ServerFnError> {
     use crate::models::corrections::correction_response;
     use crate::models::user::UserDisplay;
-    use axum_session::SessionPgSession;
+    use axum_session::SessionAnySession;
 
-    let session = use_context::<SessionPgSession>()
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let user_id = session.get::<Uuid>("id").ok_or_else(|| {
         ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
