@@ -226,9 +226,9 @@ dependencies = [
 
 [[package]]
 name = "axum_session"
-version = "0.13.0"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f8eb079aedf4bbebef903c66ef9b86d66865d69d61c9d3d303b878148eae2a5"
+checksum = "5f7f838b45b25647f9df4bd99ef0bbb009020de8093773dd27b41b12a87f2167"
 dependencies = [
  "aes-gcm",
  "async-trait",
@@ -247,13 +247,24 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "sqlx",
  "thiserror",
  "tokio",
  "tower-layer",
  "tower-service",
  "tracing",
  "uuid",
+]
+
+[[package]]
+name = "axum_session_sqlx"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4cd51b40f1b19ec03a2aaa6aa497146993371ad1ea4e15f3ea98a833445dac39"
+dependencies = [
+ "async-trait",
+ "axum_session",
+ "chrono",
+ "sqlx",
 ]
 
 [[package]]
@@ -3195,6 +3206,7 @@ version = "0.5.0"
 dependencies = [
  "axum",
  "axum_session",
+ "axum_session_sqlx",
  "cfg-if",
  "chrono",
  "console_error_panic_hook",

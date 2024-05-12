@@ -86,7 +86,7 @@ pub fn Auth(authenticate: Action<Authenticate, Result<(), ServerFnError>>) -> im
 async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
     use crate::models::pins::Pin;
     use crate::models::user::get_user_by_phone;
-    use axum_session::SessionPgSession;
+    use axum_session::SessionAnySession;
 
     let Ok(pin) = Pin::get_pin(pin).await else {
         return Err(ServerFnError::<NoCustomError>::ServerError(
@@ -100,7 +100,7 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
         ));
     };
 
-    let session = use_context::<SessionPgSession>()
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
 
     if pin.user_id != user.id {
@@ -116,8 +116,8 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
 
 #[server]
 pub async fn logout() -> Result<(), ServerFnError> {
-    use axum_session::SessionPgSession;
-    let session = use_context::<SessionPgSession>()
+    use axum_session::SessionAnySession;
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     session.clear();
 

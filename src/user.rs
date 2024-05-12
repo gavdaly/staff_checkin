@@ -43,10 +43,10 @@ impl User {
 
 #[server]
 pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
-    use axum_session::SessionPgSession;
+    use axum_session::SessionAnySession;
     use uuid::Uuid;
 
-    let Some(session) = use_context::<SessionPgSession>() else {
+    let Some(session) = use_context::<SessionAnySession>() else {
         leptos::tracing::error!("| * Error getting settion");
         return Err(ServerFnError::ServerError("Error Finding Session".into()));
     };
@@ -68,7 +68,7 @@ pub async fn get_curent_user() -> Result<Option<UserDisplay>, ServerFnError> {
 async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
     use crate::models::pins::Pin;
     use crate::models::user::get_user_by_phone;
-    use axum_session::SessionPgSession;
+    use axum_session::SessionAnySession;
 
     let Ok(pin) = Pin::get_pin(pin).await else {
         return Err(ServerFnError::<NoCustomError>::ServerError(
@@ -80,7 +80,7 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
         return Err(ServerFnError::ServerError("Internal Server Error".into()));
     };
 
-    let session = use_context::<SessionPgSession>()
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
 
     if pin.user_id != user.id {
@@ -94,8 +94,8 @@ async fn authenticate(pin: i32, phone: String) -> Result<(), ServerFnError> {
 
 #[server]
 pub async fn logout() -> Result<(), ServerFnError> {
-    use axum_session::SessionPgSession;
-    let session = use_context::<SessionPgSession>()
+    use axum_session::SessionAnySession;
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     session.clear();
 
@@ -108,8 +108,8 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
     use crate::models::sessions::{close_session, get_open_session, new_session};
     use uuid::Uuid;
     // Get User
-    use axum_session::SessionPgSession;
-    let session = use_context::<SessionPgSession>()
+    use axum_session::SessionAnySession;
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session.get::<Uuid>("id").ok_or_else(|| {
         ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())
@@ -175,8 +175,8 @@ pub async fn clock_in_link_initiate_session(link: String) -> Result<(), ServerFn
     use crate::models::sessions::{close_session, get_open_session, new_session};
     use uuid::Uuid;
     // Get User
-    use axum_session::SessionPgSession;
-    let session = use_context::<SessionPgSession>()
+    use axum_session::SessionAnySession;
+    let session = use_context::<SessionAnySession>()
         .ok_or_else(|| ServerFnError::<NoCustomError>::ServerError("Session missing.".into()))?;
     let id = session.get::<Uuid>("id").ok_or_else(|| {
         ServerFnError::<NoCustomError>::ServerError("Error getting Session!".into())

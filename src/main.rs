@@ -16,9 +16,9 @@ async fn main() {
         routing::get,
         Router,
     };
-    use axum_session::{
-        SessionConfig, SessionLayer, SessionPgPool, SessionPgSession, SessionStore,
-    };
+    use axum_session::{SessionAnyPool, SessionAnySession, SessionConfig, SessionLayer, SessionStore};
+    use axum_session_sqlx::SessionPgPool;
+    use sqlx::postgres::PgPoolOptions;
     use dotenv;
     use jobs::jobs;
     use leptos::{get_configuration, provide_context};
@@ -36,16 +36,25 @@ async fn main() {
         .await
         .expect("Should create database pool");
 
-    let pool = staff::database::get_db();
-
     let session_config = SessionConfig::default().with_table_name("user_sessions");
-    let session_store =
-        SessionStore::<SessionPgPool>::new(Some(pool.clone().into()), session_config)
-            .await
-            .expect("session store could not be created");
 
+    let database_url = std::env::var("DATABASE_URL").expect("no database url specify");
+
+    let poll = SessionAnyPool::new(SessionPgPool::from(
+            PgPoolOptions::new()
+                .max_connections(5)
+                .connect(database_url.as_str())
+                .await
+                .unwrap(),
+        ));
+
+
+    let session_store = SessionStore::<SessionAnyPool>::new(Some(poll), session_config)
+    .await
+        .expect("session store could not be created");
+    
     async fn server_fn_handler(
-        session_store: SessionPgSession,
+        session_store: SessionAnySession,
         State(_app_state): State<AppState>,
         path: Path<String>,
         request: Request<AxumBody>,
@@ -62,7 +71,7 @@ async fn main() {
     }
 
     async fn leptos_routes_handler(
-        session_store: SessionPgSession,
+        session_store: SessionAnySession,
         State(app_state): State<AppState>,
         req: Request<AxumBody>,
     ) -> Response {
