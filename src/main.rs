@@ -23,7 +23,7 @@ async fn main() {
     use jobs::jobs;
     use leptos::{get_configuration, provide_context};
     use leptos_axum::{generate_route_list, handle_server_fns_with_context, LeptosRoutes};
-    use staff::app::*;
+    use staff::app::App;
     use staff::fileserv::file_and_error_handler;
 
     jobs().await.expect("jobs should run");
