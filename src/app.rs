@@ -125,7 +125,7 @@ pub fn App() -> impl IntoView {
                                 <Route path="/users" view=Users/>
                                 <Route
                                     path="/check_in"
-                                    view=move || view! { <CheckInView check_in status/> }
+                                    view=move || view! { <CheckInView check_in /> }
                                 />
                             </Route>
                             <Route path="/admin" view=move || view! { <Outlet/> }>
@@ -206,7 +206,7 @@ async fn get_session_status() -> Result<bool, ServerFnError> {
 }
 
 #[server]
-async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
+async fn check_in(_latitude: f64, _longitude: f64, _accuracy: f64) -> Result<(), ServerFnError> {
     use crate::models::sessions::{close_session, get_open_session, new_session};
     use uuid::Uuid;
     // Get User
@@ -240,7 +240,7 @@ async fn check_in(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), Se
 }
 
 #[cfg(feature = "ssr")]
-async fn is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
+async fn _is_close(latitude: f64, longitude: f64, accuracy: f64) -> Result<(), ServerFnError> {
     use crate::models::location_trackers::insert;
     use crate::utils::caluclate_distance;
     use std::env;

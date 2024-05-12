@@ -7,15 +7,8 @@ use leptos_router::*;
 /// # Arguments
 ///
 /// * `check_in` - An `Action` object representing a check-in action.
-/// * `status` - A closure that returns a boolean value.
 #[component]
-pub fn CheckInView<F>(
-    check_in: Action<CheckIn, Result<(), ServerFnError>>,
-    status: F,
-) -> impl IntoView
-where
-    F: Fn() -> bool + 'static,
-{    
+pub fn CheckInView(check_in: Action<CheckIn, Result<(), ServerFnError>>) -> impl IntoView {    
     // use leptos_use::{use_geolocation_with_options, UseGeolocationReturn};
 
     // let options = leptos_use::UseGeolocationOptions::default().enable_high_accuracy(true);
@@ -86,7 +79,7 @@ where
 /// # Arguments
 ///
 /// * `error_number` - An unsigned 16-bit integer representing the error code.
-fn location_error(error_number: u16) -> String {
+fn _location_error(error_number: u16) -> String {
     match error_number {
         1 => "Location Services are disabled, please enable and try again.".to_string(),
         2 => "Error getting a signal for your location.".to_string(),
