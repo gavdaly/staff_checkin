@@ -95,13 +95,13 @@ fn Correction(correction: Correction, session_state: i32) -> impl IntoView {
     let handle_correction_response = create_server_action::<HandleCorrectionResponse>();
     match session_state {
         3 => view! {
-            <span>{start}</span>
-            <span>{end}</span>
+            <span class="start_time">{start}</span>
+            <span class="end_time">{end}</span>
             <span>"pending time"</span>
             <span></span>
             <span>"reason"</span>
             <span class="reason">{correction.reason}</span>
-            <ActionForm action=handle_correction_response>
+            <ActionForm class="reason" action=handle_correction_response>
                 <input type="hidden" name="id" value=correction.id.to_string()/>
                 <div>
                     <label for="response">"response"</label>
